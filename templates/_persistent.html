@@ -1,0 +1,41 @@
+<!-- Persistent stuff like the top nav bar menu or chat box that should always be available -->
+
+<ul class="nav pad-sides-05rem" id="topNav" style="z-index: -1;">
+	{{ if not .LoggedIn }}
+	<li>
+		<a href="/">Spark3D</a>
+	</li>
+	<li>
+		<a href="/login">Login</a>
+	</li>
+	<li>
+		<a href="/signup">Signup</a>
+	</li>
+	<li>
+		<a href="/courses">Courses</a>
+	</li>
+	{{ else }}
+	<!-- Logged in -->
+	<li>
+		<a href="/">Spark3D</a>
+	</li>
+	<li>
+		<a href="/logout">Logout</a>
+	</li>
+	<li>
+		<a href="/courses">Courses</a>
+	</li>
+	<li>
+		<a href="/new">New</a>
+	</li>
+	<li>
+		<a href="/user/{{ .User.Username }}">{{ .User.Name }}</a>
+	</li>
+	{{ end }}
+</ul>
+
+<div class="bg-overlay" id="messagesMount">
+	{{ range .Messages }} 
+		<h4 hideOnClick style="padding: 1rem; display: flex;">{{ . }} <i style="margin-left: auto;" class="fa-solid fa-trash-can"></i></h4>
+	{{ end }}
+</div>

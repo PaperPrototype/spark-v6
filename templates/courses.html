@@ -1,0 +1,51 @@
+{{ template "_header.html" . }}
+
+<link rel="stylesheet" href="/resources/css/courses.css">
+
+<!-- js that loads courses -->
+<script defer src="/resources/scripts/courses.js"></script>
+
+<div class="pad-sides-5 pad-top-5rem text-center">
+	<h1>Courses</h1>
+	<div>
+		<form method="get" action="/courses">
+			<div>
+				<input class="form-input" name="query" placeholder="Search..." value="{{ .Search }}">
+				<button class="form-btn" type="submit">Search</button>
+			</div>
+			<!-- hide this until it is needed -->
+			<div class="select" style="display: none;">
+				<select name="sort">
+					{{ if .Sort }}
+						<option value="{{ .Sort }}">{{ .Sort }}</option>
+					{{ end }}
+
+					<option value="popular">popular</option>
+					<option value="Option 2">reviews</option>
+					<option value="Option 3">newest</option>
+
+					<!-- to allow an outline on focus -->
+					<span class="focus"></span>
+				</select>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- 
+	courses get loaded by js instead of server side
+	this speads up google search indexing, and prevents us from using db resources when the site is only being indexed
+-->
+<div class="pad-sides-5 pad-top-2rem course-cards" id="cards">
+	<div class="course-card-temp">
+		temp 1
+	</div>
+	<div class="course-card-temp">
+		temp 2
+	</div>
+	<div class="course-card-temp">
+		temp 3
+	</div>
+</div>
+
+{{ template "_footer.html" . }}

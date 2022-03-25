@@ -1,0 +1,40 @@
+.course-cards {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.course-card {
+	width: 12rem;
+	height: 12rem;
+	padding-top: 0.5rem;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	background-color: var(--c-bg-overlay);
+	margin: 1rem;
+}
+
+.course-card-temp {
+	width: 12rem;
+	height: 12rem;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	background-color: var(--c-bg-overlay);
+	margin: 1rem;
+
+	animation-iteration-count: infinite;
+	animation-duration: 0.5s;
+	animation-name: animatecards;
+	animation-direction: alternate;
+	background-image: linear-gradient(rgb(255, 255, 255), hsl(0, 0, 80%));
+}
+
+@keyframes h {
+	0% {
+		background-image: linear-gradient(rgb(255, 255, 255), hsl(0, 0, 80%));
+	}
+	
+	100% {
+		background-image: linear-gradient(hsl(0, 0%, 80%), hsl(0, 0%, 100%));
+	}
+}

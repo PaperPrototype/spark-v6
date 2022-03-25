@@ -1,0 +1,79 @@
+<script>
+	function course_submitNewPost() {
+		console.log("attempting to create Post...");
+
+		let markdownText = document.getElementById("course_submitNewPostMarkdown").value;
+
+		if (markdownText === "") {
+			// prevent from posting an empty post
+			// server side checks for this as well
+			return
+		}
+
+		let formData = new FormData();
+		formData.append("markdown", markdownText)
+
+		fetch("/api/version/{{ .Version.ID }}/posts/new", {
+			method: "POST",
+			body: formData,
+		})
+		.then(function(resp) {
+			console.log("got response");
+
+			// error check
+			if (!resp.ok) {
+				throw new Error("Response for submitting new Post was not ok!")
+				return
+			}
+
+			// hide form
+			let form = document.getElementById("course_submitNewPostFormMessage");
+			form.innerText = "Posted!";
+
+			// hide posting form
+			Alpine.store("courseView").allowNewPost = false;
+			// delete post data
+			document.getElementById("course_submitNewPostMarkdown").value = "";
+
+			console.log("success! new post was sent!");
+			SendMessage("Successfully sent post!");
+			return resp.text();
+		})
+		.then(function(text) {
+			console.log(text);
+		})
+		.catch(function(err) {
+			console.error(err);
+
+			// hide posting form
+			Alpine.store("courseView").allowNewPost = false;
+
+			// hide form and show message
+			let form = document.getElementById("course_submitNewPostFormMessage");
+			form.innerText = "Uhh... The internet must have broken... or something... (are you logged in?)";
+		});
+	}
+</script>
+
+<div x-data x-show="$store.courseView.allowNewPost">
+	<h1>Portfolio Time!</h1>
+	{{ if .LoggedIn }}
+		<p>Make a short post to showcase your new skills! You need to post a total of {{ .Version.SectionsCountLogError }} posts to complete this course!</p>
+		<textarea id="course_submitNewPostMarkdown" class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 5rem;" 
+		placeholder=
+		"Write about what you made!
+
+You can drag and drop screenshots! (TODO)" required></textarea>
+		<button @click="course_submitNewPost();" class="form-btn bd" style="width: 100%;">Post</button>
+	{{ else }}
+		<p>You kinda need to login if you want to write a post 😋</p>
+		<textarea disabled class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 5rem;" 
+			placeholder=
+			"Write about what you made!
+
+You can drag and drop screenshots! (TODO)" required></textarea>
+		<button disabled class="form-btn bd" style="width: 100%;">Post</button>
+	{{ end }}
+</div>
+<div id="course_submitNewPostFormMessage" x-show="!$store.courseView.allowNewPost">
+</div>

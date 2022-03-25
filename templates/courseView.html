@@ -1,0 +1,132 @@
+{{ template "_header.html" . }}
+
+<div id="courseURL" hidden>/{{ .Course.Name }}/view/{{ .Version.ID }}</div>
+
+<script defer src="/resources/scripts/courseView.js"></script>
+<link href="/resources/css/courseView.css" rel="stylesheet">
+<link href="/resources/css/courses.css" rel="stylesheet">
+
+<div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
+	<h1 href="/{{ .Course.Name }}">{{ .Course.Title }}</h1>
+	{{ if eq .Course.UserID .User.ID }}
+		<a href="/{{ .Course.Name }}/settings">Settings</a>
+	{{ end }}
+	<p>
+		{{ if .Release }}
+			{{ .Release.Desc }}
+		{{ else }}
+			{{ .Course.Desc }}
+		{{ end }}
+	</p>
+	{{ if .LoggedIn }}
+		<p>{{ .Progress }}% done</p>
+	{{ else }}
+		<p>You must be logged in to view your progress!</p>
+	{{ end }}
+</div>
+<div x-data>
+	<div class="pad-sides-5 bg-overlay course-menu" style="display: flex; padding-bottom: 0.5rem; margin-top:0; padding-top:0.5rem; margin-bottom:0;" id="courseNavTop">
+		<!-- dropdown menu -->
+		<div x-show="$store.courseView.menuAvailable" @click="toggleMenu()"
+		class="bg bd"
+		style="cursor:pointer; font-size:1.8rem; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0rem;">
+			<i class="fa-solid fa-bars"></i>
+		</div>
+
+		<!-- back button when viewing posts or chat or menu to go back to course contents-->
+		<div x-cloak x-show="!$store.courseView.menuAvailable && !$store.courseView.viewingPost" @click="viewContents()"
+		class="bg bd"
+		style="cursor:pointer; font-size:1.8rem; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0rem;">
+			back
+		</div>
+
+		<!-- back button when viewing specific post to go back to viewing all posts -->
+		<div x-cloak x-show="$store.courseView.viewingPost" @click="viewPosts()"
+		class="bg bd"
+		style="cursor:pointer; font-size:1.8rem; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0rem;">
+			back
+		</div>
+
+		<!-- view posts -->
+		<div @click="viewPosts(); loadPosts({{ .Version.ID }});"
+		class="bg bd"
+		style="cursor:pointer; font-size:2rem; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.3rem; margin-left:auto; margin-right:0.5rem;">
+			<i class="fa-solid fa-file-lines"></i>
+		</div>
+
+		<!-- view chat -->
+		<div @click="viewChat()"
+		class="bg bd"
+		style="cursor:pointer; font-size:2rem; padding-left:0.4rem; padding-right:0.4rem; padding-top:0.4rem;">
+			<i class="fa-solid fa-message"></i>
+		</div>
+	</div>
+
+	<!-- dropdown menu for course -->
+	<div x-cloak x-show="$store.courseView.menuOpen" id="courseMenu" style="padding-top: 2rem; padding-bottom: 3rem; overflow-y: scroll; margin-top:0;" class="bg-overlay pad-sides-5">
+		{{ range .Version.GetSectionsLogError }}
+			<div class="thin-top" @click="loadSection({{ .ID }});">
+				{{ .Name }}
+			</div>
+		{{ end }}
+	</div>
+
+	<!-- posts by students -->
+	<div x-cloak x-show="$store.courseView.view === 'posts'">
+		<h1 class="pad-sides-5">Posts</h1>
+		<div x-show="$store.courseView.viewingPost" class="pad-sides-5" style="width: 100%;">
+			<div class="bg-overlay bd">
+				<div style="display:flex;">
+					<div style="padding: 0.5rem;">
+						by <span id="postMountUser"></span>
+					</div>
+					<div id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
+						edit
+					</div>
+				</div>
+				<div x-show="$store.courseView.editingPost">
+					<div hidden id="editPostID"></div>
+					<textarea id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+					<div>
+						<button @click="updatePost()">Update</button>
+					</div>
+					<div>
+						<button @click="$store.courseView.editingPost = false;">Cancel</button>
+					</div>
+				</div>
+				<div x-show="!$store.courseView.editingPost" markdown id="postMount" style="padding: 0.5rem; width: 100%;"></div>
+			</div>
+		</div>
+		<!-- when not viewing a specific post, show all posts -->
+		<div x-show="!$store.courseView.viewingPost" id="coursePostsMount" class="course-cards">
+			<!-- insert posts with js -->
+		</div>
+	</div>
+
+	<!-- live chat -->
+	<div x-cloak x-show="$store.courseView.view === 'chat'">
+		<h1 class="pad-sides-5">Chat</h1>
+		<div>
+			{{ template "courseView_chat.html" . }}
+		</div>
+	</div>
+
+	<!-- course contents-->
+	<div x-show="$store.courseView.view === 'contents'" id="courseMain">
+		<div markdown class="bg-overlay pad-sides-5" style="padding-top:1rem; padding-bottom:2rem;" id="courseMarkdown">
+			{{ range .Section.Contents }}
+				{{ .GetMarkdownHTMLLogError }}
+			{{ end }}
+		</div>
+		<div class="bg-overlay pad-sides-5" style="padding-top:2rem; padding-bottom:2rem;">
+			{{ template "courseView_newPost.html" . }}
+		</div>
+		<table class="bg-overlay pad-sides-5 pad-bot-2rem" style="width: 100%;">
+			<tr>
+				<td class="bd" style="padding: 0.5rem; width: 50%; text-align: center; background-color: var(--c-grey);" id="coursePrevious">Previous Section</td>
+				<td class="bd" style="padding: 0.5rem; width: 50%; text-align: center; background-color: var(--c-grey);" id="courseNext">Next Section</td>
+			</tr>
+		</table>
+	</div>
+</div>
+{{ template "_footer.html" . }}

@@ -1,0 +1,23 @@
+* {
+	font-family: sans-serif;
+}
+
+/* solve weird padding and width problems on input elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+[href] {
+	cursor: pointer;
+}
+
+[x-cloak] {
+	display: none !important;
+}

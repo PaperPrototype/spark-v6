@@ -1,0 +1,215 @@
+:root {
+	--c-black: rgb(0, 0, 0);
+	--c-bg-overlay: rgb(255, 255, 255);
+	--c-white: rgb(231, 230, 233);
+	--c-light: rgb(212, 212, 212);
+	--c-grey: rgb(188, 188, 188);
+	--c-bg: rgb(229, 229, 229);
+	--c-text: rgb(0, 0, 0);
+	--c-code: rgb(255, 57, 123);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--c-black: rgb(0, 0, 0);
+		--c-bg-overlay: hsl(240, 3%, 15%);
+		--c-light: rgb(66, 66, 66);
+		--c-grey: rgb(96, 98, 105);
+		--c-bg: rgb(0, 0, 0);
+		--c-text: rgb(255, 255, 255);
+	}
+
+	a {
+		color: rgb(113, 208, 255);
+	}
+}
+
+.bd {
+	border-radius: 0.5rem;
+}
+
+.pad-sides-05rem {
+	padding-right: 0.5rem;
+	padding-left: 0.5rem;
+}
+
+.pad-sides-5 {
+	padding-right: 5%;
+	padding-left: 5%;
+}
+
+.mar-sides-2 {
+	margin-right: 2%;
+	margin-left: 2%;
+}
+
+.mar-sides-5 {
+	margin-right: 5%;
+	margin-left: 5%;
+}
+
+.pad-sides-2 {
+	padding-right: 2%;
+	padding-left: 2%;
+}
+
+.pad-top-2rem {
+	padding-top: 2rem;
+}
+
+.pad-top-5rem {
+	padding-top: 5rem;
+}
+
+.pad-bot-2rem {
+	padding-bottom: 2rem;
+}
+
+.pad-bot-5rem {
+	padding-bottom: 5rem;
+}
+
+.thin-bot {
+	border-bottom: 0.08rem solid var(--c-light);
+}
+
+.thin-bot-grey {
+	border-bottom: 0.08rem solid var(--c-grey);
+}
+
+.thin-top {
+	border-top: 0.08rem solid var(--c-light);
+}
+
+.thin-top-grey {
+	border-top: 0.08rem solid var(--c-grey);
+}
+
+.thin-grey {
+	border: 0.08rem solid var(--c-grey);
+}
+
+.bg-overlay {
+	background-color: var(--c-bg-overlay);
+}
+
+.bg {
+	background-color: var(--c-bg);
+	color: var(--c-text);
+}
+
+.bg-grey {
+	background-color: var(--c-grey);
+}
+
+.nav {
+	margin: 0;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	list-style: none;
+	display: flex;
+	flex-direction: row;
+}
+
+.nav li {
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.nav a {
+	padding: 0.5rem;
+	border-radius: 1.5rem;
+	text-decoration: none;
+	color: var(--c-text);
+}
+
+/* forms */
+.form {
+	padding: 2rem;
+	border: 0.05rem solid var(--c-light);
+	border-radius: 0.5rem;
+}
+
+.form input, .form button {
+	margin-top: 0.5rem;
+	width: 100%;
+}
+
+.form-input {
+	border: 0.05rem solid var(--c-light);
+	padding: 0.5rem;
+}
+
+.form-btn {
+	border: 0.05rem solid var(--c-light);
+	padding: 0.5rem;
+}
+
+.form-btn:hover {
+	background-color: var(--c-grey);
+}
+
+.text-center {
+	text-align: center;
+}
+
+/* from https://moderncss.dev/custom-select-styles-with-pure-css/ */
+.select {
+	width: 100%;
+	border: 1px solid var(--c-light);
+	border-radius: 0.25rem;
+	padding: 0.5rem 0.5rem;
+	font-size: 0.8rem;
+	cursor: pointer;
+	line-height: 1.1;
+	background-color: #fff;
+  	background-image: linear-gradient(to top, #f9f9f9, #fff 33%);
+
+	/* allow custom css arrow */
+	display: grid;
+
+	/* get arrow to come after rather than below */
+	grid-template-areas: "select";
+
+	/* align arrow at end */
+	align-items: center;
+}
+
+.select::after {
+	content: "";
+	width: 0.8em;
+	height: 0.5em;
+	background-color: black;
+	clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+
+	/* align arrow at end */
+	justify-self: end;
+}
+
+
+select {
+	/* A reset of styles, including removing the default dropdown arrow */
+	appearance: none;
+	/* Additional resets for further consistency */
+	background-color: transparent;
+	border: none;
+	padding: 0 1em 0 0;
+	margin: 0;
+	width: 100%;
+	font-family: inherit;
+	font-size: inherit;
+	cursor: inherit;
+	line-height: inherit;
+
+	/* existing outline */
+	outline: none;
+}
+
+/* remove arrow in IE browsers */
+select::-ms-expand {
+	display: none;
+}
+
+select, .select:after {
+	grid-area: select;
+}

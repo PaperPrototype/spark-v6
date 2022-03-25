@@ -1,0 +1,29 @@
+{{ template "_header.html" . }}
+
+<div class="pad-sides-5 pad-top-5rem text-center">
+	<h1>Sign Up</h1>
+</div>
+<div class="pad-sides-5 pad-top-5rem">
+	<form class="form bg-overlay" action="/signup" method="post">
+		<div>
+			<input class="form-input" name="username" placeholder="Username" required>
+		</div>
+		<div>
+			<input class="form-input" name="name" placeholder="Full Name" required>
+		</div>
+		<div>
+			<input class="form-input" name="email" placeholder="Email" required>
+		</div>
+		<div>
+			<input class="form-input" name="password" type="password" placeholder="Password" required>
+		</div>
+		<div>
+			<input class="form-input" name="confirm" type="password" placeholder="Confirm Password" required>
+		</div>
+		<div>
+			<button class="form-btn">Sign Up</button>
+		</div>
+	</form>
+</div>
+
+{{ template "_footer.html" . }}

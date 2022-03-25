@@ -1,0 +1,59 @@
+.course-top-nav-fixed {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+}
+
+.course-menu-normal {
+	position: fixed;
+	
+	overflow: scroll;
+
+	right: 0;
+	left: 0;
+	bottom: 0;
+	z-index: 3;
+
+}
+
+.course-menu-fixed {
+	position: fixed;
+
+	top: 59.3984375px !important;
+	right: 0;
+	left: 0;
+	bottom: 0;
+
+	display: block;
+	overflow: scroll;
+
+	z-index: 3;
+}
+
+.course-menu-hide {
+	display: block;
+}
+
+/* course lecture styling */
+[markdown] > pre {
+	padding: 0.5rem;
+	color: var(--c-white);
+	background-color: var(--c-black) !important;
+	font-family: 'Red Hat Mono', monospace;
+	overflow-x: scroll;
+}
+
+[markdown] > pre > * {
+	color: var(--c-white);
+	font-family: 'Red Hat Mono', monospace;
+}
+
+[markdown] > p > code {
+	color: var(--c-code);
+	font-family: 'Red Hat Mono', monospace;
+}
+
+[markdown] > p {
+	word-wrap: break-word;
+}

@@ -1,0 +1,20 @@
+{{ template "_header.html" . }}
+
+<div class="pad-sides-5 pad-top-5rem pad-bot-5rem text-center bg-overlay">
+	<h1>{{ .Course.Title }}</h1>
+	{{ if eq .Course.UserID .User.ID }}
+		<a href="/{{ .Course.Name }}/settings">Settings</a>
+	{{ end }}
+	<p>
+		{{ if .Release }}
+			{{ .Release.Desc }}
+		{{ else }}
+			{{ .Course.Desc }}
+		{{ end }}
+	</p>
+	<button style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem;" href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }} " class="form-btn">Start Course</button>
+</div>
+<div>
+</div>
+
+{{ template "_footer.html" . }}
