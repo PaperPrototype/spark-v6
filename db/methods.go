@@ -43,7 +43,7 @@ func (course *Course) GetNewestVersionIDLogError() uint64 {
 
 func (release *Release) GetVersionsLogError() []Version {
 	versions := []Version{}
-	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Find(&versions).Error
+	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Order("num DESC").Find(&versions).Error
 	if err != nil {
 		log.Println("db/methods ERROR getting versions for release:", err)
 	}

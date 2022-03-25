@@ -297,8 +297,6 @@ func postNewVersion(c *gin.Context) {
 		return
 	}
 
-	log.Println("fileHandle info:", fileHandle)
-
 	if filepath.Ext(fileHandle.Filename) != ".zip" {
 		SendMessage(c, "Must be a .zip file.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
@@ -318,6 +316,7 @@ func postNewVersion(c *gin.Context) {
 		log.Println("routes ERROR creating file:", err4)
 	}
 	defer newFile.Close()
+	defer os.Remove("./" + uniqueName + ".zip")
 
 	numBytesWritten, err5 := io.Copy(newFile, file)
 	if err5 != nil {
@@ -339,9 +338,7 @@ func postNewVersion(c *gin.Context) {
 	if err6 != nil {
 		log.Println("routes ERROR extracting zip file:", err6)
 	}
-
-	// finished unarchiving delete zip file!
-	os.Remove("./" + uniqueName + ".zip")
+	defer os.RemoveAll("./upload" + uniqueName)
 
 	release, err := db.GetReleaseWithIDStr(releaseID)
 	if err != nil {
@@ -372,9 +369,6 @@ func postNewVersion(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
-
-	// finished saving delete folder
-	os.RemoveAll("./upload" + uniqueName)
 
 	SendMessage(c, "Successfully created version!")
 	c.Redirect(http.StatusFound, "/"+courseName+"/settings")
