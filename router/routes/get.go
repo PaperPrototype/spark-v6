@@ -2,17 +2,17 @@ package routes
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 
+	"main/conn"
 	"main/db"
-	"main/helpers"
 	"main/router/session"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 var metaDefault = Meta{
@@ -376,14 +376,17 @@ func getNameMedia(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", media.Type)
 	c.Writer.Header().Set("Content-Length", fmt.Sprint(media.Length))
 
-	conn := helpers.GetDBConnTemp()
+	conn, err1 := conn.GetConn()
+	if err1 != nil {
+		log.Println("routes ERROR getting db conn:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 	WriteMediaChunks(conn, c.Writer, media.ID)
-
-	conn.Close()
 }
 
-func WriteMediaChunks(conn *sql.Conn, writer io.Writer, mediaID uint64) {
-	row := conn.QueryRowContext(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
+func WriteMediaChunks(conn *pgxpool.Conn, writer io.Writer, mediaID uint64) {
+	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
 
 	buffer := []byte{}
 	err := row.Scan(&buffer)
@@ -406,8 +409,8 @@ func WriteMediaChunks(conn *sql.Conn, writer io.Writer, mediaID uint64) {
 }
 
 // this is a recursive function
-func writeMediaChunk(conn *sql.Conn, writer io.Writer, mediaID uint64, current int) {
-	row := conn.QueryRowContext(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
+func writeMediaChunk(conn *pgxpool.Conn, writer io.Writer, mediaID uint64, current int) {
+	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
 
 	buffer := []byte{}
 	err := row.Scan(&buffer)

@@ -1,9 +1,6 @@
 package helpers
 
 import (
-	"context"
-	"database/sql"
-
 	_ "github.com/jackc/pgx/v4/stdlib"
 
 	"errors"
@@ -49,47 +46,4 @@ func FileExists(path string) bool {
 	}
 
 	return true
-}
-
-// MAKE SURE TO CLOSE THE CONNECTION ONCE YOU ARE DONE!
-func GetDBConnTemp() *sql.Conn {
-	if FileExists("./dbconfig") {
-		data, err := os.ReadFile("./dbconfig")
-		if err != nil {
-			log.Println("helpers ERROR reading dbconfig file:", err)
-			panic(err)
-		}
-
-		db, err1 := sql.Open("pgx", string(data))
-		if err1 != nil {
-			log.Println("helpers ERROR opening connection:", err1)
-			panic(err)
-		}
-
-		conn, err2 := db.Conn(context.Background())
-		if err2 != nil {
-			panic(err2)
-		}
-
-		return conn
-	}
-
-	env := os.Getenv("DATABASE_URL")
-
-	if env == "" {
-		panic(errors.New("empty env variable for DATABASE_URL"))
-	}
-
-	db, err1 := sql.Open("pgx", string(env))
-	if err1 != nil {
-		log.Println("helpers ERROR opening connection:", err1)
-		panic(err1)
-	}
-
-	conn, err2 := db.Conn(context.Background())
-	if err2 != nil {
-		panic(err2)
-	}
-
-	return conn
 }

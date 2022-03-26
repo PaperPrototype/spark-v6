@@ -6,6 +6,7 @@ import (
 )
 
 func AddRoutes(router *gin.Engine) {
+
 	// landing page
 	router.GET("/", getLanding) // index
 

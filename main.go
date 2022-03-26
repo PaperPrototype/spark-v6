@@ -1,6 +1,7 @@
 package main
 
 import (
+	"main/conn"
 	"main/db"
 	"main/router"
 )
@@ -10,5 +11,9 @@ func main() {
 
 	db.Setup()
 
+	conn.Setup()
+
 	router.Run()
+
+	conn.Close()
 }
