@@ -4,6 +4,12 @@
 
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1>{{ .Course.Title }} Setting's</h1>
+	<p>
+		<a href="/{{ .Course.Name}}">To landing page</a>
+	</p>
+	<p>
+		<a href="/{{ .Course.Name}}/view/{{ .Version.ID }}">View version {{ .Course.GetNewestCourseReleaseLogError.Num }}.{{ .Course.GetNewestCourseReleaseLogError.GetNewestVersionNumLogError }}</a>
+	</p>
 </div>
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<h2>Display</h2>
