@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	window.onscroll = function(){
 		menuFollowScroll();
-		console.log("scrollY is:", window.scrollY);
 	}
 
 	// sectionID when page first loads

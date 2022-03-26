@@ -153,3 +153,7 @@ func postUpdatePost(c *gin.Context) {
 
 	db.UpdatePost(postID, newMarkdown)
 }
+
+func postEditSectionContent(c *gin.Context) {
+	log.Println("editing content")
+}

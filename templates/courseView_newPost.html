@@ -1,4 +1,21 @@
 <script>
+	document.addEventListener("DOMContentLoaded", function(event) {
+		let markdownTextarea = document.getElementById("course_submitNewPostMarkdown")
+		let insertButton = document.getElementById("insertImage");
+
+		// TODO change this to listen for an image to be dragged-and-dropped onto the textarea
+	 	insertImage.addEventListener("click", function(event) {
+			console.log("clicked insert image button");
+
+			let index = markdownTextarea.selectionStart;
+			let beginning = markdownTextarea.value.slice(0, index);
+			let end = markdownTextarea.value.slice(index, markdownTextarea.value.length);
+			let newStr = beginning + "\n![example name](link)\n" + end;
+
+			markdownTextarea.value = newStr;
+		});
+	});
+
 	function course_submitNewPost() {
 		console.log("attempting to create Post...");
 
@@ -60,21 +77,28 @@
 
 <div x-data x-show="$store.courseView.allowNewPost">
 	<h1>Portfolio Time!</h1>
+	<button id="insertImage">Insert Media/Image/Video</button>
 	{{ if .LoggedIn }}
 		<p>Make a short post to showcase your new skills! You need to post a total of {{ .Version.SectionsCountLogError }} posts to complete this course!</p>
-		<textarea id="course_submitNewPostMarkdown" class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 5rem;" 
+		<textarea id="course_submitNewPostMarkdown" class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem;" 
 		placeholder=
 		"Write about what you made!
 
-You can drag and drop screenshots! (TODO)" required></textarea>
+You can drag and drop screenshots! (TODO)
+
+Youtube videos can be embedded! Example:
+![my youtube video](https://www.youtube.com/watch?v=LC5B-vpMci8)" required></textarea>
 		<button @click="course_submitNewPost();" class="form-btn bd" style="width: 100%;">Post</button>
 	{{ else }}
 		<p>You kinda need to login if you want to write a post 😋</p>
-		<textarea disabled class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 5rem;" 
+		<textarea disabled class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem;" 
 			placeholder=
 			"Write about what you made!
 
-You can drag and drop screenshots! (TODO)" required></textarea>
+You can drag and drop screenshots! (TODO)
+
+Youtube videos can be embedded! Example:
+![my youtube video](https://www.youtube.com/watch?v=LC5B-vpMci8)" required></textarea>
 		<button disabled class="form-btn bd" style="width: 100%;">Post</button>
 	{{ end }}
 </div>

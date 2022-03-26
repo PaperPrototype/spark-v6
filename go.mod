@@ -18,6 +18,7 @@ require (
 )
 
 require (
+	github.com/13rac1/goldmark-embed v0.0.0-20201220231550-e6806f2de66a // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/frankban/quicktest v1.14.3 // indirect

@@ -8,6 +8,8 @@ import (
 	highlighting "github.com/yuin/goldmark-highlighting"
 	"github.com/yuin/goldmark/extension"
 	xurls "mvdan.cc/xurls/v2"
+
+	embed "github.com/13rac1/goldmark-embed"
 )
 
 var markdowner goldmark.Markdown = goldmark.New(
@@ -27,6 +29,7 @@ var markdowner goldmark.Markdown = goldmark.New(
 				xurls.Strict(),
 			),
 		),
+		embed.New(),
 	),
 )
 

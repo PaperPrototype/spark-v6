@@ -60,8 +60,16 @@
 
 [markdown] img {
 	max-width: 100%;
+	display: table;
 }
 
+[markdown] iframe {
+	display: table;
+	max-width: 100%;
+}
+
+
+/* highlights selected course section */
 .selected {
 	background-color: var(--c-code);
 }

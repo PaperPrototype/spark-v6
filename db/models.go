@@ -72,6 +72,7 @@ type Release struct {
 type Version struct {
 	ID        uint64 `gorm:"primaryKey"`
 	Num       uint16
+	Patch     uint16 `sql:"DEFAULT 0"`
 	CourseID  uint64 `sql:"REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
 	ReleaseID uint64 `sql:"REFERENCES releases(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
 }
@@ -97,12 +98,11 @@ type Content struct {
 
 // media files for the course
 type Media struct {
-	ID          uint64 `gorm:"primaryKey"`
-	VersionID   uint64 `sql:"REFERENCES versions(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
-	Name        string
-	Length      uint32
-	Type        string // the "type" of file (.zip .png .gif)
-	MediaChunks []MediaChunk
+	ID        uint64 `gorm:"primaryKey"`
+	VersionID uint64 `sql:"REFERENCES versions(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
+	Name      string
+	Length    uint32
+	Type      string // the "type" of file (.zip .png .gif)
 }
 
 type MediaChunk struct {
@@ -124,6 +124,21 @@ type Post struct {
 	User User
 }
 
+type UserMedia struct {
+	ID        uint64 `gorm:"primaryKey"`
+	UserID    uint64
+	Name      string
+	Length    uint32
+	Type      string // the "type" of file (.zip .png .gif)
+	CreatedAt time.Time
+}
+
+type UserMediaChunk struct {
+	UserMediaID uint64 `sql:"REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
+	Data        []byte
+	Position    uint16
+}
+
 type Channel struct {
 	ID       uint64 `gorm:"primaryKey"`
 	CourseID uint64 `gorm:"REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
@@ -131,6 +146,7 @@ type Channel struct {
 }
 
 type Message struct {
+	ID        uint64 `gorm:"primaryKey"`
 	UserID    uint64 `sql:"REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
 	ChannelID uint64 `sql:"REFERENCES channels(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`
 	CreatedAt time.Time
