@@ -10,8 +10,11 @@
 			return
 		}
 
+		let sectionID = Alpine.store("sections").current;
+
 		let formData = new FormData();
 		formData.append("markdown", markdownText)
+		formData.append("sectionID", sectionID);
 
 		fetch("/api/version/{{ .Version.ID }}/posts/new", {
 			method: "POST",
@@ -28,7 +31,7 @@
 
 			// hide form
 			let form = document.getElementById("course_submitNewPostFormMessage");
-			form.innerText = "Posted!";
+			form.innerText = "Posted! (TODO show other peoples posts, using PostToRelease.SectionID)";
 
 			// hide posting form
 			Alpine.store("courseView").allowNewPost = false;

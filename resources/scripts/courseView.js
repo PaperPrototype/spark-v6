@@ -1,7 +1,22 @@
-document.addEventListener("DOMContentLoaded", function(event) {
-	courseViewHandleMenu();
+let courseNavTop;
+let courseMain;
+let courseMenu;
 
-	// load section after the page loads
+// offset from the top of the screen
+let ogTopOffset;
+
+document.addEventListener("DOMContentLoaded", function(event) {
+	courseNavTop = document.getElementById("courseNavTop");
+	courseMain = document.getElementById("courseMain");
+	courseMenu = document.getElementById("courseMenu");
+	ogTopOffset = courseNavTop.offsetTop;
+
+	window.onscroll = function(){
+		menuFollowScroll();
+		console.log("scrollY is:", window.scrollY);
+	}
+
+	// sectionID when page first loads
 	let sectionID = document.getElementById("sectionID").innerText;
 	loadSection(sectionID);
 });
@@ -122,8 +137,6 @@ function viewEditPost() {
 		SendMessage("Failed to get post!");
 		console.error(err);
 	});
-
-	//posts/:postID/plaintext
 }
 
 function updatePost() {
@@ -194,7 +207,7 @@ function loadPost(postID) {
 	})
 	.catch(function(err) {
 		console.error(err);
-	})
+	});
 }
 
 // async load section contents
@@ -214,20 +227,27 @@ function loadSection(sectionID) {
 		console.log("response converted to json");
 		return resp.json();
 	})
-	.then(function(json) {
+	.then(function(sectionJson) {
 		let content = document.getElementById("courseContent");
 		content.innerHTML = "";
 
-		let markdown = document.createElement("div");
+		let sectionTitle = document.getElementById("sectionTitle");
+		sectionTitle.innerText = sectionJson.Name;
 
 		// TODO contents may be in english or spanish as well
 		/*
-			for (let i = 0; i < json.Contents.length; i++) {
-				json.Contents[i].Language
-				json.Contents[i].Markdown
+			for (let i = 0; i < sectionJson.Contents.length; i++) {
+				sectionJson.Contents[i].Language
+				sectionJson.Contents[i].Markdown
 			}
 		*/
-		markdown.innerHTML = json.Contents[0].Markdown;
+		if (sectionJson.Contents[0] === undefined) {
+			content.innerHTML = `<p>This section is empty!</p>`;
+			return
+		}
+
+		let markdown = document.createElement("div");
+		markdown.innerHTML = sectionJson.Contents[0].Markdown;
 
 		// FIX IMAGE LINKS
 		let images = markdown.querySelectorAll("img")
@@ -249,6 +269,8 @@ function loadSection(sectionID) {
 		}
 
 		markdown.setAttribute("markdown", "");
+
+		window.scroll(0, 0);
 
 		content.appendChild(markdown);
 	})
@@ -278,44 +300,34 @@ function loadSection(sectionID) {
 	*/
 }
 
-// handle the menu and how it should be positioned
-function courseViewHandleMenu() {
-	let courseNavTop = document.getElementById("courseNavTop");
-	let courseMain = document.getElementById("courseMain");
-	let courseMenu = document.getElementById("courseMenu");
-	
-	// offset from the top of the screen
-	let ogTopOffset = courseNavTop.offsetTop;
+function menuFollowScroll() {
+	// if top offset is greater than window's Y-scroll offset
+	// if scrolled past topbar
+	if (window.scrollY >= ogTopOffset) {
+		// scrolled down
 
-	window.onscroll = function() {
-		// if top offset is greater than window's Y-scroll offset
-		// if scrolled past topbar
-		if (window.scrollY >= ogTopOffset) {
-			// scrolled down
+		// make menu follow
+		courseMenu.classList.add("course-menu-fixed");
+		courseMenu.classList.remove("course-menu-normal");
+		
+		// set top nav to stick to top
+		courseNavTop.classList.add("course-top-nav-fixed");
 
-			// make menu follow
-			courseMenu.classList.add("course-menu-fixed");
-			courseMenu.classList.remove("course-menu-normal");
-			
-			// set top nav to stick to top
-			courseNavTop.classList.add("course-top-nav-fixed");
+		// prevent course contents from jumping into place when top nav disapears
+		courseMain.style.marginTop = courseNavTop.getBoundingClientRect().height + "px";
+		console.log(courseMain.style.marginTop);
+	} else {
+		// top
 
-			// prevent course contents from jumping into place when top nav disapears
-			courseMain.style.marginTop = courseNavTop.getBoundingClientRect().height + "px";
-			console.log(courseMain.style.marginTop);
-		} else {
-			// top
+		// stop menu from sticking to the top nav bar
+		courseNavTop.classList.remove("course-top-nav-fixed");
+		courseMain.style.marginTop = "0";
 
-			// stop menu from sticking to the top nav bar
-			courseNavTop.classList.remove("course-top-nav-fixed");
-			courseMain.style.marginTop = "0";
+		// make menu still follow
+		courseMenu.style.top = ((ogTopOffset + courseNavTop.getBoundingClientRect().height) - window.scrollY) + "px";
 
-			// make menu still follow
-			courseMenu.style.top = ((ogTopOffset + courseNavTop.getBoundingClientRect().height) - window.scrollY) + "px";
-
-			// remove menu following
-			courseMenu.classList.remove("course-menu-fixed");
-			courseMenu.classList.add("course-menu-normal");
-		}
+		// remove menu following
+		courseMenu.classList.remove("course-menu-fixed");
+		courseMenu.classList.add("course-menu-normal");
 	}
 }

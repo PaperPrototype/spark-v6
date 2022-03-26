@@ -1,6 +1,7 @@
 {{ template "_header.html" . }}
 
 <div id="courseURL" hidden>/{{ .Course.Name }}/view/{{ .Version.ID }}</div>
+<div id="courseName" hidden>{{ .Course.Name }}</div>
 <div id="versionID" hidden>{{ .Version.ID }}</div>
 <div id="sectionID" hidden>{{ .Section.ID }}</div>
 
@@ -10,14 +11,90 @@
 
 <script>
 	document.addEventListener("alpine:init", function(event) {
+		let courseNext = document.getElementById("courseNext");
+		courseNext.addEventListener("click", function() {
+			let sections = Alpine.store("sections").sections;
+			let current = Alpine.store("sections").current;
+
+			// find index of current
+			let index = 0;
+			for (let i = 0; i < sections.length; i++) {
+				if (sections[i] === current) {
+					index = i;
+					break
+				}
+			}
+
+			// prevent from loadin section out of bounds
+			let nextSectionIndex = index + 1;
+			if ((nextSectionIndex + 1) > sections.length) {
+				console.log("out of bounds!")
+				console.log("index:", index);
+				console.log("nextIndex:", nextSectionIndex);
+				console.log("currentID:", current);
+				return
+			}
+
+			let nextSectionID = Alpine.store("sections").sections[nextSectionIndex];
+
+			console.log("index:", index);
+			console.log("nextIndex:", nextSectionIndex);
+			console.log("nextID:", nextSectionID);
+			console.log("currentID:", current);
+
+			let versionID = document.getElementById("versionID").innerText;
+			let courseName = document.getElementById("courseName");
+
+			loadSection(nextSectionID);
+		});
+
+		let coursePrev = document.getElementById("coursePrevious");
+		coursePrev.addEventListener("click", function() {
+			let sections = Alpine.store("sections").sections;
+			let current = Alpine.store("sections").current;
+
+			// find index of current
+			let index = 0;
+			for (let i = 0; i < sections.length; i++) {
+				if (sections[i] === current) {
+					index = i;
+					break
+				}
+			}
+
+			// prevent from loading section out of bounds
+			let previousSectionIndex = index - 1;
+			if (previousSectionIndex < 0) {
+				console.log("out of bounds!")
+				console.log("index:", index);
+				console.log("previousIndex:", previousSectionIndex);
+				console.log("currentID:", current);
+				return
+			}
+
+			let previousSectionID = Alpine.store("sections").sections[previousSectionIndex];
+
+			console.log("index:", index);
+			console.log("previousIndex:", previousSectionIndex);
+			console.log("previousID:", previousSectionID);
+			console.log("currentID:", current);
+
+			let versionID = document.getElementById("versionID").innerText;
+			let courseName = document.getElementById("courseName");
+
+			loadSection(previousSectionID);
+		});
+
 		Alpine.store("sections", {
 			sections: [
+				// use templating to store info about sections
 				{{ range .Version.GetSectionsLogError }}
 					{{ .ID }},
 				{{ end }}
 			],
 			current: {{ .Section.ID }},
 		});
+
 		console.log("section ids", Alpine.store("sections").sections);
 	});
 </script>
@@ -61,6 +138,11 @@
 		class="bg bd"
 		style="cursor:pointer; font-size:1.8rem; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0rem;">
 			back
+		</div>
+
+		<div id="sectionTitle"
+		style="white-space: nowrap; text-overflow:clip; cursor:pointer; font-size:1.5rem; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.5rem; padding-bottom:0rem;">
+			{{ .Section.Name }}
 		</div>
 
 		<!-- view posts -->
@@ -136,8 +218,8 @@
 		</div>
 		<table class="bg-overlay pad-sides-5 pad-bot-2rem" style="width: 100%;">
 			<tr>
-				<td class="bd" style="padding: 0.5rem; width: 50%; text-align: center; background-color: var(--c-grey);" id="coursePrevious">Previous Section</td>
-				<td class="bd" style="padding: 0.5rem; width: 50%; text-align: center; background-color: var(--c-grey);" id="courseNext">Next Section</td>
+				<td class="bd" style="cursor:pointer; padding: 0.5rem; width: 50%; text-align: center; background-color: var(--c-grey);" id="coursePrevious">Previous Section</td>
+				<td class="bd" style="cursor:pointer; padding: 0.5rem; width: 50%; text-align: center; background-color: var(--c-grey);" id="courseNext">Next Section</td>
 			</tr>
 		</table>
 	</div>

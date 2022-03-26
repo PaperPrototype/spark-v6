@@ -5,6 +5,7 @@ import (
 	"main/db"
 	"main/router/session"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -74,6 +75,7 @@ func courseVersionNewPost(c *gin.Context) {
 		}
 	}
 
+	sectionID := c.PostForm("sectionID")
 	markdown := c.PostForm("markdown")
 
 	// prevent from posting empty posts
@@ -93,9 +95,17 @@ func courseVersionNewPost(c *gin.Context) {
 		return
 	}
 
+	sectionIDNum, err4 := strconv.ParseUint(sectionID, 10, 64)
+	if err4 != nil {
+		log.Println("api ERROR parsing sectionID:", err4)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
 	postToRelease := db.PostToRelease{
 		PostID:    post.ID,
 		ReleaseID: version.ReleaseID,
+		SectionID: sectionIDNum,
 	}
 	err3 := db.CreatePostToRelease(&postToRelease)
 	if err3 != nil {

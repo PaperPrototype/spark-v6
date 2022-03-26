@@ -393,3 +393,19 @@ func postEditRelease(c *gin.Context) {
 	SendMessage(c, "Successfully updated.")
 	c.Redirect(http.StatusFound, "/"+course+"/settings")
 }
+
+func postDeleteVersion(c *gin.Context) {
+	course := c.Params.ByName("course")
+	versionID := c.PostForm("versionID")
+
+	err := db.DeleteVersion(versionID)
+	if err != nil {
+		log.Println("routes ERROR deleting version:", err)
+		SendMessage(c, "Error while deleting version")
+		c.Redirect(http.StatusFound, "/"+course+"/settings")
+		return
+	}
+
+	SendMessage(c, "Successfully deleted version")
+	c.Redirect(http.StatusFound, "/"+course+"/settings")
+}
