@@ -8,6 +8,20 @@
 <link href="/resources/css/courseView.css" rel="stylesheet">
 <link href="/resources/css/courses.css" rel="stylesheet">
 
+<script>
+	document.addEventListener("alpine:init", function(event) {
+		Alpine.store("sections", {
+			sections: [
+				{{ range .Version.GetSectionsLogError }}
+					{{ .ID }},
+				{{ end }}
+			],
+			current: {{ .Section.ID }},
+		});
+		console.log("section ids", Alpine.store("sections").sections);
+	});
+</script>
+
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1 href="/{{ .Course.Name }}">{{ .Course.Title }}</h1>
 	{{ if eq .Course.UserID .User.ID }}
@@ -67,7 +81,7 @@
 	<!-- dropdown menu for course -->
 	<div x-cloak x-show="$store.courseView.menuOpen" id="courseMenu" style="padding-top: 2rem; padding-bottom: 3rem; overflow-y: scroll; margin-top:0;" class="bg-overlay pad-sides-5">
 		{{ range .Version.GetSectionsLogError }}
-			<div class="thin-top" @click="loadSection({{ .ID }});">
+			<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="thin-top" @click="loadSection({{ .ID }});">
 				{{ .Name }}
 			</div>
 		{{ end }}

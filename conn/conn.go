@@ -49,6 +49,6 @@ func Close() {
 	pool.Close()
 }
 
-func GetConn() (*pgxpool.Conn, error) {
-	return pool.Acquire(context.Background())
+func GetConn() *pgxpool.Pool {
+	return pool
 }

@@ -256,6 +256,9 @@ function loadSection(sectionID) {
 		console.error(err);
 	});
 
+	// set the current sectionID
+	Alpine.store("sections").current = sectionID;
+
 	// close menu
 	Alpine.store("courseView").menuOpen = false;
 

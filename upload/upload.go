@@ -14,7 +14,7 @@ import (
 
 const MediaChunkSize int = 16384
 
-func UploadCourse(conn *pgxpool.Conn, path string, versionID uint64) error {
+func UploadCourse(conn *pgxpool.Pool, path string, versionID uint64) error {
 	folders, err := getChildrenFolders(path)
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func UploadCourse(conn *pgxpool.Conn, path string, versionID uint64) error {
 	return nil
 }
 
-func recursiveUploadSections(conn *pgxpool.Conn, parentFolderName string, path string, versionID uint64) error {
+func recursiveUploadSections(conn *pgxpool.Pool, parentFolderName string, path string, versionID uint64) error {
 	// save section
 	row := conn.QueryRow(context.Background(), "INSERT INTO sections (name, version_id) VALUES ($1, $2) RETURNING id", parentFolderName, versionID)
 	var sectionID uint64
@@ -94,7 +94,7 @@ func recursiveUploadSections(conn *pgxpool.Conn, parentFolderName string, path s
 	return nil
 }
 
-func uploadMedia(conn *pgxpool.Conn, path string, versionID uint64) error {
+func uploadMedia(conn *pgxpool.Pool, path string, versionID uint64) error {
 	mediaFiles, err := getMediaFiles(path)
 	if err != nil {
 		return err
@@ -138,7 +138,7 @@ func uploadMedia(conn *pgxpool.Conn, path string, versionID uint64) error {
 
 // current var keeps track of a position number for the chunks
 // current var is recursively increased each recursion
-func uploadChunkedMediaRecursive(buffer []byte, conn *pgxpool.Conn, mediaID uint64, reader *bufio.Reader, current uint32) (int, error) {
+func uploadChunkedMediaRecursive(buffer []byte, conn *pgxpool.Pool, mediaID uint64, reader *bufio.Reader, current uint32) (int, error) {
 	numBytesRead, eofErr := reader.Read(buffer)
 
 	// if no error and some bytes were read

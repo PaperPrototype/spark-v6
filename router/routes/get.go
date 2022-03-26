@@ -376,16 +376,11 @@ func getNameMedia(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", media.Type)
 	c.Writer.Header().Set("Content-Length", fmt.Sprint(media.Length))
 
-	conn, err1 := conn.GetConn()
-	if err1 != nil {
-		log.Println("routes ERROR getting db conn:", err1)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
+	conn := conn.GetConn()
 	WriteMediaChunks(conn, c.Writer, media.ID)
 }
 
-func WriteMediaChunks(conn *pgxpool.Conn, writer io.Writer, mediaID uint64) {
+func WriteMediaChunks(conn *pgxpool.Pool, writer io.Writer, mediaID uint64) {
 	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
 
 	buffer := []byte{}
@@ -409,7 +404,7 @@ func WriteMediaChunks(conn *pgxpool.Conn, writer io.Writer, mediaID uint64) {
 }
 
 // this is a recursive function
-func writeMediaChunk(conn *pgxpool.Conn, writer io.Writer, mediaID uint64, current int) {
+func writeMediaChunk(conn *pgxpool.Pool, writer io.Writer, mediaID uint64, current int) {
 	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
 
 	buffer := []byte{}

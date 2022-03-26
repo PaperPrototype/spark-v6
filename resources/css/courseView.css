@@ -61,3 +61,7 @@
 [markdown] img {
 	max-width: 100%;
 }
+
+.selected {
+	background-color: var(--c-code);
+}
