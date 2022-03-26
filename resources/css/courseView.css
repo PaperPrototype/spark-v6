@@ -61,15 +61,16 @@
 [markdown] img {
 	max-width: 100%;
 	display: table;
+	border-radius: 0.5rem;
 }
 
 [markdown] iframe {
 	display: table;
 	max-width: 100%;
+	border-radius: 0.5rem;
 }
 
-
-/* highlights selected course section */
+/* highlights selected section in menu */
 .selected {
 	background-color: var(--c-code);
 }
