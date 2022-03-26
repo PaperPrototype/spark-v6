@@ -51,6 +51,7 @@ func FileExists(path string) bool {
 	return true
 }
 
+// MAKE SURE TO CLOSE THE CONNECTION ONCE YOU ARE DONE!
 func GetDBConnTemp() *sql.Conn {
 	if FileExists("./dbconfig") {
 		data, err := os.ReadFile("./dbconfig")

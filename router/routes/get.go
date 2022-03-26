@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"io"
 	"log"
@@ -375,11 +376,13 @@ func getNameMedia(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", media.Type)
 	c.Writer.Header().Set("Content-Length", fmt.Sprint(media.Length))
 
-	WriteMediaChunks(c.Writer, media.ID)
+	conn := helpers.GetDBConnTemp()
+	WriteMediaChunks(conn, c.Writer, media.ID)
+
+	conn.Close()
 }
 
-func WriteMediaChunks(writer io.Writer, mediaID uint64) {
-	conn := helpers.GetDBConnTemp()
+func WriteMediaChunks(conn *sql.Conn, writer io.Writer, mediaID uint64) {
 	row := conn.QueryRowContext(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
 
 	buffer := []byte{}
@@ -399,12 +402,11 @@ func WriteMediaChunks(writer io.Writer, mediaID uint64) {
 		return
 	}
 
-	writeMediaChunk(writer, mediaID, 1)
+	writeMediaChunk(conn, writer, mediaID, 1)
 }
 
 // this is a recursive function
-func writeMediaChunk(writer io.Writer, mediaID uint64, current int) {
-	conn := helpers.GetDBConnTemp()
+func writeMediaChunk(conn *sql.Conn, writer io.Writer, mediaID uint64, current int) {
 	row := conn.QueryRowContext(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
 
 	buffer := []byte{}
@@ -425,5 +427,5 @@ func writeMediaChunk(writer io.Writer, mediaID uint64, current int) {
 		return
 	}
 
-	writeMediaChunk(writer, mediaID, current+1)
+	writeMediaChunk(conn, writer, mediaID, current+1)
 }

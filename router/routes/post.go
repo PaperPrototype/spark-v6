@@ -363,12 +363,17 @@ func postNewVersion(c *gin.Context) {
 
 	courseFolderName := fileHandle.Filename[:len(fileHandle.Filename)-4]
 
-	err7 := upload.UploadCourse(helpers.GetDBConnTemp(), "./upload"+uniqueName+"/"+courseFolderName, version.ID)
+	conn := helpers.GetDBConnTemp()
+
+	err7 := upload.UploadCourse(conn, "./upload"+uniqueName+"/"+courseFolderName, version.ID)
 	if err7 != nil {
 		SendMessage(c, "Error uploading course: "+fmt.Sprint(err7))
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
+
+	// finished
+	conn.Close()
 
 	SendMessage(c, "Successfully created version!")
 	c.Redirect(http.StatusFound, "/"+courseName+"/settings")
