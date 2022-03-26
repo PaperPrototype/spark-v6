@@ -2,34 +2,39 @@
 
 <ul class="nav pad-sides-05rem" id="topNav" style="z-index: -1;">
 	{{ if not .LoggedIn }}
+	<img href="/" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;" src="/resources/images/spark_white.png">
 	<li>
-		<a href="/">Spark3D</a>
+		<a href="/">
+			spark
+		</a>
 	</li>
 	<li>
-		<a href="/login">Login</a>
+		<a href="/login">login</a>
 	</li>
 	<li>
-		<a href="/signup">Signup</a>
+		<a href="/signup">signup</a>
 	</li>
 	<li>
-		<a href="/courses">Courses</a>
+		<a href="/courses">courses</a>
 	</li>
 	{{ else }}
 	<!-- Logged in -->
+
+	<img href="/" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;" src="/resources/images/spark_white.png">
 	<li>
-		<a href="/">Spark3D</a>
+		<a href="/">spark</a>
 	</li>
 	<li>
-		<a href="/logout">Logout</a>
+		<a href="/logout">logout</a>
 	</li>
 	<li>
-		<a href="/courses">Courses</a>
+		<a href="/courses">courses</a>
 	</li>
 	<li>
-		<a href="/new">New</a>
+		<a href="/new">new</a>
 	</li>
 	<li>
-		<a href="/user/{{ .User.Username }}">{{ .User.Name }}</a>
+		<a href="/user/{{ .User.Username }}">{{ .User.Username }}</a>
 	</li>
 	{{ end }}
 </ul>

@@ -6,7 +6,7 @@
 	--c-grey: rgb(188, 188, 188);
 	--c-bg: rgb(229, 229, 229);
 	--c-text: rgb(0, 0, 0);
-	--c-code: rgb(255, 57, 123);
+	--c-code: rgb(255, 38, 135);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -112,7 +112,7 @@
 }
 
 .nav li {
-	margin-top: 0.5rem;
+	margin-top: 0.8rem;
 	margin-bottom: 0.5rem;
 }
 
@@ -126,7 +126,7 @@
 /* forms */
 .form {
 	padding: 2rem;
-	border: 0.05rem solid var(--c-light);
+	border: 0.08rem solid var(--c-light);
 	border-radius: 0.5rem;
 }
 
@@ -136,12 +136,12 @@
 }
 
 .form-input {
-	border: 0.05rem solid var(--c-light);
+	border: 0.08rem solid var(--c-light);
 	padding: 0.5rem;
 }
 
 .form-btn {
-	border: 0.05rem solid var(--c-light);
+	border: 0.08rem solid var(--c-light);
 	padding: 0.5rem;
 }
 

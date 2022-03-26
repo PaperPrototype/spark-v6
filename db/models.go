@@ -54,8 +54,8 @@ type Session struct {
 /* COURSE */
 type Course struct {
 	ID    uint64 `gorm:"primaryKey"`
-	Title string `sql:"NOT NULL"`        // a short title of the course
-	Name  string `sql:"UNIQUE NOT NULL"` // the courses unique url name (eg. spark.com/minecraftcourse)
+	Title string `sql:"NOT NULL"`          // a short title of the course
+	Name  string `gorm:"UNIQUE; NOT NULL"` // the courses unique url name (eg. spark.com/minecraftcourse)
 	Desc  string
 
 	UserID uint64 `sql:"REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE; NOT NULL"`

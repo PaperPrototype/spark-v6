@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -260,6 +261,7 @@ func postCourseSettingsDisplay(c *gin.Context) {
 func postNewRelease(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	desc := c.PostForm("desc")
+	price := c.PostForm("price")
 
 	course, err := db.GetCourse(courseName)
 	if err != nil {
@@ -269,10 +271,19 @@ func postNewRelease(c *gin.Context) {
 		return
 	}
 
+	priceNum, err2 := strconv.ParseUint(price, 10, 64)
+	if err2 != nil {
+		log.Println("routes ERROR getting course:", err2)
+		SendMessage(c, "Error parsing price.")
+		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
+		return
+	}
+
 	release := db.Release{
 		Num:      course.GetNewestCourseReleaseNumLogError() + 1,
 		Desc:     desc,
 		CourseID: course.ID,
+		Price:    uint16(priceNum),
 	}
 
 	err1 := db.CreateRelease(&release)
@@ -381,8 +392,9 @@ func postEditRelease(c *gin.Context) {
 	course := c.Params.ByName("course")
 	releaseID := c.PostForm("releaseID")
 	desc := c.PostForm("desc")
+	price := c.PostForm("price")
 
-	err := db.UpdateRelease(releaseID, desc)
+	err := db.UpdateRelease(releaseID, desc, price)
 	if err != nil {
 		log.Println("routes ERROR updating release:", err)
 		SendMessage(c, "Error updating release.")

@@ -50,7 +50,14 @@
 					<form action="/{{ $.Course.Name }}/settings/release/edit" method="post">
 						<h4 style="margin-top: 0.5rem;">Release {{ .Num }}.{{ .GetNewestVersionNumLogError }}.x</h4>
 						<input hidden name="releaseID" value="{{ .ID }}">
-						<textarea name="desc" style="padding: 0.5rem; min-width: 100%; max-width: 100%;" placeholder="Description">{{ .Desc }}</textarea>
+						<label>Price USD</label>
+						<div style="margin-bottom: 1rem;">
+							<input max="10" step="1" name="price" class="form-input" type="number" value="{{ .Price }}">
+						</div>
+						<label style="margin-top: 0.5rem;">Description</label>
+						<div style="margin-bottom: 1rem;">
+							<textarea name="desc" class="form-input" style="min-width: 100%; max-width: 100%;" placeholder="Description">{{ .Desc }}</textarea>
+						</div>
 						<div>
 							<button class="form-btn" type="submit">Submit Changes</button>
 						</div>
@@ -92,7 +99,14 @@
 	<div class="thin-grey" style="margin-bottom: 2rem; margin-top: 1rem; padding: 1rem; border-radius: 0.5rem;">
 		<h3 style="margin-top: 0.5rem;">New Release</h3>
 		<form action="/{{ .Course.Name }}/settings/release/new" method="post">
-			<textarea name="desc" placeholder="Description" style="padding: 0.5rem; min-width: 100%; max-width: 100%; margin-bottom: 0.5rem;"></textarea>
+			<label>Price USD</label>
+			<div style="margin-bottom: 1rem;">
+				<input max="10" step="1" name="price" class="form-input" type="number" value="0">
+			</div>
+			<label>Description</label>
+			<div style="margin-bottom: 1rem;">
+				<textarea name="desc" placeholder="Description" class="form-input" style="min-width: 100%; max-width: 100%; margin-bottom: 0.5rem;"></textarea>
+			</div>
 			<button class="form-btn" type="submit" style="width: 100%;">New Release</button>
 		</form>
 	</div>
