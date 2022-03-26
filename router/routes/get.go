@@ -380,7 +380,7 @@ func getNameMedia(c *gin.Context) {
 
 func WriteMediaChunks(writer io.Writer, mediaID uint64) {
 	conn := helpers.GetDBConnTemp()
-	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
+	row := conn.QueryRowContext(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
 
 	buffer := []byte{}
 	err := row.Scan(&buffer)
@@ -405,7 +405,7 @@ func WriteMediaChunks(writer io.Writer, mediaID uint64) {
 // this is a recursive function
 func writeMediaChunk(writer io.Writer, mediaID uint64, current int) {
 	conn := helpers.GetDBConnTemp()
-	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
+	row := conn.QueryRowContext(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
 
 	buffer := []byte{}
 	err := row.Scan(&buffer)

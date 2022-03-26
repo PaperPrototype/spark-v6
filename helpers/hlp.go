@@ -2,8 +2,9 @@ package helpers
 
 import (
 	"context"
+	"database/sql"
 
-	pgx "github.com/jackc/pgx/v4"
+	_ "github.com/jackc/pgx/v4/stdlib"
 
 	"errors"
 	"log"
@@ -50,7 +51,7 @@ func FileExists(path string) bool {
 	return true
 }
 
-func GetDBConnTemp() *pgx.Conn {
+func GetDBConnTemp() *sql.Conn {
 	if FileExists("./dbconfig") {
 		data, err := os.ReadFile("./dbconfig")
 		if err != nil {
@@ -58,10 +59,15 @@ func GetDBConnTemp() *pgx.Conn {
 			panic(err)
 		}
 
-		conn, err1 := pgx.Connect(context.Background(), string(data))
+		db, err1 := sql.Open("pgx", string(data))
 		if err1 != nil {
 			log.Println("helpers ERROR opening connection:", err1)
 			panic(err)
+		}
+
+		conn, err2 := db.Conn(context.Background())
+		if err2 != nil {
+			panic(err2)
 		}
 
 		return conn
@@ -73,10 +79,15 @@ func GetDBConnTemp() *pgx.Conn {
 		panic(errors.New("empty env variable for DATABASE_URL"))
 	}
 
-	conn, err1 := pgx.Connect(context.Background(), string(env))
+	db, err1 := sql.Open("pgx", string(env))
 	if err1 != nil {
-		log.Println("helpoers ERROR opening connection:", err1)
+		log.Println("helpers ERROR opening connection:", err1)
 		panic(err1)
+	}
+
+	conn, err2 := db.Conn(context.Background())
+	if err2 != nil {
+		panic(err2)
 	}
 
 	return conn

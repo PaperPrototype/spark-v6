@@ -3,18 +3,19 @@ package upload
 import (
 	"bufio"
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/jackc/pgx/v4"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 const MediaChunkSize int = 16384
 
-func UploadCourse(conn *pgx.Conn, path string, versionID uint64) error {
+func UploadCourse(conn *sql.Conn, path string, versionID uint64) error {
 	folders, err := getChildrenFolders(path)
 	if err != nil {
 		return err
@@ -38,9 +39,9 @@ func UploadCourse(conn *pgx.Conn, path string, versionID uint64) error {
 	return nil
 }
 
-func recursiveUploadSections(conn *pgx.Conn, parentFolderName string, path string, versionID uint64) error {
+func recursiveUploadSections(conn *sql.Conn, parentFolderName string, path string, versionID uint64) error {
 	// save section
-	row := conn.QueryRow(context.Background(), "INSERT INTO sections (name, version_id) VALUES ($1, $2) RETURNING id", parentFolderName, versionID)
+	row := conn.QueryRowContext(context.Background(), "INSERT INTO sections (name, version_id) VALUES ($1, $2) RETURNING id", parentFolderName, versionID)
 	var sectionID uint64
 	err := row.Scan(&sectionID)
 	if err != nil {
@@ -65,7 +66,7 @@ func recursiveUploadSections(conn *pgx.Conn, parentFolderName string, path strin
 			// strip .md off of name
 			name := file.Name()[:len(file.Name())-3]
 
-			_, err3 := conn.Exec(context.Background(), "INSERT INTO contents(language, section_id, markdown) VALUES($1, $2, $3)", name, sectionID, string(data))
+			_, err3 := conn.ExecContext(context.Background(), "INSERT INTO contents(language, section_id, markdown) VALUES($1, $2, $3)", name, sectionID, string(data))
 			if err3 != nil {
 				log.Println("upload ERROR inserting into contents for section", parentFolderName+":", err3)
 				return err3
@@ -94,7 +95,7 @@ func recursiveUploadSections(conn *pgx.Conn, parentFolderName string, path strin
 	return nil
 }
 
-func uploadMedia(conn *pgx.Conn, path string, versionID uint64) error {
+func uploadMedia(conn *sql.Conn, path string, versionID uint64) error {
 	mediaFiles, err := getMediaFiles(path)
 	if err != nil {
 		return err
@@ -107,7 +108,7 @@ func uploadMedia(conn *pgx.Conn, path string, versionID uint64) error {
 		}
 		defer file.Close()
 
-		row := conn.QueryRow(context.Background(), "INSERT INTO media (name, version_id, length, type) VALUES($1, $2, $3, $4) RETURNING id",
+		row := conn.QueryRowContext(context.Background(), "INSERT INTO media (name, version_id, length, type) VALUES($1, $2, $3, $4) RETURNING id",
 			media.Name(), versionID, 0, filepath.Ext(media.Name()))
 
 		var mediaID uint64
@@ -124,7 +125,7 @@ func uploadMedia(conn *pgx.Conn, path string, versionID uint64) error {
 			return err3
 		}
 
-		_, err4 := conn.Exec(context.Background(), "UPDATE media SET length = $1 WHERE id = $2", totalMediaLength, mediaID)
+		_, err4 := conn.ExecContext(context.Background(), "UPDATE media SET length = $1 WHERE id = $2", totalMediaLength, mediaID)
 		if err4 != nil {
 			log.Println("upload ERROR updating media length:", err4)
 			return err4
@@ -138,13 +139,13 @@ func uploadMedia(conn *pgx.Conn, path string, versionID uint64) error {
 
 // current var keeps track of a position number for the chunks
 // current var is recursively increased each recursion
-func uploadChunkedMediaRecursive(buffer []byte, conn *pgx.Conn, mediaID uint64, reader *bufio.Reader, current uint32) (int, error) {
+func uploadChunkedMediaRecursive(buffer []byte, conn *sql.Conn, mediaID uint64, reader *bufio.Reader, current uint32) (int, error) {
 	numBytesRead, eofErr := reader.Read(buffer)
 
 	// if no error and some bytes were read
 	if eofErr == nil || numBytesRead > 0 {
 		// save bytes to db
-		_, dbErr := conn.Exec(context.Background(), `INSERT INTO media_chunks (media_id, data, position) VALUES($1, $2, $3)`, fmt.Sprint(mediaID), buffer[:numBytesRead], current)
+		_, dbErr := conn.ExecContext(context.Background(), `INSERT INTO media_chunks (media_id, data, position) VALUES($1, $2, $3)`, fmt.Sprint(mediaID), buffer[:numBytesRead], current)
 		if dbErr != nil {
 			return numBytesRead, dbErr
 		}
