@@ -137,3 +137,12 @@ func (user *User) GetCourses() ([]Course, error) {
 	err := gormDB.Model(&Course{}).Where("id IN (?)", courseIDs).Find(&courses).Error
 	return courses, err
 }
+
+func (release *Release) GetNewestVersionLogError() *Version {
+	version := Version{}
+	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Order("num DESC").First(&version).Error
+	if err != nil {
+		log.Println("db/methods ERROR getting newest version:", err)
+	}
+	return &version
+}
