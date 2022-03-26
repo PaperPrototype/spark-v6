@@ -91,6 +91,7 @@ var allowedMediaFiles []string = []string{
 	".gif",
 	".png",
 	".jpg",
+	".jpeg",
 	".zip",
 }
 
@@ -108,7 +109,7 @@ func isAllowedMediaFile(fileName string) bool {
 
 // get all children files in a particular folder
 func getMediaFiles(path string) ([]fs.FileInfo, error) {
-	log.Println("worker: getting media files for", path)
+	log.Println("getting media files for", path)
 
 	// read the directory's contents
 	fsInfos, err := ioutil.ReadDir(path)

@@ -29,8 +29,9 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/:course/view/:versionID/posts/user/:username")                // view posts by a specific user
 	router.GET("/:course/view/:versionID/chat")                                // view the live chatroom
 
-	// course media assets (png, gif)
-	router.GET("/:course/media/:versionID/:mediaName")
+	// course media assets (zip, png, gif)
+	router.GET("/media/:versionID/name/:mediaName", getNameMedia)
+	router.GET("/media/:versionID/id/:mediaID")
 
 	// auth
 	router.GET("/signup", getSignup) // make a new account

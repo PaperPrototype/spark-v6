@@ -57,3 +57,7 @@
 [markdown] > p {
 	word-wrap: break-word;
 }
+
+[markdown] img {
+	max-width: 100%;
+}

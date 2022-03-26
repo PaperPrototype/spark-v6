@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", function(event) {
 	courseViewHandleMenu();
+
+	// load section after the page loads
+	let sectionID = document.getElementById("sectionID").innerText;
+	loadSection(sectionID);
 });
 
 document.addEventListener("alpine:init", function(event) {
@@ -211,11 +215,11 @@ function loadSection(sectionID) {
 		return resp.json();
 	})
 	.then(function(json) {
-		let markdown = document.getElementById("courseMarkdown");
+		let content = document.getElementById("courseContent");
+		content.innerHTML = "";
 
-		console.log("json is:", json);
+		let markdown = document.createElement("div");
 
-		console.log("setting innerText");
 		// TODO contents may be in english or spanish as well
 		/*
 			for (let i = 0; i < json.Contents.length; i++) {
@@ -224,6 +228,29 @@ function loadSection(sectionID) {
 			}
 		*/
 		markdown.innerHTML = json.Contents[0].Markdown;
+
+		// FIX IMAGE LINKS
+		let images = markdown.querySelectorAll("img")
+		console.log("links to fix are:", images);
+
+		let versionID = document.getElementById("versionID").innerText;
+
+		for (let i = 0; i < images.length; i++) {
+			let src = images[i].getAttribute("src")
+
+			if (src.includes("/Assets/") || src.includes("/assets/")) {
+				// get filename and strip away /Assets/
+				let name = src.slice(8, src.length);
+				let newSrc = "/media/"+versionID+"/name/"+name;
+				images[i].setAttribute("src", newSrc);
+
+				console.log("changed src to:", newSrc);
+			}
+		}
+
+		markdown.setAttribute("markdown", "");
+
+		content.appendChild(markdown);
 	})
 	.catch(function(err) {
 		console.error(err);

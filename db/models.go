@@ -18,6 +18,9 @@ func migrate() {
 		&Section{},
 		&Content{},
 
+		&Media{},
+		&MediaChunk{},
+
 		// posts
 		&Post{},
 		&PostToRelease{},
@@ -49,6 +52,7 @@ type Session struct {
 	UserID    uint64 `sql:"REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE NOT NULL"`
 }
 
+/* COURSE */
 type Course struct {
 	ID    uint64 `gorm:"primaryKey"`
 	Title string `sql:"NOT NULL"`        // a short title of the course
@@ -74,11 +78,11 @@ type Version struct {
 }
 
 type Section struct {
-	ID        uint64 `gorm:"primaryKey"`
-	Name      string
-	VersionID uint64 // version this section is connected to
+	ID   uint64 `gorm:"primaryKey"`
+	Name string
+	// version this section is connected to
+	VersionID uint64 `sql:"REFERENCES versions(id) ON UPDATE CASCADE ON DELETE CASCADE NOT NULL"`
 	ParentID  uint64 // parent section ID
-	UpgradeID uint64 // when a new version is released author can map this section to the next versions section
 
 	// children contents
 	// special ORM parameter that can be preloaded with data
@@ -92,6 +96,24 @@ type Content struct {
 	Markdown  string
 }
 
+// media files for the course
+type Media struct {
+	ID        uint64 `gorm:"primaryKey"`
+	VersionID uint64 `sql:"REFERENCES versions(id) ON UPDATE CASCADE ON DELETE CASCADE NOT NULL"`
+	Name      string
+	Length    uint32
+	Type      string // the "type" of file (.zip .png .gif)
+}
+
+type MediaChunk struct {
+	MediaID uint64 `sql:"REFERENCES media(id) ON UPDATE CASCADE ON DELETE CASCADE NOT NULL"`
+	// the raw bytes from the file
+	Data []byte
+	// Order to load chunks from db
+	Position uint16
+}
+
+/* SOCIAL */
 type Post struct {
 	ID        uint64    `gorm:"primaryKey"`
 	CreatedAt time.Time // special param name gorm automaically sets time

@@ -1,0 +1,17 @@
+#topNav {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+
+.landing-width {
+	width: 100%;
+}
+
+/* when width larger than 900px */
+@media only screen and (min-width: 800px){
+	.landing-width {
+		width: 50%;
+	}
+}

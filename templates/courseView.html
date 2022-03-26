@@ -1,6 +1,8 @@
 {{ template "_header.html" . }}
 
 <div id="courseURL" hidden>/{{ .Course.Name }}/view/{{ .Version.ID }}</div>
+<div id="versionID" hidden>{{ .Version.ID }}</div>
+<div id="sectionID" hidden>{{ .Section.ID }}</div>
 
 <script defer src="/resources/scripts/courseView.js"></script>
 <link href="/resources/css/courseView.css" rel="stylesheet">
@@ -113,10 +115,7 @@
 
 	<!-- course contents-->
 	<div x-show="$store.courseView.view === 'contents'" id="courseMain">
-		<div markdown class="bg-overlay pad-sides-5" style="padding-top:1rem; padding-bottom:2rem;" id="courseMarkdown">
-			{{ range .Section.Contents }}
-				{{ .GetMarkdownHTMLLogError }}
-			{{ end }}
+		<div class="bg-overlay pad-sides-5" style="padding-top:1rem; padding-bottom:2rem;" id="courseContent">
 		</div>
 		<div class="bg-overlay pad-sides-5" style="padding-top:2rem; padding-bottom:2rem;">
 			{{ template "courseView_newPost.html" . }}

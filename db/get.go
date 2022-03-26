@@ -118,3 +118,9 @@ func GetPost(postID string) (*Post, error) {
 	err := gormDB.Model(&Post{}).Where("id = ?", postID).First(&post).Error
 	return &post, err
 }
+
+func GetMedia(versionID string, mediaName string) (*Media, error) {
+	media := Media{}
+	err := gormDB.Model(&Media{}).Where("version_id = ?", versionID).Where("name = ?", mediaName).First(&media).Error
+	return &media, err
+}

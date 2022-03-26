@@ -2,12 +2,13 @@ package helpers
 
 import (
 	"context"
-	"database/sql"
+
+	pgx "github.com/jackc/pgx/v4"
+
 	"errors"
 	"log"
 	"os"
 
-	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -49,7 +50,7 @@ func FileExists(path string) bool {
 	return true
 }
 
-func GetDBConnTemp() *sql.Conn {
+func GetDBConnTemp() *pgx.Conn {
 	if FileExists("./dbconfig") {
 		data, err := os.ReadFile("./dbconfig")
 		if err != nil {
@@ -57,15 +58,9 @@ func GetDBConnTemp() *sql.Conn {
 			panic(err)
 		}
 
-		db, err1 := sql.Open("postgres", string(data))
+		conn, err1 := pgx.Connect(context.Background(), string(data))
 		if err1 != nil {
-			log.Println("helpoers ERROR opening connection:", err1)
-			panic(err)
-		}
-
-		conn, err2 := db.Conn(context.Background())
-		if err2 != nil {
-			log.Println("helpoers ERROR getting connection:", err2)
+			log.Println("helpers ERROR opening connection:", err1)
 			panic(err)
 		}
 
@@ -78,16 +73,10 @@ func GetDBConnTemp() *sql.Conn {
 		panic(errors.New("empty env variable for DATABASE_URL"))
 	}
 
-	db, err1 := sql.Open("postgres", string(env))
+	conn, err1 := pgx.Connect(context.Background(), string(env))
 	if err1 != nil {
 		log.Println("helpoers ERROR opening connection:", err1)
 		panic(err1)
-	}
-
-	conn, err2 := db.Conn(context.Background())
-	if err2 != nil {
-		log.Println("helpoers ERROR getting connection:", err2)
-		panic(err2)
 	}
 
 	return conn

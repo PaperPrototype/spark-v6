@@ -1,10 +1,14 @@
 package routes
 
 import (
+	"context"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 
 	"main/db"
+	"main/helpers"
 	"main/router/session"
 
 	"github.com/gin-gonic/gin"
@@ -357,4 +361,69 @@ func getUser(c *gin.Context) {
 			"Meta":           metaDefault,
 		},
 	)
+}
+
+func getNameMedia(c *gin.Context) {
+	versionID := c.Params.ByName("versionID")
+	mediaName := c.Params.ByName("mediaName")
+	media, err := db.GetMedia(versionID, mediaName)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.Writer.Header().Set("Content-Type", media.Type)
+	c.Writer.Header().Set("Content-Length", fmt.Sprint(media.Length))
+
+	WriteMediaChunks(c.Writer, media.ID)
+}
+
+func WriteMediaChunks(writer io.Writer, mediaID uint64) {
+	conn := helpers.GetDBConnTemp()
+	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
+
+	buffer := []byte{}
+	err := row.Scan(&buffer)
+	if err != nil {
+		log.Println("ERROR scanning data from media_chunks:", err)
+		return
+	}
+
+	log.Println("length to write is:", len(buffer))
+
+	num, err1 := writer.Write(buffer)
+	log.Println("wrote:", num)
+	if num <= 0 {
+		return
+	} else if err1 != nil {
+		return
+	}
+
+	writeMediaChunk(writer, mediaID, 1)
+}
+
+// this is a recursive function
+func writeMediaChunk(writer io.Writer, mediaID uint64, current int) {
+	conn := helpers.GetDBConnTemp()
+	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
+
+	buffer := []byte{}
+	err := row.Scan(&buffer)
+	if err != nil {
+		log.Println("ERROR scanning data from media_chunks:", err)
+		return
+	}
+
+	log.Println("length to write recursively is:", len(buffer))
+
+	num, err1 := writer.Write(buffer)
+	log.Println("wrote:", num)
+	if num <= 0 {
+		log.Println("database: Ignore the above error \n The above query error just means that there are no more chunks for the image in the db. ")
+		return
+	} else if err1 != nil {
+		return
+	}
+
+	writeMediaChunk(writer, mediaID, current+1)
 }
