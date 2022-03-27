@@ -5,6 +5,7 @@
 </div>
 <div class="pad-sides-5 pad-top-5rem">
 	<form class="form bg-overlay" action="/login" method="post">
+		<input hidden name="redirectURL" value="{{ .RedirectURL }}">
 		<div>
 			<input class="form-input" name="username" placeholder="Username" required>
 		</div>
@@ -14,6 +15,9 @@
 		<div>
 			<button class="form-btn">Login</button>
 		</div>
+		<p>
+			<a href="/signup">Signup instead?</a>
+		</p>
 	</form>
 </div>
 

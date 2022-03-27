@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -122,4 +123,8 @@ func UserHasPurchasedCourse(userID uint64, releaseID uint64) bool {
 	}
 
 	return true
+}
+
+func DeleteExpiredBuyReleases() error {
+	return gormDB.Where("expires_at < ?", time.Now()).Delete(&BuyRelease{}).Error
 }

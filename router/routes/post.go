@@ -117,6 +117,8 @@ func postLogin(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 
+	redirectURL := c.PostForm("redirectURL")
+
 	user, success := db.TryGetUser(username, password)
 	if !success {
 		SendMessage(c, "Incorrect username or password.")
@@ -134,7 +136,11 @@ func postLogin(c *gin.Context) {
 
 	session.Login(c, sessionToken)
 
-	c.Redirect(http.StatusFound, "/")
+	if redirectURL == "" {
+		c.Redirect(http.StatusFound, "/courses")
+	}
+
+	c.Redirect(http.StatusFound, redirectURL)
 }
 
 func postSignup(c *gin.Context) {
@@ -363,6 +369,7 @@ func postNewVersion(c *gin.Context) {
 		Num:       release.GetNewestVersionNumLogError() + 1,
 		ReleaseID: release.ID,
 		CourseID:  release.CourseID,
+		Error:     "",
 	}
 
 	err1 := db.CreateVersion(&version)

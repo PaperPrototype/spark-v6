@@ -3,6 +3,7 @@ package upload
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -13,6 +14,12 @@ import (
 )
 
 const MediaChunkSize int = 16384
+
+// represents 10000000 bytes
+// or 10 MB's
+const MaxMediaChunkSize int64 = 10000000
+
+var ErrMediaTooLarge error = errors.New("media size exceeded max asset size of 10 MB.")
 
 func UploadCourse(conn *pgxpool.Pool, path string, versionID uint64) error {
 	folders, err := getChildrenFolders(path)
@@ -98,6 +105,19 @@ func uploadMedia(conn *pgxpool.Pool, path string, versionID uint64) error {
 	mediaFiles, err := getMediaFiles(path)
 	if err != nil {
 		return err
+	}
+
+	// before saving check all media file sizes
+	for _, media := range mediaFiles {
+		// prevent media larger than a certain byte size
+		if media.Size() > int64(MaxMediaChunkSize) {
+			// don't save this media
+			err5 := logError(conn, versionID, "Maximum asset size is 10 MB. Media with name "+media.Name()+" was too large and could not be saved.")
+			if err5 != nil {
+				log.Println("upload ERROR logging error for media too large:", err5)
+			}
+			return ErrMediaTooLarge
+		}
 	}
 
 	for _, media := range mediaFiles {

@@ -1,11 +1,14 @@
 package upload
 
 import (
+	"context"
 	"io/fs"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"strings"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 func getChildrenFolders(path string) ([]fs.FileInfo, error) {
@@ -131,4 +134,12 @@ func getMediaFiles(path string) ([]fs.FileInfo, error) {
 
 	// give back only files in direcotry
 	return files, nil
+}
+
+func logError(conn *pgxpool.Pool, versionID uint64, err string) error {
+	log.Println("upload ERROR " + err)
+
+	// "t" represents true in gorm (the ORM used in the frontend)
+	_, err1 := conn.Exec(context.Background(), "UPDATE versions SET error = $1 WHERE id = $2", err, versionID)
+	return err1
 }

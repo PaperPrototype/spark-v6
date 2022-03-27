@@ -47,3 +47,23 @@ func FileExists(path string) bool {
 
 	return true
 }
+
+func GetStripeKey() string {
+	if FileExists("./stripeconfig") {
+		data, err := os.ReadFile("./stripeconfig")
+		if err != nil {
+			log.Println("config: error reading stripeconfig file")
+			panic(err)
+		}
+
+		return string(data)
+	}
+
+	env := os.Getenv("STRIPE_KEY")
+
+	if env == "" {
+		panic(errors.New("empty env variable for STRIPE_KEY"))
+	}
+
+	return env
+}

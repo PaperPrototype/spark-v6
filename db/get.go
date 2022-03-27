@@ -1,6 +1,7 @@
 package db
 
 import (
+	"log"
 	"main/markdown"
 )
 
@@ -123,4 +124,28 @@ func GetMedia(versionID string, mediaName string) (*Media, error) {
 	media := Media{}
 	err := gormDB.Model(&Media{}).Where("version_id = ?", versionID).Where("name = ?", mediaName).First(&media).Error
 	return &media, err
+}
+
+func GetNewestCourseRelease(courseID uint64) (*Release, error) {
+	release := Release{}
+	err := gormDB.Model(&Release{}).Where("course_id = ?", courseID).Order("num DESC").First(&release).Error
+	return &release, err
+}
+
+func GetBuyRelease(buyReleaseID string) (*BuyRelease, error) {
+	err := DeleteExpiredBuyReleases()
+	if err != nil {
+		log.Println("db ERROR deleting expired releases:", err)
+		return nil, err
+	}
+
+	buyRelease := BuyRelease{}
+	err1 := gormDB.Model(&BuyRelease{}).Where("id = ?", buyReleaseID).First(&buyRelease).Error
+	return &buyRelease, err1
+}
+
+func GetNewestReleaseVersion(releaseID uint64) (*Version, error) {
+	version := Version{}
+	err := gormDB.Model(&Version{}).Where("release_id = ?", releaseID).Order("num DESC").First(&version).Error
+	return &version, err
 }

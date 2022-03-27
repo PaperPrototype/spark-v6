@@ -30,15 +30,54 @@ func getCourse(c *gin.Context) {
 		return
 	}
 
+	release, err1 := db.GetNewestCourseRelease(course.ID)
+	if err1 != nil {
+		log.Println("ERROR getting release:", err1)
+
+		// render without release
+		c.HTML(
+			http.StatusOK,
+			"course.html",
+			gin.H{
+				"Course":   course,
+				"Messages": GetMessages(c),
+				"User":     session.GetLoggedInUserHideError(c),
+				"LoggedIn": session.IsLoggedInValid(c),
+				"Meta":     metaDefault,
+			},
+		)
+		return
+	}
+
+	purchased := false
+
+	if release.Price != 0 {
+		user, err2 := session.GetLoggedInUser(c)
+		if err2 == nil {
+			if user.HasPurchasedRelease(release.ID) {
+				purchased = true
+			}
+		}
+	}
+
+	hasVersions := true
+	_, err3 := release.GetNewestVersion()
+	if err3 != nil {
+		hasVersions = false
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"course.html",
 		gin.H{
-			"Course":   course,
-			"Messages": GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
-			"Meta":     metaDefault,
+			"HasVersions": hasVersions,
+			"Purchased":   purchased,
+			"Course":      course,
+			"Release":     release,
+			"Messages":    GetMessages(c),
+			"User":        session.GetLoggedInUserHideError(c),
+			"LoggedIn":    session.IsLoggedInValid(c),
+			"Meta":        metaDefault,
 		},
 	)
 }
@@ -75,14 +114,21 @@ func getLanding(c *gin.Context) {
 }
 
 func getLogin(c *gin.Context) {
+	redirectURL := c.Query("redirect_url")
+
+	if redirectURL != "" {
+		log.Println("redirect url is:", redirectURL)
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"login.html",
 		gin.H{
-			"Messages": GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
-			"Meta":     metaDefault,
+			"RedirectURL": redirectURL,
+			"Messages":    GetMessages(c),
+			"User":        session.GetLoggedInUserHideError(c),
+			"LoggedIn":    session.IsLoggedInValid(c),
+			"Meta":        metaDefault,
 		},
 	)
 }
@@ -168,13 +214,15 @@ func getLost(c *gin.Context) {
 
 func getCourseVersion(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
+	courseName := c.Params.ByName("course")
 
 	// TODO check that user owns course release before allowing access
 
 	version, err := db.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes ERROR getting version from db:", err)
-		notFound(c)
+		SendMessage(c, "No course version yet!")
+		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
 
@@ -390,10 +438,7 @@ func WriteMediaChunks(conn *pgxpool.Pool, writer io.Writer, mediaID uint64) {
 		return
 	}
 
-	log.Println("length to write is:", len(buffer))
-
 	num, err1 := writer.Write(buffer)
-	log.Println("wrote:", num)
 	if num <= 0 {
 		return
 	} else if err1 != nil {
@@ -414,10 +459,7 @@ func writeMediaChunk(conn *pgxpool.Pool, writer io.Writer, mediaID uint64, curre
 		return
 	}
 
-	log.Println("length to write recursively is:", len(buffer))
-
 	num, err1 := writer.Write(buffer)
-	log.Println("wrote:", num)
 	if num <= 0 {
 		log.Println("database: Ignore the above error \n The above query error just means that there are no more chunks for the image in the db. ")
 		return

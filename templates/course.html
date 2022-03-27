@@ -1,6 +1,6 @@
 {{ template "_header.html" . }}
 
-<div class="pad-sides-5 pad-top-5rem pad-bot-5rem text-center bg-overlay">
+<div class="pad-sides-5 pad-top-5rem pad-bot-5rem text-center">
 	<h1>{{ .Course.Title }}</h1>
 	{{ if eq .Course.UserID .User.ID }}
 		<a href="/{{ .Course.Name }}/settings">Settings</a>
@@ -12,16 +12,39 @@
 			{{ .Course.Desc }}
 		{{ end }}
 	</p>
-	{{ if ne .Release.Price 0 }}
-		<button
-		style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-		href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }} " 
-		class="form-btn bd">Start Course</button>
+	{{ if .Release }}
+		{{ if eq .Release.Price 0 }}
+			<button
+			style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
+			href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }} " 
+			class="form-btn bd">(Free) Open Course</button>
+		{{ else }}
+			{{ if .Purchased }}
+				<button
+				style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
+				class="form-btn bd" href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }}">(Purchased) Open course</button>
+			{{ else }}
+				{{ if .HasVersions }}
+					<!-- if the user owns the course -->
+					{{ if eq .Course.UserID .User.ID }}
+						<button
+						style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
+						href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }} " 
+						class="form-btn bd">(Author) Open Course</button>
+					{{ else }}
+						<form action="/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
+							<button type="submit"
+							style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
+							class="form-btn bd">Buy Course ${{ .Release.Price }} (USD)</button>
+						</form>
+					{{ end }}
+				{{ else }}
+					<p>(no versions released yet)</p>
+				{{ end }}
+			{{ end }}
+		{{ end }}
 	{{ else }}
-		<button
-		id="buyCourse"
-		style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
-		class="form-btn bd">Buy Course ${{ .Release.Price }}</button>
+			<p>(no releases yet)</p>
 	{{ end }}
 </div>
 <div>

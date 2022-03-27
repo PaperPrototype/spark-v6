@@ -60,4 +60,9 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/new", postNew)
 
 	router.GET("/lost", getLost)
+
+	// payments routes for courses
+	router.POST("/:course/buy/:releaseID", mustBeLoggedIn, postBuyRelease)
+	router.GET("/:course/success", mustBeLoggedIn, getBuySuccess)
+	router.GET("/:course/cancel", mustBeLoggedIn, getBuyCancel)
 }

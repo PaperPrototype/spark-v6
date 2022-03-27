@@ -146,3 +146,26 @@ func (release *Release) GetNewestVersionLogError() *Version {
 	}
 	return &version
 }
+
+func (release *Release) GetNewestVersion() (*Version, error) {
+	version := Version{}
+	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Order("num DESC").First(&version).Error
+	return &version, err
+}
+
+func (user *User) HasPurchasedRelease(releaseID uint64) bool {
+	var count int64 = 0
+	err := gormDB.Model(&Purchase{}).Where("user_id = ?", user.ID).Where("release_id = ?", releaseID).Count(&count).Error
+
+	// if err then not valid
+	if err != nil {
+		return false
+	}
+
+	// if nothing exists
+	if count == 0 {
+		return false
+	}
+
+	return true
+}

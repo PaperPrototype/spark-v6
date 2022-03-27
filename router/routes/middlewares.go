@@ -3,6 +3,7 @@ package routes
 import (
 	"main/db"
 	"main/router/session"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,4 +37,18 @@ func mustBeCourseEditor(c *gin.Context) {
 
 	// if all is well then continue
 	c.Next()
+}
+
+func mustBeLoggedIn(c *gin.Context) {
+	if !session.IsLoggedInValid(c) {
+		SendMessage(c, "We kinda need you to be logged in to access that page...")
+		c.Redirect(http.StatusFound, "/login")
+		return
+	}
+
+	c.Next()
+}
+
+func UserOwnsOrPurchasedCourseVersion(c *gin.Context) {
+
 }

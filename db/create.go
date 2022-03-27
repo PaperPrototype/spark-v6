@@ -43,3 +43,7 @@ func CreatePostToRelease(relation *PostToRelease) error {
 func CreatePurchase(purchase *Purchase) error {
 	return gormDB.Create(purchase).Error
 }
+
+func CreateBuyRelease(buyRelease *BuyRelease) error {
+	return gormDB.Create(buyRelease).Error
+}

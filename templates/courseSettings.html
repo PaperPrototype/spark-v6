@@ -83,12 +83,36 @@
 						</form>
 					</div>
 					{{ range .GetVersionsLogError }}
-						<div style="margin-top: 2rem; display: flex;" class="thin-top-grey">
-							<div>
-								<h5>Version .{{ .Num }}</h5>
+						<div style="margin-top: 2rem;" class="thin-top-grey">
+							<div style="display: flex;">
+								<div>
+									<h5>Version .{{ .Num }}</h5>
+								</div>
+								{{ if .Error }}
+									<div style="margin-top: 1rem; margin-left: 1rem;">
+										<form action="/{{ $.Course.Name }}/settings/version/delete" method="post">
+											<input hidden name="versionID" value="{{ .ID }}">
+											<button class="form-btn bd" style="background-color: var(--c-code);" type="submit">Delete version</button>
+										</form>
+									</div>
+									<div style="margin-top: 1rem; margin-left: 1rem;">
+										<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View version</a>
+									</div>
+								{{ else }}
+									<div style="margin-top: 1rem; margin-left: 1rem;">
+										<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View version</a>
+									</div>
+								{{ end }}
 							</div>
-							<div style="margin-top: 1rem; margin-left: 1rem;">
-								<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View version</a>
+							{{ if .Error }}
+								<div>
+									An error occured
+								</div>
+							{{ end }}
+							<div>
+								<p>
+									{{ .Error }}
+								</p>
 							</div>
 						</div>
 					{{ end }}
