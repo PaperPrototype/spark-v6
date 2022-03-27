@@ -78,13 +78,13 @@
 							</div>
 						</form>
 						<div style="margin-top: 0.5rem; margin-bottom: 0.5rem;" @click="toggle()">
-							Versions <i class="fa-solid fa-caret-down"></i>
+							Uploads <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></i>
 						</div>
 					</div>
 					<div x-show="open === true" x-cloak>
 						<div class="thin-top-grey">
 							<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
-								<h5>Upload New Version</h5>
+								<h5>New Upload</h5>
 							</div>
 							<!-- TODO handle zip files or git downloads and specific git branches -->
 							<form action="/{{ $.Course.Name }}/settings/version/new" method="post" enctype="multipart/form-data">
@@ -93,7 +93,7 @@
 									<input name="zipFile" accept=".zip" type="file">
 								</div>
 								<div>
-									<button type="submit">Upload New Version</button>
+									<button type="submit">New Upload</button>
 								</div>
 							</form>
 						</div>
@@ -101,21 +101,21 @@
 							<div style="margin-top: 2rem;" class="thin-top-grey">
 								<div style="display: flex;">
 									<div>
-										<h5>Version .{{ .Num }}</h5>
+										<h5>Upload .{{ .Num }}.{{ .Patch }}</h5>
 									</div>
 									{{ if .Error }}
 										<div style="margin-top: 1rem; margin-left: 1rem;">
 											<form action="/{{ $.Course.Name }}/settings/version/delete" method="post">
 												<input hidden name="versionID" value="{{ .ID }}">
-												<button class="form-btn bd" style="background-color: var(--c-code);" type="submit">Delete version</button>
+												<button class="form-btn bd" style="background-color: var(--c-code);" type="submit">Delete upload</button>
 											</form>
 										</div>
 										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View version</a>
+											<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
 										</div>
 									{{ else }}
 										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View version</a>
+											<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
 										</div>
 									{{ end }}
 								</div>

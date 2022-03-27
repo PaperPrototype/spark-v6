@@ -160,6 +160,16 @@ func (release *Release) GetNewestVersion() (*Version, error) {
 	return &version, err
 }
 
+func (release *Release) GetVersionsCountLogError() int64 {
+	var count int64 = 0
+	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Count(&count).Error
+	if err != nil {
+		log.Println("db/GetVersionsCountLogError ERROR counting versions:", err)
+	}
+
+	return count
+}
+
 func (user *User) HasPurchasedRelease(releaseID uint64) bool {
 	var count int64 = 0
 	err := gormDB.Model(&Purchase{}).Where("user_id = ?", user.ID).Where("release_id = ?", releaseID).Count(&count).Error

@@ -109,7 +109,7 @@ func TryUserPassword(username string, password string) (*User, bool) {
 	return &user, true
 }
 
-func UserHasPurchasedCourse(userID uint64, releaseID uint64) bool {
+func UserHasPurchasedCourseRelease(userID uint64, releaseID uint64) bool {
 	var count int64 = 0
 	err := gormDB.Model(&Purchase{}).Where("user_id = ?", userID).Where("release_id = ?", releaseID).Count(&count).Error
 

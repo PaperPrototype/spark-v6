@@ -68,24 +68,17 @@ func getCourse(c *gin.Context) {
 		}
 	}
 
-	hasVersions := true
-	_, err3 := release.GetNewestVersion()
-	if err3 != nil {
-		hasVersions = false
-	}
-
 	c.HTML(
 		http.StatusOK,
 		"course.html",
 		gin.H{
-			"HasVersions": hasVersions,
-			"Purchased":   purchased,
-			"Course":      course,
-			"Release":     release,
-			"Messages":    msg.GetMessages(c),
-			"User":        session.GetLoggedInUserHideError(c),
-			"LoggedIn":    session.IsLoggedInValid(c),
-			"Meta":        metaDefault,
+			"Purchased": purchased,
+			"Course":    course,
+			"Release":   release,
+			"Messages":  msg.GetMessages(c),
+			"User":      session.GetLoggedInUserHideError(c),
+			"LoggedIn":  session.IsLoggedInValid(c),
+			"Meta":      metaDefault,
 		},
 	)
 }
@@ -298,22 +291,53 @@ func getCourseRelease(c *gin.Context) {
 
 	release, err1 := db.GetCourseReleaseNumString(course.ID, releaseNum)
 	if err1 != nil {
-		log.Println("routes ERROR getting release from db:", err1)
-		msg.SendMessage(c, "Error getting release with that number.")
-		c.Redirect(http.StatusFound, "/"+name)
+		log.Println("ERROR getting release:", err1)
+
+		// render without release
+		c.HTML(
+			http.StatusOK,
+			"course.html",
+			gin.H{
+				"Course":   course,
+				"Messages": msg.GetMessages(c),
+				"User":     session.GetLoggedInUserHideError(c),
+				"LoggedIn": session.IsLoggedInValid(c),
+				"Meta":     metaDefault,
+			},
+		)
 		return
+	}
+
+	// convert release desc to support markdown
+	releaseMarkdowned, err5 := markdown.Convert([]byte(release.Markdown))
+	if err5 != nil {
+		log.Println("routes/get course ERROR converting markown for release Desc:", err5)
+	}
+
+	release.Markdown = template.HTML(releaseMarkdowned.String())
+
+	purchased := false
+
+	if release.Price != 0 {
+		user, err2 := session.GetLoggedInUser(c)
+		if err2 == nil {
+			if user.HasPurchasedRelease(release.ID) {
+				purchased = true
+			}
+		}
 	}
 
 	c.HTML(
 		http.StatusOK,
 		"course.html",
 		gin.H{
-			"Course":   course,
-			"Release":  release,
-			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
-			"Meta":     metaDefault,
+			"Purchased": purchased,
+			"Course":    course,
+			"Release":   release,
+			"Messages":  msg.GetMessages(c),
+			"User":      session.GetLoggedInUserHideError(c),
+			"LoggedIn":  session.IsLoggedInValid(c),
+			"Meta":      metaDefault,
 		},
 	)
 }

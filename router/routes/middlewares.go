@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log"
 	"main/db"
 	"main/msg"
 	"main/router/session"
@@ -50,6 +51,60 @@ func mustBeLoggedIn(c *gin.Context) {
 	c.Next()
 }
 
-func UserOwnsOrPurchasedCourseVersion(c *gin.Context) {
+// OVERVIEW
+// if not owner of course
+// 		if course release not public
+// 				return
+// 		if course release not free
+//			if not payed
+// 				return and pay
+// coninue
+func MustHaveAccessToCourseRelease(c *gin.Context) {
+	courseName := c.Params.ByName("course")
+	versionID := c.Params.ByName("versionID")
 
+	version, err := db.GetVersion(versionID)
+	if err != nil {
+		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting version:", err)
+		notFound(c)
+		return
+	}
+
+	release, err1 := db.GetRelease(version.ReleaseID)
+	if err1 != nil {
+		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting release:", err1)
+		notFound(c)
+		return
+	}
+
+	course, err2 := db.GetCourse(courseName)
+	if err2 != nil {
+		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting course:", err2)
+		notFound(c)
+		return
+	}
+
+	user := session.GetLoggedInUserHideError(c)
+
+	// if not owner of course
+	if course.UserID != user.ID {
+		// if course release not public
+		if !release.Public {
+			notFound(c)
+			return
+		}
+
+		// if course release not free
+		if release.Price != 0 {
+			// if not payed
+			if !db.UserHasPurchasedCourseRelease(user.ID, release.ID) {
+				msg.SendMessage(c, "You kinda have to pay to access that")
+				c.Redirect(http.StatusFound, "/"+course.Name)
+				return
+			}
+		}
+	}
+
+	// coninue
+	c.Next()
 }

@@ -46,7 +46,7 @@ func courseVersionNewPost(c *gin.Context) {
 	*/
 
 	// check if user has purchased the course
-	if !db.UserHasPurchasedCourse(user.ID, version.ReleaseID) {
+	if !db.UserHasPurchasedCourseRelease(user.ID, version.ReleaseID) {
 		release, err4 := db.GetRelease(version.ReleaseID)
 		if err4 != nil {
 			log.Println("api ERROR getting release:", err4)

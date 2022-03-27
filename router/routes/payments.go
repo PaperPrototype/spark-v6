@@ -45,6 +45,18 @@ func postBuyRelease(c *gin.Context) {
 		return
 	}
 
+	if course.UserID == user.ID {
+		msg.SendMessage(c, "You are the author of this course!")
+		c.Redirect(http.StatusFound, "/"+course.Name+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
+		return
+	}
+
+	if user.HasPurchasedRelease(release.ID) {
+		msg.SendMessage(c, "You already own this course release!")
+		c.Redirect(http.StatusFound, "/"+course.Name+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
+		return
+	}
+
 	params := &stripe.CheckoutSessionParams{
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{

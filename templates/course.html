@@ -5,6 +5,7 @@
 	{{ if eq .Course.UserID .User.ID }}
 		<a href="/{{ .Course.Name }}/settings">Settings</a>
 	{{ end }}
+	<p style="background-color:var(--c-code); width:max-content; color:white;" class="form-btn bd">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</p>
 	<!-- allow line breaks in the pre tag -->
 	<pre style="
 	overflow-x: auto;
@@ -13,52 +14,66 @@
 	white-space: -pre-wrap;
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
-	{{ if .Release }}
-		{{ if eq .Release.Price 0 }}
-			<button
-			style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-			href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
-			class="form-btn bd">(Free) Open Course</button>
-		{{ else }}
-			{{ if .Purchased }}
-				<button
-				style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
-				class="form-btn bd" href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">(Purchased) Open course</button>
-			{{ else }}
-				{{ if .HasVersions }}
-					<!-- if the user owns the course -->
-					{{ if eq .Course.UserID .User.ID }}
-						<button
-						style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-						href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
-						class="form-btn bd">(Author) Open Course</button>
-					{{ else }}
-						<form action="/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
-							<button type="submit"
-							style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
-							class="form-btn bd">Buy Course ${{ .Release.Price }} (USD)</button>
-						</form>
-					{{ end }}
-				{{ else }}
-					<p>(no versions released yet)</p>
-				{{ end }}
-			{{ end }}
-		{{ end }}
-	{{ else }}
-			<p>(no releases yet)</p>
-	{{ end }}
-	<button
-	style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-	href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
-	class="form-btn bd">
-		(Bypass payment (TEMPORARY)) Open Course
-	</button>
+	{{ template "course_buyOrOpenButton.html" . }}
 </div>
-<div class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
+<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<div>
+		<h2>Course Sections</h2>
+		<div class="thin-grey bd" style="padding:1rem; padding-top:0rem;">
+			{{ if eq .Release.GetNewestVersionLogError.ID 0 }}
+				<h5>Release {{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</h5>
+				<div>
+					{{ .Release.GetVersionsCountLogError }} Uploads
+				</div>
+			{{ else }}
+				<h5>Release {{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</h5>
+				<div>
+					<!-- display sections -->
+					{{ range .Release.GetNewestVersionLogError.GetSectionsLogError }}
+						<div>
+							{{ .Name }}
+						</div>
+					{{ end }}
+				</div>
+			{{ end }}
+		</div>
+		<div x-data="{ open: false }">
+			<h5 @click="open = ! open">All Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
+			<div x-show="open">
+				{{ range .Course.GetPublicCourseReleasesLogError }}
+					<div x-data="{ open: false }" class="thin-grey bd" style="padding:1rem; padding-top:0rem; margin-bottom: 1rem;;">
+						<div style="display:flex;">
+							<h4 @click="open = ! open" >
+								Release {{ .Num }}  <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
+							</h4>
+							<div style="margin-top:1rem; margin-left:auto;">
+								<button href="/{{ $.Course.Name }}/{{ .Num }}" style="background-color: var(--c-code); color:white;" class="form-btn bd">View Release</button>
+							</div>
+						</div>
+						<div>
+							{{ .GetVersionsCountLogError }} Uploads
+						</div>
+						<div x-show="open">
+							{{ range .GetVersionsLogError }}
+								<div class="thin-top">
+									<h5> Upload .{{ .Num }}.{{ .Patch }} </h5>
+									{{ range .GetSectionsLogError }}
+										<div>
+											{{ .Name }}
+										</div>
+									{{ end }}
+								</div>
+							{{ end }}
+						</div>
+					</div>
+				{{ end }}
+			</div>
+		</div>
+	</div>
+	<div class="pad-top-2rem">
 		{{ .Release.Markdown }}
 	</div>
-	<div class="pad-top-5rem">
+	<div class="pad-top-2rem">
 		TODO Reviews
 	</div>
 </div>

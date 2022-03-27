@@ -6,7 +6,6 @@ import (
 )
 
 func AddRoutes(router *gin.Engine) {
-
 	// landing page
 	router.GET("/", getLanding) // index
 
@@ -25,12 +24,12 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/:course/settings/version/delete", mustBeCourseEditor, postDeleteVersion)
 
 	// view inside of course content
-	router.GET("/:course/view/:versionID", getCourseVersion)                   // view a version of the course
-	router.GET("/:course/view/:versionID/:sectionID", getCourseVersionSection) // view a section of the course
-	router.GET("/:course/view/:versionID/posts")                               // view posts
-	router.GET("/:course/view/:versionID/posts/:postID")                       // view specific post
-	router.GET("/:course/view/:versionID/posts/user/:username")                // view posts by a specific user
-	router.GET("/:course/view/:versionID/chat")                                // view the live chatroom
+	router.GET("/:course/view/:versionID", MustHaveAccessToCourseRelease, getCourseVersion)                   // view a version of the course
+	router.GET("/:course/view/:versionID/:sectionID", MustHaveAccessToCourseRelease, getCourseVersionSection) // view a section of the course
+	router.GET("/:course/view/:versionID/posts")                                                              // view posts
+	router.GET("/:course/view/:versionID/posts/:postID")                                                      // view specific post
+	router.GET("/:course/view/:versionID/posts/user/:username")                                               // view posts by a specific user
+	router.GET("/:course/view/:versionID/chat")                                                               // view the live chatroom
 
 	// course media assets (zip, png, gif)
 	router.GET("/media/:versionID/name/:mediaName", getNameMedia)

@@ -101,14 +101,28 @@
 
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1 href="/{{ .Course.Name }}">{{ .Course.Title }}</h1>
+	<pre style="
+	overflow-x: auto;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
 	{{ if eq .Course.UserID .User.ID }}
 		<a href="/{{ .Course.Name }}/settings">Settings</a>
 	{{ end }}
 	{{ if .LoggedIn }}
 		<p>{{ .Progress }}% done</p>
 	{{ else }}
-		<p>You must be logged in to view your progress!</p>
+		<p>
+			<a href="/login">
+				login to view your progress!
+			</a>
+		</p>
 	{{ end }}
+	<p>
+		<a href="/{{ .Course.Name }}">landing page</a>
+	</p>
 </div>
 <div x-data>
 	<div class="pad-sides-5 bg-overlay course-menu" style="display: flex; padding-bottom: 0.5rem; margin-top:0; padding-top:0.5rem; margin-bottom:0;" id="courseNavTop">
