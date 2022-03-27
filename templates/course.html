@@ -5,9 +5,14 @@
 	{{ if eq .Course.UserID .User.ID }}
 		<a href="/{{ .Course.Name }}/settings">Settings</a>
 	{{ end }}
-	<p>
-		{{ .Course.Subtitle }}
-	</p>
+	<!-- allow line breaks in the pre tag -->
+	<pre style="
+	overflow-x: auto;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
 	{{ if .Release }}
 		{{ if eq .Release.Price 0 }}
 			<button
