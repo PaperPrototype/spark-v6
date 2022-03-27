@@ -1,35 +1,31 @@
 {{ template "_header.html" . }}
 
-<div class="pad-sides-5 pad-top-5rem pad-bot-5rem text-center">
+<div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1>{{ .Course.Title }}</h1>
 	{{ if eq .Course.UserID .User.ID }}
 		<a href="/{{ .Course.Name }}/settings">Settings</a>
 	{{ end }}
 	<p>
-		{{ if .Release }}
-			{{ .Release.Desc }}
-		{{ else }}
-			{{ .Course.Desc }}
-		{{ end }}
+		{{ .Course.Subtitle }}
 	</p>
 	{{ if .Release }}
 		{{ if eq .Release.Price 0 }}
 			<button
 			style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-			href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }} " 
+			href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
 			class="form-btn bd">(Free) Open Course</button>
 		{{ else }}
 			{{ if .Purchased }}
 				<button
 				style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
-				class="form-btn bd" href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }}">(Purchased) Open course</button>
+				class="form-btn bd" href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">(Purchased) Open course</button>
 			{{ else }}
 				{{ if .HasVersions }}
 					<!-- if the user owns the course -->
 					{{ if eq .Course.UserID .User.ID }}
 						<button
 						style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-						href="/{{ .Course.Name }}/view/{{ .Course.GetNewestVersionIDLogError }} " 
+						href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
 						class="form-btn bd">(Author) Open Course</button>
 					{{ else }}
 						<form action="/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
@@ -46,8 +42,20 @@
 	{{ else }}
 			<p>(no releases yet)</p>
 	{{ end }}
+	<button
+	style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
+	href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
+	class="form-btn bd">
+		(Bypass payment (TEMPORARY)) Open Course
+	</button>
 </div>
-<div>
+<div class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
+	<div>
+		{{ .Release.Markdown }}
+	</div>
+	<div class="pad-top-5rem">
+		TODO Reviews
+	</div>
 </div>
 
 {{ template "_footer.html" . }}

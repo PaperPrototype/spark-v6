@@ -4,11 +4,12 @@ import (
 	"html/template"
 	"log"
 	"main/markdown"
+	"main/payments"
 )
 
-func (course *Course) GetCourseReleasesLogError() []Release {
+func (course *Course) GetPublicCourseReleasesLogError() []Release {
 	releases := []Release{}
-	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Find(&releases).Error
+	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Where("public = ?", true).Order("num DESC").Find(&releases).Error
 	if err != nil {
 		log.Println("db/methods ERROR getting course releases:", err)
 	}
@@ -16,9 +17,20 @@ func (course *Course) GetCourseReleasesLogError() []Release {
 	return releases
 }
 
-func (course *Course) GetNewestCourseReleaseNumLogError() uint16 {
+// don't filter out private releases
+func (course *Course) GetAllCourseReleasesLogError() []Release {
+	releases := []Release{}
+	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Order("num DESC").Find(&releases).Error
+	if err != nil {
+		log.Println("db/methods ERROR getting course releases:", err)
+	}
+
+	return releases
+}
+
+func (course *Course) GetNewestPublicCourseReleaseNumLogError() uint16 {
 	release := Release{}
-	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Order("num DESC").First(&release).Error
+	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Where("public = ?", true).Order("num DESC").First(&release).Error
 	if err != nil {
 		log.Println("db/methods ERROR getting newest course release num:", err)
 	}
@@ -26,19 +38,14 @@ func (course *Course) GetNewestCourseReleaseNumLogError() uint16 {
 	return release.Num
 }
 
-func (course *Course) GetNewestVersionIDLogError() uint64 {
+func (course *Course) GetAllNewestCourseReleaseNumLogError() uint16 {
 	release := Release{}
 	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Order("num DESC").First(&release).Error
 	if err != nil {
-		log.Println("db/methods ERROR getting newest course release id:", err)
+		log.Println("db/methods ERROR getting newest course release num:", err)
 	}
 
-	version := Version{}
-	err1 := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Order("num DESC").First(&version).Error
-	if err1 != nil {
-		log.Println("db/methods ERROR getting newest version id:", err1)
-	}
-	return version.ID
+	return release.Num
 }
 
 func (release *Release) GetVersionsLogError() []Version {
@@ -115,9 +122,9 @@ func (version *Version) SectionsCountLogError() int64 {
 	return count
 }
 
-func (course *Course) GetNewestCourseReleaseLogError() *Release {
+func (course *Course) GetNewestPublicCourseReleaseLogError() *Release {
 	release := Release{}
-	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Order("num DESC").First(&release).Error
+	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Order("num DESC").Where("public = ?", true).First(&release).Error
 	if err != nil {
 		log.Println("db ERROR getting newest course release:", err)
 	}
@@ -168,4 +175,45 @@ func (user *User) HasPurchasedRelease(releaseID uint64) bool {
 	}
 
 	return true
+}
+
+func (purchase *Purchase) GetReleaseLogError() *Release {
+	release := Release{}
+	err := gormDB.Model(&Release{}).Where("id = ?", purchase.ReleaseID).First(&release).Error
+	if err != nil {
+		log.Println("db ERROR getting release:", err)
+	}
+	return &release
+}
+
+func (purchase *Purchase) GetUserLogError() *User {
+	user := User{}
+	err := gormDB.Model(&User{}).Where("id = ?", purchase.UserID).First(&user).Error
+	if err != nil {
+		log.Println("db ERROR getting user:", err)
+	}
+	return &user
+}
+
+// get the total amount we owe teacher from a course
+func (purchase *Purchase) CalculatePayout() float32 {
+	spark3DsCut := float32(purchase.AmountPaid) * payments.PercentageShare
+	return float32(purchase.AmountPaid) - spark3DsCut
+}
+
+func (course *Course) GetCurrentTotalCoursePayoutAmountLogError() float64 {
+	releaseIDs := gormDB.Model(&Release{}).Select("id").Where("course_id = ?", course.ID)
+
+	purchases := []Purchase{}
+	err := gormDB.Model(&Purchase{}).Where("release_id IN (?)", releaseIDs).Find(&purchases).Error
+	if err != nil {
+		log.Println("db ERROR getting GetCurrentTotalCoursePayoutAmount:", err)
+	}
+
+	var total float64 = 0
+	for _, purchase := range purchases {
+		total += float64(purchase.CalculatePayout())
+	}
+
+	return total
 }

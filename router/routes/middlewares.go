@@ -2,6 +2,7 @@ package routes
 
 import (
 	"main/db"
+	"main/msg"
 	"main/router/session"
 	"net/http"
 
@@ -41,7 +42,7 @@ func mustBeCourseEditor(c *gin.Context) {
 
 func mustBeLoggedIn(c *gin.Context) {
 	if !session.IsLoggedInValid(c) {
-		SendMessage(c, "We kinda need you to be logged in to access that page...")
+		msg.SendMessage(c, "We kinda need you to be logged in to access that page...")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}

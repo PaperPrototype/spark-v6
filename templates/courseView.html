@@ -104,13 +104,6 @@
 	{{ if eq .Course.UserID .User.ID }}
 		<a href="/{{ .Course.Name }}/settings">Settings</a>
 	{{ end }}
-	<p>
-		{{ if .Release }}
-			{{ .Release.Desc }}
-		{{ else }}
-			{{ .Course.Desc }}
-		{{ end }}
-	</p>
 	{{ if .LoggedIn }}
 		<p>{{ .Progress }}% done</p>
 	{{ else }}

@@ -11,14 +11,18 @@
 </div>
 <div class="pad-sides-5">
 	<h2>Courses</h2>
-	<div class="course-cards">
-		{{ range .ProfileCourses }}
-			<div class="course-card">
-				<h2 href="/{{ .Name }}">{{ .Title }}</h2>
-				<a href="/:course/view/:versionID/posts/user/:username">User posts</a>
-			</div>
-		{{ end }}
-	</div>
+	{{ if .ProfileCourses }}
+		<div class="course-cards">
+			{{ range .ProfileCourses }}
+				<div class="course-card">
+					<h2 href="/{{ .Name }}">{{ .Title }}</h2>
+					<a href="/:course/view/:versionID/posts/user/:username">User posts</a>
+				</div>
+			{{ end }}
+		</div>
+	{{ else }}
+		<p>No courses taken yet.</p>
+	{{ end }}
 </div>
 
 {{ template "_footer.html" . }}

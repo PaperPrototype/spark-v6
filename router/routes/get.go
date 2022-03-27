@@ -1,18 +1,18 @@
 package routes
 
 import (
-	"context"
 	"fmt"
-	"io"
+	"html/template"
 	"log"
 	"net/http"
 
 	"main/conn"
 	"main/db"
+	"main/markdown"
+	"main/msg"
 	"main/router/session"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 var metaDefault = Meta{
@@ -30,7 +30,7 @@ func getCourse(c *gin.Context) {
 		return
 	}
 
-	release, err1 := db.GetNewestCourseRelease(course.ID)
+	release, err1 := db.GetNewestPublicCourseRelease(course.ID)
 	if err1 != nil {
 		log.Println("ERROR getting release:", err1)
 
@@ -40,7 +40,7 @@ func getCourse(c *gin.Context) {
 			"course.html",
 			gin.H{
 				"Course":   course,
-				"Messages": GetMessages(c),
+				"Messages": msg.GetMessages(c),
 				"User":     session.GetLoggedInUserHideError(c),
 				"LoggedIn": session.IsLoggedInValid(c),
 				"Meta":     metaDefault,
@@ -48,6 +48,14 @@ func getCourse(c *gin.Context) {
 		)
 		return
 	}
+
+	// convert release desc to support markdown
+	releaseMarkdowned, err5 := markdown.Convert([]byte(release.Markdown))
+	if err5 != nil {
+		log.Println("routes/get course ERROR converting markown for release Desc:", err5)
+	}
+
+	release.Markdown = template.HTML(releaseMarkdowned.String())
 
 	purchased := false
 
@@ -74,7 +82,7 @@ func getCourse(c *gin.Context) {
 			"Purchased":   purchased,
 			"Course":      course,
 			"Release":     release,
-			"Messages":    GetMessages(c),
+			"Messages":    msg.GetMessages(c),
 			"User":        session.GetLoggedInUserHideError(c),
 			"LoggedIn":    session.IsLoggedInValid(c),
 			"Meta":        metaDefault,
@@ -90,7 +98,7 @@ func getCourses(c *gin.Context) {
 		http.StatusOK,
 		"courses.html",
 		gin.H{
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Search":   search,
@@ -105,7 +113,7 @@ func getLanding(c *gin.Context) {
 		http.StatusOK,
 		"landing.html",
 		gin.H{
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
@@ -125,7 +133,7 @@ func getLogin(c *gin.Context) {
 		"login.html",
 		gin.H{
 			"RedirectURL": redirectURL,
-			"Messages":    GetMessages(c),
+			"Messages":    msg.GetMessages(c),
 			"User":        session.GetLoggedInUserHideError(c),
 			"LoggedIn":    session.IsLoggedInValid(c),
 			"Meta":        metaDefault,
@@ -138,7 +146,7 @@ func getNew(c *gin.Context) {
 		http.StatusOK,
 		"new.html",
 		gin.H{
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
@@ -151,7 +159,7 @@ func getSignup(c *gin.Context) {
 		http.StatusOK,
 		"signup.html",
 		gin.H{
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
@@ -166,7 +174,7 @@ func getLogout(c *gin.Context) {
 
 func getCourseSettings(c *gin.Context) {
 	if !session.IsLoggedInValid(c) {
-		SendMessage(c, "You must be logged in to access a settings page.")
+		msg.SendMessage(c, "You must be logged in to access a settings page.")
 		notFound(c)
 		return
 	}
@@ -189,11 +197,11 @@ func getCourseSettings(c *gin.Context) {
 		http.StatusOK,
 		"courseSettings.html",
 		gin.H{
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     user,
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Course":   course,
-			"Releases": course.GetCourseReleasesLogError(),
+			"Releases": course.GetAllCourseReleasesLogError(),
 			"Meta":     metaDefault,
 		},
 	)
@@ -204,7 +212,7 @@ func getLost(c *gin.Context) {
 		http.StatusNotFound,
 		"notFound.html",
 		gin.H{
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
@@ -221,14 +229,14 @@ func getCourseVersion(c *gin.Context) {
 	version, err := db.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes ERROR getting version from db:", err)
-		SendMessage(c, "No course version yet!")
+		msg.SendMessage(c, "No course version yet!")
 		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
 
 	section, err2 := version.GetFirstSectionPreload()
 	if err2 != nil {
-		SendMessage(c, "Error getting first section.")
+		msg.SendMessage(c, "Error getting first section.")
 	}
 
 	course, err1 := db.GetCoursewithID(version.CourseID)
@@ -243,7 +251,7 @@ func getCourseVersion(c *gin.Context) {
 	if session.IsLoggedInValid(c) {
 		user, _ := session.GetLoggedInUser(c)
 
-		amount := course.GetNewestCourseReleaseLogError().UserPostsCountLogError(user.ID)
+		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
 		total := version.SectionsCountLogError()
 
 		log.Println("amount:", amount)
@@ -268,7 +276,7 @@ func getCourseVersion(c *gin.Context) {
 			"Course":   course,
 			"Version":  version,
 			"Section":  section,
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
@@ -291,7 +299,7 @@ func getCourseRelease(c *gin.Context) {
 	release, err1 := db.GetCourseReleaseNumString(course.ID, releaseNum)
 	if err1 != nil {
 		log.Println("routes ERROR getting release from db:", err1)
-		SendMessage(c, "Error getting release with that number.")
+		msg.SendMessage(c, "Error getting release with that number.")
 		c.Redirect(http.StatusFound, "/"+name)
 		return
 	}
@@ -302,7 +310,7 @@ func getCourseRelease(c *gin.Context) {
 		gin.H{
 			"Course":   course,
 			"Release":  release,
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
@@ -327,7 +335,7 @@ func getCourseVersionSection(c *gin.Context) {
 	section, err2 := db.GetSectionPreload(sectionID)
 	if err2 != nil {
 		log.Println("routes/get ERROR getting section for getCourseVersionSection:", err2)
-		SendMessage(c, "Error getting first section.")
+		msg.SendMessage(c, "Error getting first section.")
 	}
 
 	course, err1 := db.GetCoursewithID(version.CourseID)
@@ -342,7 +350,7 @@ func getCourseVersionSection(c *gin.Context) {
 	if session.IsLoggedInValid(c) {
 		user, _ := session.GetLoggedInUser(c)
 
-		amount := course.GetNewestCourseReleaseLogError().UserPostsCountLogError(user.ID)
+		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
 		total := version.SectionsCountLogError()
 
 		log.Println("amount:", amount)
@@ -367,7 +375,7 @@ func getCourseVersionSection(c *gin.Context) {
 			"Course":   course,
 			"Version":  version,
 			"Section":  section,
-			"Messages": GetMessages(c),
+			"Messages": msg.GetMessages(c),
 			"User":     session.GetLoggedInUserHideError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
@@ -380,7 +388,7 @@ func getUser(c *gin.Context) {
 	username := c.Params.ByName("username")
 
 	if username == "" {
-		SendMessage(c, "Can't find that user!")
+		msg.SendMessage(c, "Can't find that user!")
 		notFound(c)
 		return
 	}
@@ -388,7 +396,7 @@ func getUser(c *gin.Context) {
 	profileUser, err := db.GetUserWithUsername(username)
 	if err != nil {
 		log.Println("routes ERROR gettingUserWithUsername:", err)
-		SendMessage(c, "Can't find that user!")
+		msg.SendMessage(c, "Can't find that user!")
 		notFound(c)
 		return
 	}
@@ -402,7 +410,7 @@ func getUser(c *gin.Context) {
 		http.StatusOK,
 		"user.html",
 		gin.H{
-			"Messages":       GetMessages(c),
+			"Messages":       msg.GetMessages(c),
 			"User":           session.GetLoggedInUserHideError(c),
 			"ProfileUser":    profileUser,
 			"ProfileCourses": courses,
@@ -428,44 +436,43 @@ func getNameMedia(c *gin.Context) {
 	WriteMediaChunks(conn, c.Writer, media.ID)
 }
 
-func WriteMediaChunks(conn *pgxpool.Pool, writer io.Writer, mediaID uint64) {
-	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position", mediaID)
+func getUserPayouts(c *gin.Context) {
 
-	buffer := []byte{}
-	err := row.Scan(&buffer)
-	if err != nil {
-		log.Println("ERROR scanning data from media_chunks:", err)
-		return
-	}
-
-	num, err1 := writer.Write(buffer)
-	if num <= 0 {
-		return
-	} else if err1 != nil {
-		return
-	}
-
-	writeMediaChunk(conn, writer, mediaID, 1)
+	c.HTML(
+		http.StatusOK,
+		"payout.html",
+		gin.H{
+			"Messages": msg.GetMessages(c),
+			"User":     session.GetLoggedInUserHideError(c),
+			"LoggedIn": session.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
 }
 
-// this is a recursive function
-func writeMediaChunk(conn *pgxpool.Pool, writer io.Writer, mediaID uint64, current int) {
-	row := conn.QueryRow(context.Background(), "SELECT data FROM media_chunks WHERE media_id = $1 ORDER BY position OFFSET $2", mediaID, current)
+func getReleaseDelete(c *gin.Context) {
+	courseName := c.Params.ByName("course")
+	releaseID := c.Query("releaseID")
 
-	buffer := []byte{}
-	err := row.Scan(&buffer)
+	release, err := db.GetAllReleaseWithIDStr(releaseID)
 	if err != nil {
-		log.Println("ERROR scanning data from media_chunks:", err)
-		return
+		log.Println("routes/getReleaseDelete ERROR getting release:", err)
 	}
 
-	num, err1 := writer.Write(buffer)
-	if num <= 0 {
-		log.Println("database: Ignore the above error \n The above query error just means that there are no more chunks for the image in the db. ")
-		return
-	} else if err1 != nil {
-		return
-	}
+	c.HTML(
+		http.StatusOK,
+		"confirmDelete.html",
+		gin.H{
+			"Messages": msg.GetMessages(c),
+			"User":     session.GetLoggedInUserHideError(c),
+			"LoggedIn": session.IsLoggedInValid(c),
+			"Meta":     metaDefault,
 
-	writeMediaChunk(conn, writer, mediaID, current+1)
+			// special params for confirmDelete.html
+			"Action":  "/" + courseName + "/settings/release/delete/confirm",
+			"Message": "Confirm you want to delete release " + fmt.Sprint(release.Num),
+			"Data":    release.ID,
+			"Further": "This will also delete all versions and user content in this release!",
+		},
+	)
 }

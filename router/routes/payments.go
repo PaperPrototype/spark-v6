@@ -5,6 +5,7 @@ import (
 	"log"
 	"main/db"
 	"main/helpers"
+	"main/msg"
 	"net/http"
 	"time"
 
@@ -23,7 +24,7 @@ func postBuyRelease(c *gin.Context) {
 
 	user, err5 := auth.GetLoggedInUser(c)
 	if err5 != nil {
-		SendMessage(c, "You must be logged in to access this page.")
+		msg.SendMessage(c, "You must be logged in to access this page.")
 		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
@@ -31,16 +32,16 @@ func postBuyRelease(c *gin.Context) {
 	course, err := db.GetCourse(courseName)
 	if err != nil {
 		log.Println("routes/payments ERROR getting course:", err)
-		SendMessage(c, "Error getting course")
-		c.Redirect(http.StatusFound, "/")
+		msg.SendMessage(c, "Error getting course")
+		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
 
-	release, err3 := db.GetReleaseWithIDStr(releaseID)
+	release, err3 := db.GetPublicReleaseWithIDStr(releaseID)
 	if err3 != nil {
 		log.Println("routes/payments ERROR getting release:", err3)
-		SendMessage(c, "Error getting course")
-		c.Redirect(http.StatusFound, "/")
+		msg.SendMessage(c, "Error getting course release")
+		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
 
@@ -65,7 +66,7 @@ func postBuyRelease(c *gin.Context) {
 	resultSession, err2 := session.New(params)
 	if err2 != nil {
 		log.Println("routes/payments ERROR creating payment session:", err2)
-		SendMessage(c, "Error creating payment session")
+		msg.SendMessage(c, "Error creating payment session")
 		c.Redirect(http.StatusFound, "/"+course.Name)
 		return
 	}
@@ -80,7 +81,7 @@ func postBuyRelease(c *gin.Context) {
 	err4 := db.CreateBuyRelease(&buyRelease)
 	if err4 != nil {
 		log.Println("routes/payments ERROR creating buyRelease:", err4)
-		SendMessage(c, "Error creating buyRelease")
+		msg.SendMessage(c, "Error creating buyRelease")
 		c.Redirect(http.StatusFound, "/"+course.Name)
 		return
 	}
@@ -96,7 +97,7 @@ func getBuySuccess(c *gin.Context) {
 
 	if buyReleaseID == "" {
 		log.Println("db MALICIOUS behavviour trying to success a order that was never started or expired?")
-		SendMessage(c, "An error occurred.")
+		msg.SendMessage(c, "An error occurred.")
 		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
@@ -105,7 +106,7 @@ func getBuySuccess(c *gin.Context) {
 	if err != nil {
 		log.Println("db ERROR getting buyRelease:", err)
 		log.Println("db MALICIOUS behaviour trying to success a order that was never started or expired?")
-		SendMessage(c, "An error occurred. Maybe your order timed out?")
+		msg.SendMessage(c, "An error occurred. Maybe your order timed out?")
 		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
@@ -114,13 +115,13 @@ func getBuySuccess(c *gin.Context) {
 	if err3 != nil {
 		// this error may happen if user chooses to buy a course with no versions released yet
 		log.Println("Error getting version:", err3)
-		SendMessage(c, "No course versions released yet. Don't worry once this author releases a version you will have access to it!")
+		msg.SendMessage(c, "No course versions released yet. Don't worry once this author releases a version you will have access to it!")
 		// continue DON'T RETURN!
 	}
 
 	user, err1 := auth.GetLoggedInUser(c)
 	if err1 != nil {
-		SendMessage(c, "An error occurred. Are you logged in?")
+		msg.SendMessage(c, "An error occurred. Are you logged in?")
 		// if user gets signed out while buy make sure they can log in again and still finish purchasing course!
 		c.BindQuery(&struct {
 			RedirectURL string `form:"redirect_url"`
@@ -132,7 +133,7 @@ func getBuySuccess(c *gin.Context) {
 	}
 
 	if user.ID != buyRelease.UserID {
-		SendMessage(c, "This is not your purchase!")
+		msg.SendMessage(c, "This is not your purchase!")
 		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
@@ -146,7 +147,7 @@ func getBuySuccess(c *gin.Context) {
 	}
 	err2 := db.CreatePurchase(&purchase)
 	if err2 != nil {
-		SendMessage(c, "Purchase creating failed! That is not supposed to happen! Contact us and send a screenshot of this message!")
+		msg.SendMessage(c, "Purchase creating failed! That is not supposed to happen! Contact us and send a screenshot of this message!")
 		c.Redirect(http.StatusFound, "")
 		return
 	}
@@ -159,7 +160,7 @@ func getBuySuccess(c *gin.Context) {
 	}
 
 	log.Println("Payment success!")
-	SendMessage(c, "Payment success! Welcome!")
+	msg.SendMessage(c, "Payment success! Welcome!")
 	c.Redirect(http.StatusFound, "/"+courseName+"/view/"+fmt.Sprint(version.ID))
 }
 
@@ -167,6 +168,6 @@ func getBuyCancel(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 
 	log.Println("Payment canceled!")
-	SendMessage(c, "Payment canceled")
+	msg.SendMessage(c, "Payment canceled")
 	c.Redirect(http.StatusFound, "/"+courseName)
 }

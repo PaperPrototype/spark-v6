@@ -57,12 +57,11 @@ func courseVersionNewPost(c *gin.Context) {
 		// if course price is zero, give free course purchase!
 		if release.Price == 0 {
 			purchase := db.Purchase{
-				PercentageDue: 0,
-				VersionID:     version.ID,
-				UserID:        user.ID,
-				ReleaseID:     release.ID,
-				AmountPaid:    0,
-				CreatedAt:     time.Now(),
+				VersionID:  version.ID,
+				UserID:     user.ID,
+				ReleaseID:  release.ID,
+				AmountPaid: 0,
+				CreatedAt:  time.Now(),
 			}
 
 			err5 := db.CreatePurchase(&purchase)

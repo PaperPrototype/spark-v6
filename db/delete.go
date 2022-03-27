@@ -76,3 +76,21 @@ func DeleteVersionMedias(versionID string) error {
 func DeleteBuyRelease(buyReleaseID string) error {
 	return gormDB.Where("id = ?", buyReleaseID).Delete(&BuyRelease{}).Error
 }
+
+func DeleteRelease(releaseID string) error {
+	err := gormDB.Where("id = ?", releaseID).Delete(&Release{}).Error
+	if err != nil {
+		return err
+	}
+
+	err1 := DeleteReleaseVersions(releaseID)
+	if err1 != nil {
+		return err1
+	}
+
+	return nil
+}
+
+func DeleteReleaseVersions(releaseID string) error {
+	return gormDB.Model(&Version{}).Where("release_id = ?", releaseID).Delete(&Version{}).Error
+}

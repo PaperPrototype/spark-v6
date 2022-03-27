@@ -1,0 +1,38 @@
+{{ template "_header.html" . }}
+<div class="pad-sides-5 pad-top-5rem text-center">
+	<h1>Payouts</h1>
+	<p>Get paid for the courses users bought.</p>
+</div>
+<div x-data="{ open: false }"  class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
+	{{ if .Purchases }}
+		<h2 x-cloak @click="open = ! open">Purchases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h2>
+		<div class="thin-grey bd" style="padding:1rem;">
+			<button>Get payout ${{ .Course.GetCurrentTotalCoursePayoutAmountLogError }}</button>
+		</div>
+		<div x-cloak x-show="open">
+			{{ range .Purchases }}
+				<div class="thin-grey bd" style="padding:1rem;">
+					<div>
+						Amount: ${{ .AmountPaid }}
+					</div>
+					<div>
+						Payout Amount {{ .CalculatePayout }}
+					</div>
+					<div>
+						Release: {{ .GetReleaseLogError.Num }}
+					</div>
+					<div>
+						User: <a href="/user/{{ .GetUserLogError.Username }}">
+							@{{ .GetUserLogError.Username }}
+						</a>
+					</div>
+				</div>
+			{{ end }}
+		</div>
+	{{ else }}
+		<h2>Purchases</h2>
+		<p>No purchases yet!</p>
+	{{ end }}
+</div>
+
+{{ template "_footer.html" . }}

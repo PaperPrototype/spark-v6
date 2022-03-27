@@ -1,6 +1,9 @@
 package db
 
-import "time"
+import (
+	"html/template"
+	"time"
+)
 
 func migrate() {
 	gormDB.AutoMigrate(
@@ -39,9 +42,8 @@ type Purchase struct {
 	ID     uint64 `gorm:"primaryKey"`
 	UserID uint64 `gorm:"not null"`
 
-	CreatedAt     time.Time `gorm:"not null"`
-	AmountPaid    uint16    `gorm:"default 0"`
-	PercentageDue float32   `gorm:"default 0"`
+	CreatedAt  time.Time `gorm:"not null"`
+	AmountPaid uint16    `gorm:"default 0"`
 
 	// a specific course release
 	ReleaseID uint64
@@ -49,6 +51,8 @@ type Purchase struct {
 	// not a required parameter but used to keep track of version user is currently taking
 	// also set to newest version when user first buys a course
 	VersionID uint64
+
+	User User // don't add tag for cascading on delete cause it will delete the user when trying to delete the purchase
 }
 
 type User struct {
@@ -70,10 +74,10 @@ type Session struct {
 
 /* COURSE */
 type Course struct {
-	ID    uint64 `gorm:"primaryKey"`
-	Title string `gorm:"not null"`         // a short title of the course
-	Name  string `gorm:"UNIQUE; NOT NULL"` // the courses unique url name (eg. spark.com/minecraftcourse)
-	Desc  string
+	ID       uint64 `gorm:"primaryKey"`
+	Title    string `gorm:"not null"`         // a short title of the course
+	Name     string `gorm:"UNIQUE; NOT NULL"` // the courses unique url name (eg. spark.com/minecraftcourse)
+	Subtitle string
 
 	UserID uint64 `gorm:"not null"`
 
@@ -85,10 +89,12 @@ type Release struct {
 	ID       uint64 `gorm:"primaryKey"`
 	Price    uint16 `gorm:"default:0"`
 	Num      uint16 `gorm:"default:0"`
-	Desc     string
+	Markdown template.HTML
 	CourseID uint64 `gorm:"not null"`
+	Public   bool   `gorm:"default:f"`
 
-	Versions []Version `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Versions  []Version  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Version struct {

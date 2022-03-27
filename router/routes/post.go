@@ -2,11 +2,13 @@ package routes
 
 import (
 	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"main/conn"
 	"main/db"
 	"main/helpers"
+	"main/msg"
 	"main/router/session"
 	"main/upload"
 	"net/http"
@@ -22,7 +24,7 @@ import (
 
 func postNew(c *gin.Context) {
 	if !session.IsLoggedInValid(c) {
-		SendMessage(c, "You must be logged in to create a new course.")
+		msg.SendMessage(c, "You must be logged in to create a new course.")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -30,7 +32,7 @@ func postNew(c *gin.Context) {
 	user, err2 := session.GetLoggedInUser(c)
 	if err2 != nil {
 		log.Println("ERROR getting logged in user:", err2)
-		SendMessage(c, "Error getting logged in user.")
+		msg.SendMessage(c, "Error getting logged in user.")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
@@ -52,10 +54,10 @@ func postNew(c *gin.Context) {
 	desc := c.PostForm("desc")
 
 	course := db.Course{
-		Name:   name,
-		Title:  title,
-		Desc:   desc,
-		UserID: user.ID,
+		Name:     name,
+		Title:    title,
+		Subtitle: desc,
+		UserID:   user.ID,
 	}
 
 	if strings.Contains(uncleanName, " ") {
@@ -97,7 +99,7 @@ func postNew(c *gin.Context) {
 
 	if err1 != nil {
 		log.Println("ERROR:", err1)
-		SendMessage(c, "Error. That name is already taken.")
+		msg.SendMessage(c, "Error. That name is already taken.")
 		c.Redirect(http.StatusFound, "/new")
 		return
 	}
@@ -105,7 +107,7 @@ func postNew(c *gin.Context) {
 	err := db.CreateCourse(&course)
 	if err != nil {
 		log.Println("ERROR:", err)
-		SendMessage(c, "Error creating new course.")
+		msg.SendMessage(c, "Error creating new course.")
 		c.Redirect(http.StatusFound, "/new")
 	}
 
@@ -119,9 +121,9 @@ func postLogin(c *gin.Context) {
 
 	redirectURL := c.PostForm("redirectURL")
 
-	user, success := db.TryGetUser(username, password)
+	user, success := db.TryUserPassword(username, password)
 	if !success {
-		SendMessage(c, "Incorrect username or password.")
+		msg.SendMessage(c, "Incorrect username or password.")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
@@ -129,7 +131,7 @@ func postLogin(c *gin.Context) {
 	sessionToken, err4 := db.CreateSession(user.ID)
 	if err4 != nil {
 		log.Println("ERROR creating session in db:", err4)
-		SendMessage(c, "Error creating session. You will have to login.")
+		msg.SendMessage(c, "Error creating session. You will have to login.")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
@@ -152,38 +154,38 @@ func postSignup(c *gin.Context) {
 
 	available, err := db.UsernameAvailable(username)
 	if !available {
-		SendMessage(c, "Username already taken.")
+		msg.SendMessage(c, "Username already taken.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
 
 	if err != nil {
-		SendMessage(c, "Username taken or error.")
+		msg.SendMessage(c, "Username taken or error.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
 
 	if strings.Contains(username, " ") {
-		SendMessage(c, "Username cannot have spaces.")
+		msg.SendMessage(c, "Username cannot have spaces.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
 
 	emailAvailable, err2 := db.EmailAvailable(email)
 	if !emailAvailable {
-		SendMessage(c, "That email is already taken.")
+		msg.SendMessage(c, "That email is already taken.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
 
 	if err2 != nil {
-		SendMessage(c, "Email taken or error.")
+		msg.SendMessage(c, "Email taken or error.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
 
 	if pass != confirm {
-		SendMessage(c, "Passwords do not match!")
+		msg.SendMessage(c, "Passwords do not match!")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
@@ -191,7 +193,7 @@ func postSignup(c *gin.Context) {
 	hash, err1 := helpers.HashPassword(pass)
 	if err1 != nil {
 		log.Println("ERROR hashing password routes/signup:", err1)
-		SendMessage(c, "Password error.")
+		msg.SendMessage(c, "Password error.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
@@ -206,21 +208,21 @@ func postSignup(c *gin.Context) {
 	err3 := db.CreateUser(&user)
 	if err3 != nil {
 		log.Println("ERROR creating user routes/signup:", err3)
-		SendMessage(c, "Error creating user.")
+		msg.SendMessage(c, "Error creating user.")
 		c.Redirect(http.StatusFound, "/signup")
 	}
 
 	sessionToken, err4 := db.CreateSession(user.ID)
 	if err4 != nil {
 		log.Println("ERROR creating session in db:", err4)
-		SendMessage(c, "Error creating session. You will have to login.")
+		msg.SendMessage(c, "Error creating session. You will have to login.")
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
 
 	session.Login(c, sessionToken)
 
-	SendMessage(c, "Signed up and logged in!")
+	msg.SendMessage(c, "Signed up and logged in!")
 	c.Redirect(http.StatusFound, "/courses")
 }
 
@@ -232,7 +234,7 @@ func postCourseSettingsDisplay(c *gin.Context) {
 
 	course, err2 := db.GetCourseWithIDStr(courseID)
 	if err2 != nil {
-		SendMessage(c, "Error finding course.")
+		msg.SendMessage(c, "Error finding course.")
 		log.Println("ERROR finding course:", err2)
 		c.Redirect(http.StatusFound, "/")
 		return
@@ -240,13 +242,13 @@ func postCourseSettingsDisplay(c *gin.Context) {
 
 	available, err := db.CourseNameAvailableNotSelf(name, courseID)
 	if !available {
-		SendMessage(c, "That course name is taken.")
+		msg.SendMessage(c, "That course name is taken.")
 		c.Redirect(http.StatusFound, "/"+course.Name+"/settings")
 		return
 	}
 
 	if err != nil {
-		SendMessage(c, "Error checking if course name available.")
+		msg.SendMessage(c, "Error checking if course name available.")
 		log.Println("ERROR checking if course name is available:", err)
 		c.Redirect(http.StatusFound, "/"+course.Name+"/settings")
 		return
@@ -254,13 +256,13 @@ func postCourseSettingsDisplay(c *gin.Context) {
 
 	err1 := db.UpdateCourse(courseID, title, name, desc)
 	if err1 != nil {
-		SendMessage(c, "Error updating course.")
+		msg.SendMessage(c, "Error updating course.")
 		log.Println("ERROR updating course:", err1)
 		c.Redirect(http.StatusFound, "/"+course.Name+"/settings")
 		return
 	}
 
-	SendMessage(c, "Successfully updated course!")
+	msg.SendMessage(c, "Successfully updated course!")
 	c.Redirect(http.StatusFound, "/"+name+"/settings")
 }
 
@@ -272,7 +274,7 @@ func postNewRelease(c *gin.Context) {
 	course, err := db.GetCourse(courseName)
 	if err != nil {
 		log.Println("routes ERROR getting course:", err)
-		SendMessage(c, "Error getting course.")
+		msg.SendMessage(c, "Error getting course.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
@@ -280,14 +282,14 @@ func postNewRelease(c *gin.Context) {
 	priceNum, err2 := strconv.ParseUint(price, 10, 64)
 	if err2 != nil {
 		log.Println("routes ERROR getting course:", err2)
-		SendMessage(c, "Error parsing price.")
+		msg.SendMessage(c, "Error parsing price.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
 
 	release := db.Release{
-		Num:      course.GetNewestCourseReleaseNumLogError() + 1,
-		Desc:     desc,
+		Num:      course.GetAllNewestCourseReleaseNumLogError() + 1,
+		Markdown: template.HTML(desc),
 		CourseID: course.ID,
 		Price:    uint16(priceNum),
 	}
@@ -295,12 +297,12 @@ func postNewRelease(c *gin.Context) {
 	err1 := db.CreateRelease(&release)
 	if err1 != nil {
 		log.Println("routes ERROR creating release:", err1)
-		SendMessage(c, "Error getting course.")
+		msg.SendMessage(c, "Error getting course.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
 
-	SendMessage(c, "Successfully created release!")
+	msg.SendMessage(c, "Successfully created release!")
 	c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 }
 
@@ -310,13 +312,13 @@ func postNewVersion(c *gin.Context) {
 
 	fileHandle, err2 := c.FormFile("zipFile")
 	if err2 != nil {
-		SendMessage(c, "Error getting form file. Make sure you selected a file to upload.")
+		msg.SendMessage(c, "Error getting form file. Make sure you selected a file to upload.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
 
 	if filepath.Ext(fileHandle.Filename) != ".zip" {
-		SendMessage(c, "Must be a .zip file.")
+		msg.SendMessage(c, "Must be a .zip file.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
@@ -358,9 +360,9 @@ func postNewVersion(c *gin.Context) {
 	}
 	defer os.RemoveAll("./upload" + uniqueName)
 
-	release, err := db.GetReleaseWithIDStr(releaseID)
+	release, err := db.GetAllReleaseWithIDStr(releaseID)
 	if err != nil {
-		SendMessage(c, "Error getting release.")
+		msg.SendMessage(c, "Error getting release.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
@@ -375,7 +377,7 @@ func postNewVersion(c *gin.Context) {
 	err1 := db.CreateVersion(&version)
 	if err1 != nil {
 		log.Println("routes ERROR creating release:", err1)
-		SendMessage(c, "Error getting course.")
+		msg.SendMessage(c, "Error getting course.")
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
@@ -386,12 +388,14 @@ func postNewVersion(c *gin.Context) {
 
 	err7 := upload.UploadCourse(conn, "./upload"+uniqueName+"/"+courseFolderName, version.ID)
 	if err7 != nil {
-		SendMessage(c, "Error uploading course: "+fmt.Sprint(err7))
+		msg.SendMessage(c, "Error uploading course: "+fmt.Sprint(err7))
+		// log error to version so user can view it and delete version
+		upload.LogError(conn, version.ID, err7.Error())
 		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 		return
 	}
 
-	SendMessage(c, "Successfully created version!")
+	msg.SendMessage(c, "Successfully created version!")
 	c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 }
 
@@ -400,16 +404,22 @@ func postEditRelease(c *gin.Context) {
 	releaseID := c.PostForm("releaseID")
 	desc := c.PostForm("desc")
 	price := c.PostForm("price")
+	publicStr := c.PostForm("public")
 
-	err := db.UpdateRelease(releaseID, desc, price)
+	var public bool = false
+	if publicStr != "" {
+		public = true
+	}
+
+	err := db.UpdateRelease(releaseID, desc, price, public)
 	if err != nil {
 		log.Println("routes ERROR updating release:", err)
-		SendMessage(c, "Error updating release.")
+		msg.SendMessage(c, "Error updating release.")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
-	SendMessage(c, "Successfully updated.")
+	msg.SendMessage(c, "Successfully updated.")
 	c.Redirect(http.StatusFound, "/"+course+"/settings")
 }
 
@@ -420,11 +430,42 @@ func postDeleteVersion(c *gin.Context) {
 	err := db.DeleteVersion(versionID)
 	if err != nil {
 		log.Println("routes ERROR deleting version:", err)
-		SendMessage(c, "Error while deleting version")
+		msg.SendMessage(c, "Error while deleting version")
 		c.Redirect(http.StatusFound, "/"+course+"/settings")
 		return
 	}
 
-	SendMessage(c, "Successfully deleted version")
+	msg.SendMessage(c, "Successfully deleted version")
 	c.Redirect(http.StatusFound, "/"+course+"/settings")
+}
+
+func postReleaseDeleteConfirm(c *gin.Context) {
+	courseName := c.Params.ByName("course")
+	releaseID := c.PostForm("data")
+	password := c.PostForm("password")
+
+	user, err := session.GetLoggedInUser(c)
+	if err != nil {
+		msg.SendMessage(c, "You must be logged in to access that page.")
+		c.Redirect(http.StatusFound, "/login")
+		return
+	}
+
+	_, success := db.TryUserPassword(user.Username, password)
+	if success {
+		err1 := db.DeleteRelease(releaseID)
+		if err1 != nil {
+			log.Println("routes/postReleaseDeleteConfirm ERROR deleting release:", err1)
+			msg.SendMessage(c, "Error. Failed to delete release.")
+			c.Redirect(http.StatusFound, "/"+courseName+"/settings")
+			return
+		}
+
+		msg.SendMessage(c, "Successfully deleted release.")
+		c.Redirect(http.StatusFound, "/"+courseName+"/settings")
+		return
+	}
+
+	msg.SendMessage(c, "Incorrect password.")
+	c.Redirect(http.StatusFound, "/"+courseName+"/settings")
 }

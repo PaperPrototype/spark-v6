@@ -1,4 +1,4 @@
-package routes
+package msg
 
 import (
 	"encoding/json"

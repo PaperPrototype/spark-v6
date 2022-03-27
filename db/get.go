@@ -51,7 +51,13 @@ func GetCoursewithID(courseID uint64) (*Course, error) {
 	return &course, err
 }
 
-func GetReleaseWithIDStr(releaseID string) (*Release, error) {
+func GetPublicReleaseWithIDStr(releaseID string) (*Release, error) {
+	release := Release{}
+	err := gormDB.Where("id = ?", releaseID).Where("public = ?", true).First(&release).Error
+	return &release, err
+}
+
+func GetAllReleaseWithIDStr(releaseID string) (*Release, error) {
 	release := Release{}
 	err := gormDB.Where("id = ?", releaseID).First(&release).Error
 	return &release, err
@@ -111,7 +117,7 @@ func GetUserWithUsername(username string) (*User, error) {
 
 func GetRelease(releaseID uint64) (*Release, error) {
 	release := Release{}
-	err := gormDB.Model(&Release{}).Where("id = ?", releaseID).First(&release).Error
+	err := gormDB.Model(&Release{}).Where("id = ?", releaseID).Where("public = ?", true).First(&release).Error
 	return &release, err
 }
 func GetPost(postID string) (*Post, error) {
@@ -126,7 +132,13 @@ func GetMedia(versionID string, mediaName string) (*Media, error) {
 	return &media, err
 }
 
-func GetNewestCourseRelease(courseID uint64) (*Release, error) {
+func GetNewestPublicCourseRelease(courseID uint64) (*Release, error) {
+	release := Release{}
+	err := gormDB.Model(&Release{}).Where("course_id = ?", courseID).Where("public = ?", true).Order("num DESC").First(&release).Error
+	return &release, err
+}
+
+func GetAllNewestCourseRelease(courseID uint64) (*Release, error) {
 	release := Release{}
 	err := gormDB.Model(&Release{}).Where("course_id = ?", courseID).Order("num DESC").First(&release).Error
 	return &release, err
@@ -148,4 +160,26 @@ func GetNewestReleaseVersion(releaseID uint64) (*Version, error) {
 	version := Version{}
 	err := gormDB.Model(&Version{}).Where("release_id = ?", releaseID).Order("num DESC").First(&version).Error
 	return &version, err
+}
+
+func GetPurchases(courseID uint64) ([]Purchase, error) {
+	releaseIDs := gormDB.Model(&Release{}).Select("id").Where("course_id = ?", courseID)
+
+	purchases := []Purchase{}
+	err := gormDB.Model(&Purchase{}).Where("release_id IN (?)", releaseIDs).Find(&purchases).Error
+	return purchases, err
+}
+
+func GetCurrentTotalCoursePayoutAmount(courseID uint64) (float64, error) {
+	releaseIDs := gormDB.Model(&Release{}).Select("id").Where("course_id = ?", courseID)
+
+	purchases := []Purchase{}
+	err := gormDB.Model(&Purchase{}).Where("release_id IN (?)", releaseIDs).Where("payed_out = ?", false).Find(&purchases).Error
+
+	var total float64 = 0
+	for _, purchase := range purchases {
+		total += float64(purchase.CalculatePayout())
+	}
+
+	return total, err
 }

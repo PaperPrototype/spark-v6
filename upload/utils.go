@@ -136,7 +136,7 @@ func getMediaFiles(path string) ([]fs.FileInfo, error) {
 	return files, nil
 }
 
-func logError(conn *pgxpool.Pool, versionID uint64, err string) error {
+func LogError(conn *pgxpool.Pool, versionID uint64, err string) error {
 	log.Println("upload ERROR " + err)
 
 	// "t" represents true in gorm (the ORM used in the frontend)

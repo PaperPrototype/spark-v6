@@ -112,7 +112,7 @@ func uploadMedia(conn *pgxpool.Pool, path string, versionID uint64) error {
 		// prevent media larger than a certain byte size
 		if media.Size() > int64(MaxMediaChunkSize) {
 			// don't save this media
-			err5 := logError(conn, versionID, "Maximum asset size is 10 MB. Media with name "+media.Name()+" was too large and could not be saved.")
+			err5 := LogError(conn, versionID, "Maximum asset size is 10 MB. Media with name "+media.Name()+" was too large and could not be saved.")
 			if err5 != nil {
 				log.Println("upload ERROR logging error for media too large:", err5)
 			}

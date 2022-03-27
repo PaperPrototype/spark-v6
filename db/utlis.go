@@ -91,7 +91,8 @@ func SessionExists(tokenUUID string) bool {
 	return true
 }
 
-func TryGetUser(username string, password string) (*User, bool) {
+// returns true if successfully entered password
+func TryUserPassword(username string, password string) (*User, bool) {
 	user := User{}
 	err := gormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
 

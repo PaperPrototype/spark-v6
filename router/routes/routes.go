@@ -17,11 +17,12 @@ func AddRoutes(router *gin.Engine) {
 	// course settings
 	router.GET("/:course/settings", mustBeCourseEditor, getCourseSettings)
 	router.POST("/:course/settings/display", mustBeCourseEditor, postCourseSettingsDisplay)
-	router.POST("/:course/settings/release", mustBeCourseEditor, postCourseSettingsDisplay)
 	router.POST("/:course/settings/release/new", mustBeCourseEditor, postNewRelease)
+	router.GET("/:course/settings/release/delete", mustBeCourseEditor, getReleaseDelete)
+	router.POST("/:course/settings/release/delete/confirm", mustBeCourseEditor, postReleaseDeleteConfirm)
+	router.POST("/:course/settings/release/edit", mustBeCourseEditor, postEditRelease)
 	router.POST("/:course/settings/version/new", mustBeCourseEditor, postNewVersion)
 	router.POST("/:course/settings/version/delete", mustBeCourseEditor, postDeleteVersion)
-	router.POST("/:course/settings/release/edit", mustBeCourseEditor, postEditRelease)
 
 	// view inside of course content
 	router.GET("/:course/view/:versionID", getCourseVersion)                   // view a version of the course
@@ -44,11 +45,17 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/login/forgot")      // forgot password
 	router.GET("/logout", getLogout) // logout
 
+	// publicly accessible pages for logged in users
 	router.GET("/user/:username", getUser)         // get user profile
 	router.GET("/user/:username/media/:mediaName") // where the user can upload and access images or gifs
 	/*
 		user setting on a cog wheel button, but don't offer settings menu as a url route
 	*/
+
+	// DASHBOARD for logged in users only
+	router.GET("/user/courses", mustBeLoggedIn)                 // get user payouts
+	router.GET("/user/payouts", mustBeLoggedIn, getUserPayouts) // get user payouts
+	router.GET("/user/payouts/connect", mustBeLoggedIn)         // connect account to stripe so we can pay out to teachers
 
 	router.GET("/courses", getCourses) // search courses with possible url query
 	/*
