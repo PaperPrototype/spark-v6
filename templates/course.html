@@ -30,9 +30,9 @@
 				<div>
 					<!-- display sections -->
 					{{ range .Release.GetNewestVersionLogError.GetSectionsLogError }}
-						<div>
+						<h3>
 							{{ .Name }}
-						</div>
+						</h3>
 					{{ end }}
 				</div>
 			{{ end }}
