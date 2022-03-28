@@ -45,6 +45,10 @@ type Purchase struct {
 	CreatedAt  time.Time `gorm:"not null"`
 	AmountPaid uint16    `gorm:"default 0"`
 
+	// the purchases courseID
+	// course ID
+	CourseID uint64 `gorm:"default:1; not null"`
+
 	// a specific course release
 	ReleaseID uint64
 

@@ -183,3 +183,9 @@ func GetCurrentTotalCoursePayoutAmount(courseID uint64) (float64, error) {
 
 	return total, err
 }
+
+func GetUserCourses(userID uint64) ([]Course, error) {
+	courses := []Course{}
+	err := gormDB.Model(&Course{}).Where("user_id = ?", userID).Find(&courses).Error
+	return courses, err
+}

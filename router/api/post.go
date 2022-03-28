@@ -60,6 +60,7 @@ func courseVersionNewPost(c *gin.Context) {
 				VersionID:  version.ID,
 				UserID:     user.ID,
 				ReleaseID:  release.ID,
+				CourseID:   release.CourseID,
 				AmountPaid: 0,
 				CreatedAt:  time.Now(),
 			}

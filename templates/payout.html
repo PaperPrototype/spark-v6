@@ -1,37 +1,41 @@
 {{ template "_header.html" . }}
 <div class="pad-sides-5 pad-top-5rem text-center">
 	<h1>Payouts</h1>
-	<p>Get paid for the courses users bought.</p>
+	<p style="color:var(--c-grey);">Time to get paid</p>
 </div>
-<div x-data="{ open: false }"  class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
-	{{ if .Purchases }}
-		<h2 x-cloak @click="open = ! open">Purchases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h2>
-		<div class="thin-grey bd" style="padding:1rem;">
-			<button>Get payout ${{ .Course.GetCurrentTotalCoursePayoutAmountLogError }}</button>
-		</div>
-		<div x-cloak x-show="open">
-			{{ range .Purchases }}
-				<div class="thin-grey bd" style="padding:1rem;">
-					<div>
-						Amount: ${{ .AmountPaid }}
-					</div>
-					<div>
-						Payout Amount {{ .CalculatePayout }}
-					</div>
-					<div>
-						Release: {{ .GetReleaseLogError.Num }}
-					</div>
-					<div>
-						User: <a href="/user/{{ .GetUserLogError.Username }}">
-							@{{ .GetUserLogError.Username }}
-						</a>
-					</div>
+<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
+	{{ if .Courses }}
+		{{ range .Courses }}
+			<div class="thin-grey bd" style="padding:1rem; padding-top:0rem;">
+				<h2>{{ .Title }} Purchase's <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h2>
+				<div>
+					<button>Get payout ${{ .GetCurrentTotalCoursePayoutAmountLogError }}</button>
 				</div>
-			{{ end }}
-		</div>
+				<div>
+					<h3>Purchases</h3>
+					{{ range .GetPurchasesLogError }}
+						<div class="thin-grey bd" style="padding:1rem;">
+							<div>
+								Amount: ${{ .AmountPaid }}
+							</div>
+							<div>
+								Payout Amount {{ .CalculatePayout }}
+							</div>
+							<div>
+								Release: {{ .GetReleaseLogError.Num }}
+							</div>
+							<div>
+								User: <a href="/user/{{ .GetUserLogError.Username }}">
+									@{{ .GetUserLogError.Username }}
+								</a>
+							</div>
+						</div>
+					{{ end }}
+				</div>
+			</div>
+		{{ end }}
 	{{ else }}
-		<h2>Purchases</h2>
-		<p>No purchases yet!</p>
+			<h2>You have not uploaded any courses!</h2>
 	{{ end }}
 </div>
 

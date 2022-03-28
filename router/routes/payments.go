@@ -154,6 +154,7 @@ func getBuySuccess(c *gin.Context) {
 		UserID:     user.ID,
 		VersionID:  version.ID,
 		ReleaseID:  buyRelease.ReleaseID,
+		CourseID:   version.CourseID,
 		CreatedAt:  time.Now(),
 		AmountPaid: buyRelease.AmountPaying,
 	}

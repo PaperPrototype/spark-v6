@@ -227,3 +227,13 @@ func (course *Course) GetCurrentTotalCoursePayoutAmountLogError() float64 {
 
 	return total
 }
+
+func (course *Course) GetPurchasesLogError() []Purchase {
+	purchases := []Purchase{}
+	err := gormDB.Model(&Purchase{}).Where("course_id = ?", course.ID).Find(&purchases).Error
+	if err != nil {
+		log.Println("db/methods ERROR getting purchases from GetPurchasesLogError:", err)
+	}
+
+	return purchases
+}

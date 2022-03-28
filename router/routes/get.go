@@ -461,13 +461,31 @@ func getNameMedia(c *gin.Context) {
 }
 
 func getUserPayouts(c *gin.Context) {
+	if !session.IsLoggedInValid(c) {
+		msg.SendMessage(c, "You must be logged in to access payouts.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	user, err := session.GetLoggedInUser(c)
+	if err != nil {
+		msg.SendMessage(c, "Error getting logged in user")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	courses, err1 := db.GetUserCourses(user.ID)
+	if err1 != nil {
+		log.Println("routes ERROR getting user courses from getUserPayouts:", err1)
+	}
 
 	c.HTML(
 		http.StatusOK,
 		"payout.html",
 		gin.H{
+			"Courses":  courses,
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     user,
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
