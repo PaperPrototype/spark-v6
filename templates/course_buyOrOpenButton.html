@@ -1,35 +1,45 @@
 {{ if .Release }}
-{{ if eq .Release.Price 0 }}
-	<button
-	style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-	href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
-	class="form-btn bd">(Free) Open Course</button>
-{{ else }}
-	{{ if .Purchased }}
+	{{ if eq .Release.Price 0 }}
 		<button
-		style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
-		class="form-btn bd" href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">(Purchased) Open course</button>
+		style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+		padding-left:2rem; padding-right:2rem;" 
+		href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
+		class="form-btn bd">(Free) Open Course</button>
+		<p style="color:var(--c-grey);">You will be directed to stripe for payments</p>
 	{{ else }}
-		<!-- if release has versions -->
-		{{ if ne .Release.GetNewestVersionLogError.ID 0 }}
-			<!-- if the user owns the course -->
-			{{ if eq .Course.UserID .User.ID }}
-				<button
-				style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;" 
-				href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
-				class="form-btn bd">(Author) Open Course</button>
-			{{ else }}
-				<form action="/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
-					<button type="submit"
-					style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;"
-					class="form-btn bd">Buy Course ${{ .Release.Price }} (USD)</button>
-				</form>
-			{{ end }}
+		{{ if .Purchased }}
+			<button
+			style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+			padding-left:2rem; padding-right:2rem;"
+			class="form-btn bd" href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">
+				(Purchased) Open course
+			</button>
+			<p style="color:var(--c-grey);">You will be directed to stripe for payments</p>
 		{{ else }}
-			<p>(this release has no uploads yet)</p>
+			<!-- if release has versions -->
+			{{ if ne .Release.GetNewestVersionLogError.ID 0 }}
+				<!-- if the user owns the course -->
+				{{ if eq .Course.UserID .User.ID }}
+					<button
+					style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+					padding-left:2rem; padding-right:2rem;" 
+					href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
+					class="form-btn bd">(Author) Open Course</button>
+					<p style="color:var(--c-grey);">You will be directed to stripe for payments</p>
+				{{ else }}
+					<form action="/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
+						<button type="submit"
+						style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+						padding-left:2rem; padding-right:2rem;"
+						class="form-btn bd">Buy Course ${{ .Release.Price }} (USD)</button>
+					</form>
+					<p style="color:var(--c-grey);">You will be directed to stripe for payments</p>
+				{{ end }}
+			{{ else }}
+				<p>(this release has no uploads yet)</p>
+			{{ end }}
 		{{ end }}
 	{{ end }}
-{{ end }}
 {{ else }}
 	<p>(this course has no releases yet)</p>
 {{ end }}

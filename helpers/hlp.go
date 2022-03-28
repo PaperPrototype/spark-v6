@@ -67,3 +67,8 @@ func GetStripeKey() string {
 
 	return env
 }
+
+func GetHost() string {
+	env := os.Getenv("HOST")
+	return env
+}
