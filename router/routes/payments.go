@@ -71,8 +71,8 @@ func postBuyRelease(c *gin.Context) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		SuccessURL: stripe.String("http://localhost:8080/" + courseName + "/success?session_id={CHECKOUT_SESSION_ID}"),
-		CancelURL:  stripe.String("http://localhost:8080/" + courseName + "/cancel"),
+		SuccessURL: stripe.String(helpers.GetHost() + "/" + courseName + "/success?session_id={CHECKOUT_SESSION_ID}"),
+		CancelURL:  stripe.String(helpers.GetHost() + "/" + courseName + "/cancel"),
 	}
 
 	resultSession, err2 := session.New(params)

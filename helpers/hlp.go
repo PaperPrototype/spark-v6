@@ -69,6 +69,10 @@ func GetStripeKey() string {
 }
 
 func GetHost() string {
-	env := os.Getenv("HOST")
+	env := os.Getenv("HOST_URL")
+	if env == "" {
+		env = "localhost:8080"
+	}
+
 	return env
 }
