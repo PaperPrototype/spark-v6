@@ -12,7 +12,7 @@
 @media (prefers-color-scheme: dark) {
 	:root {
 		--c-black: rgb(0, 0, 0);
-		--c-bg-overlay: rgb(47, 49, 54);
+		--c-bg-overlay: rgb(44, 46, 51);
 		--c-light: rgb(66, 66, 66);
 		--c-grey: rgb(96, 98, 105);
 		--c-bg: rgb(20, 20, 20);
