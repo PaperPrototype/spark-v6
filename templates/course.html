@@ -18,14 +18,8 @@
 </div>
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<div>
-		<h2>Images From Course</h2>
-		<div>
-			TODO
-		</div>
-	</div>
-	<div>
-		<h2>Course Sections</h2>
-		<div class="thin-grey bd" style="padding:1rem; padding-top:0rem;">
+		<div style="padding-top:0rem;">
+			<h1>Sections</h1>
 			{{ if eq .Release.GetNewestVersionLogError.ID 0 }}
 				<h5>Release {{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</h5>
 				<div>
@@ -36,9 +30,9 @@
 				<div>
 					<!-- display sections -->
 					{{ range .Release.GetNewestVersionLogError.GetSectionsLogError }}
-						<h3>
+						<div style="font-size:1.2rem;">
 							{{ .Name }}
-						</h3>
+						</div>
 					{{ end }}
 				</div>
 			{{ end }}
