@@ -18,6 +18,14 @@
 </div>
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<div>
+		<h2>Images From Course</h2>
+		<div>
+			{{ range .Release.GetMediaHighlights }}
+				<div></div>
+			{{ end }}
+		</div>
+	</div>
+	<div>
 		<h2>Course Sections</h2>
 		<div class="thin-grey bd" style="padding:1rem; padding-top:0rem;">
 			{{ if eq .Release.GetNewestVersionLogError.ID 0 }}
