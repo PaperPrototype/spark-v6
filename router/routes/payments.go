@@ -22,10 +22,18 @@ func postBuyRelease(c *gin.Context) {
 	releaseID := c.Params.ByName("releaseID")
 	courseName := c.Params.ByName("course")
 
+	release, err3 := db.GetPublicReleaseWithIDStr(releaseID)
+	if err3 != nil {
+		log.Println("routes/payments ERROR getting release:", err3)
+		msg.SendMessage(c, "Error getting course release")
+		c.Redirect(http.StatusFound, "/"+courseName)
+		return
+	}
+
 	user, err5 := auth.GetLoggedInUser(c)
 	if err5 != nil {
 		msg.SendMessage(c, "You must be logged in to access this page.")
-		c.Redirect(http.StatusFound, "/"+courseName)
+		c.Redirect(http.StatusFound, "/"+courseName+"/"+fmt.Sprint(release.Num))
 		return
 	}
 
@@ -33,15 +41,7 @@ func postBuyRelease(c *gin.Context) {
 	if err != nil {
 		log.Println("routes/payments ERROR getting course:", err)
 		msg.SendMessage(c, "Error getting course")
-		c.Redirect(http.StatusFound, "/"+courseName)
-		return
-	}
-
-	release, err3 := db.GetPublicReleaseWithIDStr(releaseID)
-	if err3 != nil {
-		log.Println("routes/payments ERROR getting release:", err3)
-		msg.SendMessage(c, "Error getting course release")
-		c.Redirect(http.StatusFound, "/"+courseName)
+		c.Redirect(http.StatusFound, "/"+courseName+"/"+fmt.Sprint(release.Num))
 		return
 	}
 
@@ -79,7 +79,7 @@ func postBuyRelease(c *gin.Context) {
 	if err2 != nil {
 		log.Println("routes/payments ERROR creating payment session:", err2)
 		msg.SendMessage(c, "Error creating payment session")
-		c.Redirect(http.StatusFound, "/"+course.Name)
+		c.Redirect(http.StatusFound, "/"+courseName+"/"+fmt.Sprint(release.Num))
 		return
 	}
 
@@ -94,7 +94,7 @@ func postBuyRelease(c *gin.Context) {
 	if err4 != nil {
 		log.Println("routes/payments ERROR creating buyRelease:", err4)
 		msg.SendMessage(c, "Error creating buyRelease")
-		c.Redirect(http.StatusFound, "/"+course.Name)
+		c.Redirect(http.StatusFound, "/"+courseName+"/"+fmt.Sprint(release.Num))
 		return
 	}
 

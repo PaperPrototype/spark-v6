@@ -158,5 +158,54 @@ func postUpdatePost(c *gin.Context) {
 }
 
 func postEditSectionContent(c *gin.Context) {
-	log.Println("editing content")
+	sectionID := c.Params.ByName("sectionID")
+	contentID := c.Params.ByName("contentID")
+
+	contentMarkdown := c.PostForm("content")
+	versionID := c.PostForm("versionID")
+
+	if !session.IsLoggedInValid(c) {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	user, err1 := session.GetLoggedInUser(c)
+	if err1 != nil {
+		log.Println("api ERROR couldn't get logged in user:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	version, err2 := db.GetVersion(versionID)
+	if err2 != nil {
+		log.Println("api ERROR getting version:", err2)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	release, err4 := db.GetRelease(version.ReleaseID)
+	if err4 != nil {
+		log.Println("api ERROR getting release:", err4)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	course, err3 := db.GetCoursewithID(release.CourseID)
+	if err3 != nil {
+		log.Println("api ERROR getting course:", err3)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	if user.ID != course.UserID {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	err := db.UpdateSectionContentAndIncreasePatch(sectionID, contentID, contentMarkdown, versionID)
+	if err != nil {
+		log.Println("api ERROR updating section content for api/postEditSectionContent:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 }

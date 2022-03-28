@@ -27,6 +27,7 @@ document.addEventListener("alpine:init", function(event) {
 		allowNewPost: true,
 		viewingPost: false,
 		editingPost: false,
+		editingContent: false,
 
 		// views
 		views: ['contents', 'chat', 'posts', 'menu'],
@@ -39,6 +40,7 @@ function viewChat() {
 	Alpine.store("courseView").view = 'chat';
 	Alpine.store("courseView").menuAvailable = false;
 	Alpine.store("courseView").menuOpen = false;
+	Alpine.store("courseView").editingContent = false;
 }
 
 // show posts view
@@ -47,6 +49,7 @@ function viewPosts() {
 	Alpine.store("courseView").menuAvailable = false;
 	Alpine.store("courseView").menuOpen = false;
 	Alpine.store("courseView").viewingPost = false;
+	Alpine.store("courseView").editingContent = false;
 }
 
 // show contents/lecture/section view
@@ -54,6 +57,7 @@ function viewContents() {
 	Alpine.store("courseView").view = 'contents';
 	Alpine.store("courseView").menuAvailable = true;
 	Alpine.store("courseView").allowNewPost = true;
+	Alpine.store("courseView").editingContent = false;
 }
 
 // toggle nav menu
@@ -272,6 +276,8 @@ function loadSection(sectionID) {
 		window.scroll(0, 0);
 
 		content.appendChild(markdown);
+
+		Alpine.store("courseView").editingContent = false;
 	})
 	.catch(function(err) {
 		console.error(err);
@@ -329,4 +335,73 @@ function menuFollowScroll() {
 		courseMenu.classList.remove("course-menu-fixed");
 		courseMenu.classList.add("course-menu-normal");
 	}
+}
+
+function loadEditSectionPlaintext() {
+	let currentSectionID = Alpine.store("sections").current;
+
+	fetch("/api/section/"+ currentSectionID+ "/plaintext",{
+		method: "get",
+	})
+	.then(function(resp) {
+		console.log("got response");
+
+		if (!resp.ok) {
+			throw new Error("Response for loadSection was not ok");
+		}
+
+		console.log("response converted to json");
+		return resp.json();
+	})
+	.then(function(sectionJson) {
+		let courseContentEdit = document.getElementById("courseContentEdit");
+		let courseContentEditSaveButton = document.getElementById("courseContentEditSaveButton");
+
+		if (sectionJson.Contents[0] === undefined) {
+			courseContentEdit.value = `This section is empty!`;
+			return
+		}
+
+		courseContentEditSaveButton.setAttribute("contentID",  sectionJson.Contents[0].ID);
+		courseContentEdit.value = sectionJson.Contents[0].Markdown;
+	})
+	.catch(function(err) {
+		SendMessage("Failed to load section plaintext.")
+		console.error(err);
+	});
+}
+
+function saveEditSectionContent() {
+	let courseContentEdit = document.getElementById("courseContentEdit");
+	let courseContentEditSaveButton = document.getElementById("courseContentEditSaveButton");
+	let contentID = courseContentEditSaveButton.getAttribute("contentID")
+	let sectionID = Alpine.store("sections").current;
+
+	let versionID = document.getElementById("versionID").innerText;
+
+	let formData = new FormData();
+	formData.append("content", courseContentEdit.value);
+	formData.append("versionID", versionID);
+
+	fetch("/api/section/"+sectionID+"/content/"+contentID+"/edit", {
+		method: "post",
+		body: formData,
+	})
+	.then(function(resp) {
+		console.log("got response");
+
+		if (!resp.ok) {
+			throw new Error("Response for loadSection was not ok");
+		}
+	})
+	.then(function() {
+		SendMessage("Successfully updated section!");
+
+		loadSection(sectionID);
+	})
+	.catch(function(err) {
+		SendMessage("Error updating section");
+
+		console.error(err);
+	});
 }

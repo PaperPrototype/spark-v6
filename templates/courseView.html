@@ -218,7 +218,15 @@
 
 	<!-- course contents-->
 	<div x-show="$store.courseView.view === 'contents'" id="courseMain">
-		<div class="bg-overlay pad-sides-5" style="padding-top:1rem; padding-bottom:2rem;" id="courseContent">
+		<div class="pad-sides-5 bg-overlay" style="display:flex;">
+			<p x-show="$store.courseView.editingContent === false" @click="$store.courseView.editingContent = ! $store.courseView.editingContent; loadEditSectionPlaintext();" style="margin-left:auto;">edit <i class="fa-solid fa-pen-to-square"></i></p>
+			<p x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = ! $store.courseView.editingContent" style="margin-left:auto;">cancel <i class="fa-solid fa-pen-to-square"></i></p>
+		</div>
+		<div x-show="$store.courseView.editingContent === false" class="bg-overlay pad-sides-5" style="padding-top:1rem; padding-bottom:2rem;" id="courseContent">
+		</div>
+		<div x-cloak x-show="$store.courseView.editingContent === true" class="pad-sides-5 bg-overlay">
+			<textarea id="courseContentEdit" class="bd" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+			<button id="courseContentEditSaveButton" @click="saveEditSectionContent(); $store.courseView.editingContent = ! $store.courseView.editingContent" class="form-btn bd" style="width:100%">Update</button>
 		</div>
 		<div class="bg-overlay pad-sides-5" style="padding-top:2rem; padding-bottom:2rem;">
 			{{ template "courseView_newPost.html" . }}

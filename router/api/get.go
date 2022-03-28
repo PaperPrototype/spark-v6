@@ -35,6 +35,19 @@ func getSection(c *gin.Context) {
 	c.JSON(http.StatusOK, section)
 }
 
+func getSectionPlaintext(c *gin.Context) {
+	sectionID := c.Params.ByName("sectionID")
+	section, err := db.GetSectionPreload(sectionID)
+
+	if err != nil {
+		log.Println("api ERROR getting section for api/getSectionPlaintext:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, section)
+}
+
 func getVersionPosts(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
 

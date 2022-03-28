@@ -79,19 +79,21 @@
 	<h1>Portfolio Time!</h1>
 	{{ if .LoggedIn }}
 		<p>Make a short post to showcase your new skills! You need to post a total of {{ .Version.SectionsCountLogError }} posts to complete this course!</p>
-		<button id="insertImage">Insert Media/Image/Video</button>
-		<textarea id="course_submitNewPostMarkdown" class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem;" 
-		placeholder=
-		"Write about what you made   
-
+		<div>
+			<button class="form-btn" style="width:100%; border-top-right-radius: 0.5rem; border-top-left-radius: 0.5rem;" id="insertImage">Insert Media/Image/Video</button>
+			<textarea id="course_submitNewPostMarkdown" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
+			placeholder=
+			"Write about what you made   
+	
 You can drag and drop screenshots (TODO)   
 
 Youtube videos can be embedded!    
 ![my youtube video](https://www.youtube.com/watch?v=LC5B-vpMci8)" required></textarea>
+		</div>
 		<button @click="course_submitNewPost();" class="form-btn bd" style="width: 100%;">Post</button>
 	{{ else }}
 		<p>You kinda need to login if you want to write a post 😋</p>
-		<textarea disabled class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem;" 
+		<textarea disabled class="bd" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
 			placeholder=
 			"Write about what you made!    
 

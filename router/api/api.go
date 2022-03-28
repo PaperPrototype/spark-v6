@@ -8,6 +8,7 @@ import (
 func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/courses", getCourses)
 	group.GET("/section/:sectionID", getSection)
+	group.GET("/section/:sectionID/plaintext", getSectionPlaintext)
 	group.POST("/section/:sectionID/content/:contentID/edit", postEditSectionContent)
 	group.POST("/version/:versionID/posts/new", courseVersionNewPost)
 	group.GET("/version/:versionID/posts", getVersionPosts)
