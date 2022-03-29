@@ -46,7 +46,7 @@ func courseVersionNewPost(c *gin.Context) {
 	*/
 
 	// check if user has purchased the course
-	if !db.UserHasPurchasedCourseRelease(user.ID, version.ReleaseID) {
+	if !db.UserCanAccessCourseRelease(user.ID, version) {
 		release, err4 := db.GetRelease(version.ReleaseID)
 		if err4 != nil {
 			log.Println("api ERROR getting release:", err4)
@@ -191,7 +191,7 @@ func postEditSectionContent(c *gin.Context) {
 		return
 	}
 
-	course, err3 := db.GetCoursewithID(release.CourseID)
+	course, err3 := db.GetCourseWithIDPreloadUser(release.CourseID)
 	if err3 != nil {
 		log.Println("api ERROR getting course:", err3)
 		c.AbortWithStatus(http.StatusInternalServerError)

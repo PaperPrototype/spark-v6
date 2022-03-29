@@ -26,12 +26,11 @@ async function loadCourses() {
 
 			let card = document.createElement("div");
 			card.classList.add("course-card");
-			card.setAttribute("href", "/"+json[i].Name);
+			card.setAttribute("href", "/"+json[i].User.Username + "/" + json[i].Name);
 
 			card.innerHTML = 
-			`
-			<h2>` + json[i].Title + `</h2>
-			`;
+			`<h2>` + json[i].Title + `</h2>` +
+			`<p>` + `by @` + json[i].User.Username + `</p>`;
 
 			cards.appendChild(card);
 		}

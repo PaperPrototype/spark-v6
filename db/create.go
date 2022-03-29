@@ -47,3 +47,7 @@ func CreatePurchase(purchase *Purchase) error {
 func CreateBuyRelease(buyRelease *BuyRelease) error {
 	return gormDB.Create(buyRelease).Error
 }
+
+func CreateStripeConnection(stripeConnection *StripeConnection) error {
+	return gormDB.Create(stripeConnection).Error
+}

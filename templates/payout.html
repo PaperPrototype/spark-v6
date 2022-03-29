@@ -2,14 +2,20 @@
 <div class="pad-sides-5 pad-top-5rem text-center">
 	<h1>Payouts</h1>
 	<p style="color:var(--c-grey);">Time to get paid</p>
+	<p style="color:var(--c-grey);">We take a 15% cut</p>
 </div>
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
+	<h1>Courses</h1>
 	{{ if .Courses }}
 		{{ range .Courses }}
 			<div class="thin-grey bd" style="padding:1rem; padding-top:0rem;">
-				<h2>{{ .Title }} Purchase's <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h2>
+				<h2><a href="/{{ $.User.Username }}/{{ .Name }}">{{ .Title }} Purchase's</a></h2>
 				<div>
-					<button>Get payout ${{ .GetCurrentTotalCoursePayoutAmountLogError }}</button>
+					<button href="/user/payouts/connect" class="form-btn bd" style="font-weight:600; background-color:var(--c-code); color:white; padding-left: 1rem; padding-right:1rem;">Connect account</button>
+					<p style="color:var(--c-grey);">You will be redirected to stripe</p>
+				</div>
+				<div style="margin-top:2rem;">
+					<button class="form-btn bd" style="font-weight:600; background-color:var(--c-code); color:white; padding-left: 1rem; padding-right:1rem;">Collect pay ${{ .GetCurrentTotalCoursePayoutAmountLogError }}</button>
 				</div>
 				<div>
 					<h3>Purchases</h3>
@@ -19,14 +25,17 @@
 								Amount: ${{ .AmountPaid }}
 							</div>
 							<div>
+								Created At: {{ .CreatedAt }}
+							</div>
+							<div>
 								Payout Amount {{ .CalculatePayout }}
 							</div>
 							<div>
 								Release: {{ .GetReleaseLogError.Num }}
 							</div>
 							<div>
-								User: <a href="/user/{{ .GetUserLogError.Username }}">
-									@{{ .GetUserLogError.Username }}
+								User: <a href="/{{ $.User.Username }}">
+									@/{{ $.User.Username }}
 								</a>
 							</div>
 						</div>

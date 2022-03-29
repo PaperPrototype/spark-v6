@@ -21,9 +21,10 @@ var metaDefault = Meta{
 }
 
 func getCourse(c *gin.Context) {
-	name := c.Params.ByName("course")
+	username := c.Params.ByName("username")
+	courseName := c.Params.ByName("course")
 
-	course, err := db.GetCourse(name)
+	course, err := db.GetUserCoursePreloadUser(username, courseName)
 	if err != nil {
 		log.Println("ERROR getting course:", err)
 		notFound(c)
@@ -172,7 +173,10 @@ func getCourseSettings(c *gin.Context) {
 		return
 	}
 
-	course, err := db.GetCourse(c.Params.ByName("course"))
+	username := c.Params.ByName("username")
+	courseName := c.Params.ByName("course")
+
+	course, err := db.GetUserCoursePreloadUser(username, courseName)
 	if err != nil {
 		log.Println("ERROR getting course:", err)
 		notFound(c)
@@ -215,28 +219,29 @@ func getLost(c *gin.Context) {
 
 func getCourseVersion(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
+	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
 	// TODO check that user owns course release before allowing access
 
-	version, err := db.GetVersion(versionID)
+	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
+	if err1 != nil {
+		log.Println("routes ERROR getting course from db:", err1)
+		notFound(c)
+		return
+	}
+
+	version, err := course.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes ERROR getting version from db:", err)
-		msg.SendMessage(c, "No course version yet!")
+		msg.SendMessage(c, "That course upload may have been deleted!")
 		c.Redirect(http.StatusFound, "/"+courseName)
 		return
 	}
 
 	section, err2 := version.GetFirstSectionPreload()
 	if err2 != nil {
-		msg.SendMessage(c, "Error getting first section.")
-	}
-
-	course, err1 := db.GetCoursewithID(version.CourseID)
-	if err1 != nil {
-		log.Println("routes ERROR getting course from db:", err1)
-		notFound(c)
-		return
+		log.Println("routes/get ERROR getting versions first section in getCourseVersion:", err2)
 	}
 
 	var progress int64
@@ -279,10 +284,11 @@ func getCourseVersion(c *gin.Context) {
 }
 
 func getCourseRelease(c *gin.Context) {
+	username := c.Params.ByName("username")
 	name := c.Params.ByName("course")
 	releaseNum := c.Params.ByName("releaseNum")
 
-	course, err := db.GetCourse(name)
+	course, err := db.GetUserCoursePreloadUser(username, name)
 	if err != nil {
 		log.Println("ERROR getting course:", err)
 		notFound(c)
@@ -343,11 +349,20 @@ func getCourseRelease(c *gin.Context) {
 }
 
 func getCourseVersionSection(c *gin.Context) {
+	courseName := c.Params.ByName("course")
+	username := c.Params.ByName("username")
 	versionID := c.Params.ByName("versionID")
 
 	// TODO check that user owns course release before allowing access
 
-	version, err := db.GetVersion(versionID)
+	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
+	if err1 != nil {
+		log.Println("routes ERROR getting course from db:", err1)
+		notFound(c)
+		return
+	}
+
+	version, err := course.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes ERROR getting version from db:", err)
 		notFound(c)
@@ -360,13 +375,6 @@ func getCourseVersionSection(c *gin.Context) {
 	if err2 != nil {
 		log.Println("routes/get ERROR getting section for getCourseVersionSection:", err2)
 		msg.SendMessage(c, "Error getting first section.")
-	}
-
-	course, err1 := db.GetCoursewithID(version.CourseID)
-	if err1 != nil {
-		log.Println("routes ERROR getting course from db:", err1)
-		notFound(c)
-		return
 	}
 
 	var progress int64
@@ -496,7 +504,7 @@ func getReleaseDelete(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	releaseID := c.Query("releaseID")
 
-	release, err := db.GetAllReleaseWithIDStr(releaseID)
+	release, err := db.GetAllReleaseWithID(releaseID)
 	if err != nil {
 		log.Println("routes/getReleaseDelete ERROR getting release:", err)
 	}

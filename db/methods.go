@@ -48,6 +48,12 @@ func (course *Course) GetAllNewestCourseReleaseNumLogError() uint16 {
 	return release.Num
 }
 
+func (course *Course) GetVersion(versionID interface{}) (*Version, error) {
+	version := Version{}
+	err := gormDB.Model(&Version{}).Where("course_id = ?", course.ID).Where("id = ?", versionID).First(&version).Error
+	return &version, err
+}
+
 func (release *Release) GetVersionsLogError() []Version {
 	versions := []Version{}
 	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Order("num DESC").Find(&versions).Error
@@ -236,4 +242,31 @@ func (course *Course) GetPurchasesLogError() []Purchase {
 	}
 
 	return purchases
+}
+
+func (purchase *Purchase) GetCourseLogError() *Course {
+	course := Course{}
+	err := gormDB.Model(&Course{}).Where("id = ?", purchase.CourseID).First(&course)
+	if err != nil {
+		log.Println("db/methods ERROR gettign course GetCourseLogError:", err)
+	}
+
+	return &course
+}
+
+func (user *User) HasStripeConnection() bool {
+	var count int64 = 0
+	err := gormDB.Model(&StripeConnection{}).Where("user_id = ?", user.ID).Count(&count).Error
+
+	// if err then not valid
+	if err != nil {
+		return false
+	}
+
+	// if nothing exists
+	if count == 0 {
+		return false
+	}
+
+	return true
 }

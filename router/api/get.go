@@ -10,7 +10,7 @@ import (
 )
 
 func getCourses(c *gin.Context) {
-	courses, err := db.GetAllCourses()
+	courses, err := db.GetAllCoursesPreloadUser()
 
 	if err != nil {
 		log.Println("api ERROR getting course for api/getCourses:", err)
@@ -19,7 +19,6 @@ func getCourses(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, courses)
-
 }
 
 func getSection(c *gin.Context) {

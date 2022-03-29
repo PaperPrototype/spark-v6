@@ -9,7 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func mustBeCourseEditor(c *gin.Context) {
+// Un-used middleware to authenticate user
+func ustBeCourseEditor(c *gin.Context) {
 	// must be logged in
 	if !session.IsLoggedInValid(c) {
 		// abort with internal error to hide the fact this course exists
@@ -25,9 +26,8 @@ func mustBeCourseEditor(c *gin.Context) {
 		return
 	}
 
-	// middleware to authenticate user
 	courseID := c.Params.ByName("courseID")
-	course, err := db.GetCourseWithIDStr(courseID)
+	course, err := db.GetCourseWithIDPreloadUser(courseID)
 	if err != nil {
 		log.Println("api ERROR getting course:", err)
 		c.AbortWithStatus(http.StatusInternalServerError)

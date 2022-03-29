@@ -3,14 +3,14 @@
 		<button
 		style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
 		padding-left:2rem; padding-right:2rem;" 
-		href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
+		href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
 		class="form-btn bd">(Free) Open Course</button>
 	{{ else }}
 		{{ if .Purchased }}
 			<button
 			style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
 			padding-left:2rem; padding-right:2rem;"
-			class="form-btn bd" href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">
+			class="form-btn bd" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">
 				(Purchased) Open course
 			</button>
 		{{ else }}
@@ -21,10 +21,10 @@
 					<button
 					style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
 					padding-left:2rem; padding-right:2rem;" 
-					href="/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
+					href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
 					class="form-btn bd">(Author) Open Course</button>
 				{{ else }}
-					<form action="/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
+					<form action="/{{ .Course.User.Username }}/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
 						<button type="submit"
 						style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
 						padding-left:2rem; padding-right:2rem;"

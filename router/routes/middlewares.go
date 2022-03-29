@@ -25,8 +25,8 @@ func mustBeCourseEditor(c *gin.Context) {
 	}
 
 	name := c.Params.ByName("course")
-
-	course, err1 := db.GetCourse(name)
+	username := c.Params.ByName("username")
+	course, err1 := db.GetUserCoursePreloadUser(username, name)
 	if err1 != nil {
 		notFound(c)
 		return
@@ -60,12 +60,21 @@ func mustBeLoggedIn(c *gin.Context) {
 // 				return and pay
 // coninue
 func MustHaveAccessToCourseRelease(c *gin.Context) {
+	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 	versionID := c.Params.ByName("versionID")
 
-	version, err := db.GetVersion(versionID)
+	course, err2 := db.GetUserCoursePreloadUser(username, courseName)
+	if err2 != nil {
+		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting course:", err2)
+		notFound(c)
+		return
+	}
+
+	version, err := course.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting version:", err)
+		msg.SendMessage(c, "That version may have been deleted!")
 		notFound(c)
 		return
 	}
@@ -73,13 +82,6 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 	release, err1 := db.GetRelease(version.ReleaseID)
 	if err1 != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting release:", err1)
-		notFound(c)
-		return
-	}
-
-	course, err2 := db.GetCourse(courseName)
-	if err2 != nil {
-		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting course:", err2)
 		notFound(c)
 		return
 	}
@@ -97,9 +99,9 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 		// if course release not free
 		if release.Price != 0 {
 			// if not payed
-			if !db.UserHasPurchasedCourseRelease(user.ID, release.ID) {
+			if !db.UserCanAccessCourseRelease(user.ID, version) {
 				msg.SendMessage(c, "You kinda have to pay to access that")
-				c.Redirect(http.StatusFound, "/"+course.Name)
+				c.Redirect(http.StatusFound, "/"+username+"/"+course.Name)
 				return
 			}
 		}

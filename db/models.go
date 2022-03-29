@@ -24,6 +24,9 @@ func migrate() {
 		&Purchase{},
 		&BuyRelease{},
 
+		// stripe payouts
+		&StripeConnection{},
+
 		// posts
 		&Post{},
 		&PostToRelease{},
@@ -31,11 +34,11 @@ func migrate() {
 }
 
 type BuyRelease struct {
-	ID           string
-	ReleaseID    uint64
-	UserID       uint64
-	AmountPaying uint16
-	ExpiresAt    time.Time
+	StripeSessionID string `gorm:"primaryKey"`
+	ReleaseID       uint64
+	UserID          uint64
+	AmountPaying    uint16
+	ExpiresAt       time.Time
 }
 
 type Purchase struct {
@@ -61,13 +64,20 @@ type Purchase struct {
 
 type User struct {
 	ID       uint64 `gorm:"primaryKey"`
-	Username string `sql:"UNIQUE"` // unique identifer used in the url
+	Username string `gorm:"unique"` // unique identifer used in the url
 	Name     string // real name
 	Hash     string // password hash
-	Email    string `sql:"UNIQUE"`
+	Email    string `gorm:"unique"`
 	Bio      string
 
-	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Purchases        []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	StripeConnection StripeConnection
+}
+
+// stripe connection
+type StripeConnection struct {
+	StripeAccountID string
+	UserID          uint64 `gorm:"not null,unique"`
 }
 
 type Session struct {
@@ -79,11 +89,14 @@ type Session struct {
 /* COURSE */
 type Course struct {
 	ID       uint64 `gorm:"primaryKey"`
-	Title    string `gorm:"not null"`         // a short title of the course
-	Name     string `gorm:"UNIQUE; NOT NULL"` // the courses unique url name (eg. spark.com/minecraftcourse)
+	Title    string `gorm:"not null"` // a short title of the course
+	Name     string `gorm:"not null"` // the courses unique url name (eg. spark.com/username/minecraftcourse)
 	Subtitle string
 
 	UserID uint64 `gorm:"not null"`
+
+	// ORM preloadable property
+	User User
 
 	Releases []Release `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Versions []Version `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
@@ -203,7 +216,8 @@ type PostToRelease struct {
 	SectionID uint64
 }
 
-// allow for "thread-like" conversations to continue from messages
+// maybe?
+// allow for "thread-like" conversations to continue from messages?
 type Thread struct {
 	// the new channel ID
 	ChannelID uint64 `gorm:"not null"`

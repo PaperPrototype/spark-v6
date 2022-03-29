@@ -1,6 +1,6 @@
 {{ template "_header.html" . }}
 
-<div id="courseURL" hidden>/{{ .Course.Name }}/view/{{ .Version.ID }}</div>
+<div id="courseURL" hidden>/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Version.ID }}</div>
 <div id="courseName" hidden>{{ .Course.Name }}</div>
 <div id="versionID" hidden>{{ .Version.ID }}</div>
 <div id="sectionID" hidden>{{ .Section.ID }}</div>
@@ -109,7 +109,7 @@
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
 	{{ if eq .Course.UserID .User.ID }}
-		<a href="/{{ .Course.Name }}/settings">Settings</a>
+		<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings">Settings</a>
 	{{ end }}
 	{{ if .LoggedIn }}
 		<p>{{ .Progress }}% done</p>
@@ -121,7 +121,7 @@
 		</p>
 	{{ end }}
 	<p>
-		<a href="/{{ .Course.Name }}">landing page</a>
+		<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}">landing page</a>
 	</p>
 </div>
 <div x-data>

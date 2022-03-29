@@ -7,9 +7,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CourseNameAvailable(name string) (bool, error) {
+func UserCourseNameAvailable(username string, name string) (bool, error) {
+	user := User{}
+	err1 := gormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
+	if err1 != nil {
+		return false, err1
+	}
+
 	var count int64 = 0
-	err := gormDB.Model(&Course{}).Where("name = ?", name).Count(&count).Error
+	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", name).Count(&count).Error
 	// if err then taken
 	if err != nil {
 		return false, err
@@ -23,9 +29,15 @@ func CourseNameAvailable(name string) (bool, error) {
 	return true, nil
 }
 
-func CourseNameAvailableNotSelf(name string, courseID string) (bool, error) {
+func UserCourseNameAvailableNotSelf(username string, name string, courseID interface{}) (bool, error) {
+	user := User{}
+	err1 := gormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
+	if err1 != nil {
+		return false, err1
+	}
+
 	var count int64 = 0
-	err := gormDB.Model(&Course{}).Where("name = ?", name).Where("id != ?", courseID).Count(&count).Error
+	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", name).Where("id != ?", courseID).Count(&count).Error
 
 	log.Println("checking if course name available not self.")
 
@@ -109,9 +121,21 @@ func TryUserPassword(username string, password string) (*User, bool) {
 	return &user, true
 }
 
-func UserHasPurchasedCourseRelease(userID uint64, releaseID uint64) bool {
+// check if the user is the owner or if the user has purchased the course
+func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
+	course := Course{}
+	err1 := gormDB.Model(&Course{}).Where("id = ?", version.CourseID).First(&course).Error
+	if err1 != nil {
+		return false
+	}
+
+	// if they are the owner of the course
+	if userID == course.UserID {
+		return true
+	}
+
 	var count int64 = 0
-	err := gormDB.Model(&Purchase{}).Where("user_id = ?", userID).Where("release_id = ?", releaseID).Count(&count).Error
+	err := gormDB.Model(&Purchase{}).Where("user_id = ?", userID).Where("release_id = ?", version.ReleaseID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {

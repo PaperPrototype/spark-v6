@@ -5,17 +5,17 @@
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1>{{ .Course.Title }} Setting's</h1>
 	<p>
-		<a href="/{{ .Course.Name }}">To landing page</a>
+		<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}">To landing page</a>
 	</p>
 	{{ if ne .Course.GetNewestPublicCourseReleaseLogError.ID 0 }}
 		<p>
-			<a href="/{{ .Course.Name }}/view/{{ .Course.GetNewestPublicCourseReleaseLogError.GetNewestVersionLogError.ID }}">View newest public version {{ .Course.GetNewestPublicCourseReleaseLogError.Num }}.{{ .Course.GetNewestPublicCourseReleaseLogError.GetNewestVersionNumLogError }}</a>
+			<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Course.GetNewestPublicCourseReleaseLogError.GetNewestVersionLogError.ID }}">View newest public version {{ .Course.GetNewestPublicCourseReleaseLogError.Num }}.{{ .Course.GetNewestPublicCourseReleaseLogError.GetNewestVersionNumLogError }}</a>
 		</p>
 	{{ end }}
 </div>
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<h2>Display</h2>
-	<form action="/{{ .Course.Name }}/settings/display" method="post">
+	<form action="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings/display" method="post">
 		<input hidden="{{ .Course.ID }}" name="courseID" value="{{ .Course.ID }}">
 		<label>Title</label>
 		<div style="margin-bottom: 2rem;">
@@ -43,6 +43,11 @@
 		</div>
 	</form>
 </div>
+<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
+	<h2>Payouts</h2>
+	<p>Total payout amount ${{ .Course.GetCurrentTotalCoursePayoutAmountLogError }} (USD)</p>
+	<a href="/user/payouts">Go to payouts</a>
+</div>
 <div x-data="{ open: false }" class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
 	{{ if .Releases }}
 		<h2 x-cloak @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h2>
@@ -54,12 +59,12 @@
 							<h4 style="margin-top: 0.5rem; margin-right: 0.5rem;">
 								Release {{ .Num }}.{{ .GetNewestVersionNumLogError }}.x
 							</h4>
-							<form action="/{{ $.Course.Name }}/settings/release/delete" method="get">
+							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/delete" method="get">
 								<input hidden name="releaseID" value="{{ .ID }}">
 								<button type="submit" class="form-btn">Delete</button>
 							</form>
 						</div>
-						<form action="/{{ $.Course.Name }}/settings/release/edit" method="post">
+						<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/edit" method="post">
 							<input hidden name="releaseID" value="{{ .ID }}">
 							<label>Price USD</label>
 							<div style="margin-bottom: 1rem;">
@@ -87,7 +92,7 @@
 								<h5>New Upload</h5>
 							</div>
 							<!-- TODO handle zip files or git downloads and specific git branches -->
-							<form action="/{{ $.Course.Name }}/settings/version/new" method="post" enctype="multipart/form-data">
+							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/new" method="post" enctype="multipart/form-data">
 								<input hidden name="releaseID" value="{{ .ID }}">
 								<div>
 									<input name="zipFile" accept=".zip" type="file">
@@ -111,11 +116,11 @@
 											</form>
 										</div>
 										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
+											<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
 										</div>
 									{{ else }}
 										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<a href="/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
+											<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
 										</div>
 									{{ end }}
 								</div>
@@ -141,14 +146,14 @@
 	{{ end }}
 	<div class="thin-grey" style="margin-bottom: 2rem; margin-top: 1rem; padding: 1rem; border-radius: 0.5rem;">
 		<h3 style="margin-top: 0.5rem;">New Release</h3>
-		<form action="/{{ .Course.Name }}/settings/release/new" method="post">
+		<form action="/{{ $.Course.User.Username }}/{{ .Course.Name }}/settings/release/new" method="post">
 			<label>Price USD</label>
 			<div style="margin-bottom: 1rem;">
 				<input max="10" step="1" name="price" class="form-input" type="number" value="0">
 			</div>
 			<label>Markdown Description</label>
 			<div style="margin-bottom: 1rem;">
-				<textarea name="desc" placeholder="Description" class="form-input" style="min-width: 100%; max-width: 100%; margin-bottom: 0.5rem;"></textarea>
+				<textarea name="desc" placeholder="Description" class="form-input" style="min-width: 100%; max-width: 100%; margin-bottom: 0.5rem; height:10rem;"></textarea>
 			</div>
 			<button class="form-btn" type="submit" style="width: 100%;">New Release</button>
 		</form>
