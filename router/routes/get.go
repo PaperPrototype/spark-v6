@@ -487,15 +487,27 @@ func getUserPayouts(c *gin.Context) {
 		log.Println("routes ERROR getting user courses from getUserPayouts:", err1)
 	}
 
+	var totalPayout float64 = 0
+	for _, course := range courses {
+		totalPayout += course.GetCurrentTotalCoursePayoutAmountLogError()
+	}
+
+	stripeConnection, err2 := db.GetStripeConnection(user.ID)
+	if err2 != nil {
+		log.Println("routes/get ERROR getting stripe connection for getUserPayouts:", err2)
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"payout.html",
 		gin.H{
-			"Courses":  courses,
-			"Messages": msg.GetMessages(c),
-			"User":     user,
-			"LoggedIn": session.IsLoggedInValid(c),
-			"Meta":     metaDefault,
+			"TotalPayout":      totalPayout,
+			"StripeConnection": stripeConnection,
+			"Courses":          courses,
+			"Messages":         msg.GetMessages(c),
+			"User":             user,
+			"LoggedIn":         session.IsLoggedInValid(c),
+			"Meta":             metaDefault,
 		},
 	)
 }

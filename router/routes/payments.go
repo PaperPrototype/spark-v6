@@ -16,6 +16,7 @@ import (
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
 	"github.com/stripe/stripe-go/v72/checkout/session"
+	"github.com/stripe/stripe-go/v72/transfer"
 )
 
 func postBuyRelease(c *gin.Context) {
@@ -110,7 +111,7 @@ func getBuySuccess(c *gin.Context) {
 	buyReleaseID := c.Query("session_id")
 
 	if buyReleaseID == "" {
-		log.Println("db MALICIOUS behavviour trying to success a order that was never started or expired?")
+		log.Println("db MALICIOUS behaviour trying to success a order that was never started or expired?")
 		msg.SendMessage(c, "An error occurred.")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
 		return
@@ -336,10 +337,65 @@ func getPayoutsConnectFinished(c *gin.Context) {
 	// TODO test if user successfully connected in stripe (check the state of the details_submitted parameter)
 	// see https://stripe.com/docs/connect/express-accounts#return_url
 	// code example https://stripe.com/docs/api/accounts/retrieve
-	log.Println("/user/payouts/connect/return")
+
+	user, err := auth.GetLoggedInUser(c)
+	if err != nil {
+		log.Println("routes/payments ERROR getting user in getPayoutsConnectFinished:", err)
+		msg.SendMessage(c, "You must be logged in!")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	stripeConnection, err1 := db.GetStripeConnection(user.ID)
+	if err1 != nil {
+		log.Println("routes/payments ERROR getting stripeConnection in getPayoutsConnectFinished:", err1)
+		msg.SendMessage(c, "Error getting stripe connection")
+		c.Redirect(http.StatusFound, "/user/payouts")
+		return
+	}
+
+	// if all details were submitted
+	submitted, err2 := stripeConnection.DetailsSubmitted()
+	if err2 != nil {
+		log.Println("routes/payments ERROR getting details submitted:", err2)
+		msg.SendMessage(c, "Error getting account details.")
+	}
+
+	if !submitted {
+		msg.SendMessage(c, "Finish filling out account details by clicking 'Connect account' again. Make sure to use the same email.")
+		c.Redirect(http.StatusFound, "/user/payouts")
+		return
+	}
 
 	// user is successfully connected
 	msg.SendMessage(c, "Successfully connected account!")
 	// user is successfully connected
 	c.Redirect(http.StatusFound, "/user/payouts")
+}
+
+func getPayout(c *gin.Context) {
+	user, err := auth.GetLoggedInUser(c)
+	if err != nil {
+		log.Println("routes/payments ERROR getting user in getPayoutsConnectFinished:", err)
+		msg.SendMessage(c, "You must be logged in!")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	stripeConnection, err1 := db.GetStripeConnection(user.ID)
+	if err1 != nil {
+		log.Println("routes/payments ERROR getting user in getPayoutsConnectFinished:", err1)
+		msg.SendMessage(c, "You must be logged in!")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	// See https://stripe.com/docs/connect/add-and-pay-out-guide#with-code-pay-out-to-user
+	// TODO test if stripe connection can handle money transfers to it
+	params := &stripe.TransferParams{
+		Amount:      stripe.Int64(1000),
+		Currency:    stripe.String(string(stripe.CurrencyUSD)),
+		Destination: stripe.String(stripeConnection.StripeAccountID),
+	}
+	transferResult, err2 := transfer.New(params)
 }

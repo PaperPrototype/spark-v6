@@ -195,28 +195,8 @@ func GetPurchases(courseID uint64) ([]Purchase, error) {
 	return purchases, err
 }
 
-func GetCurrentTotalCoursePayoutAmount(courseID uint64) (float64, error) {
-	releaseIDs := gormDB.Model(&Release{}).Select("id").Where("course_id = ?", courseID)
-
-	purchases := []Purchase{}
-	err := gormDB.Model(&Purchase{}).Where("release_id IN (?)", releaseIDs).Where("payed_out = ?", false).Find(&purchases).Error
-
-	var total float64 = 0
-	for _, purchase := range purchases {
-		total += float64(purchase.CalculatePayout())
-	}
-
-	return total, err
-}
-
 func GetUserCourses(userID uint64) ([]Course, error) {
 	courses := []Course{}
 	err := gormDB.Model(&Course{}).Where("user_id = ?", userID).Find(&courses).Error
 	return courses, err
-}
-
-func GetStripeConnection(userID uint64) (*StripeConnection, error) {
-	stripeConnection := StripeConnection{}
-	err := gormDB.Model(&StripeConnection{}).Where("user_id = ?", userID).First(&stripeConnection).Error
-	return &stripeConnection, err
 }

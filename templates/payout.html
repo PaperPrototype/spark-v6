@@ -4,6 +4,23 @@
 	<p style="color:var(--c-grey);">Time to get paid</p>
 	<p style="color:var(--c-grey);">We take a 15% cut</p>
 </div>
+<div class="pad-sides-5 pad-top-2rem pad-bot-2rem text-center bg-overlay">
+	{{ if .StripeConnection.DetailsSubmittedLogError }}
+		<div style="margin-top:2rem;">
+			<button href="/user/payouts/payout" class="form-btn bd" style="font-weight:600; background-color:var(--c-code); color:white; padding-left: 1rem; padding-right:1rem;">
+				Collect all pay ${{ .TotalPayout }} USD
+			</button>
+			<p style="color:var(--c-grey);">You will be redirected to stripe.</p>
+		</div>
+	{{ else }} <!-- they need to conenct their account or finish filling out details -->
+		<div>
+			<button href="/user/payouts/connect" class="form-btn bd" style="font-weight:600; background-color:var(--c-code); color:white; padding-left: 1rem; padding-right:1rem;">
+				Connect account
+			</button>
+			<p style="color:var(--c-grey);">You will be redirected to stripe for a secure experience.</p>
+		</div>
+	{{ end }}
+</div>
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<h1>Courses</h1>
 	{{ if .Courses }}
@@ -11,13 +28,7 @@
 			<div class="thin-grey bd" style="padding:1rem; padding-top:0rem;">
 				<h2><a href="/{{ $.User.Username }}/{{ .Name }}">{{ .Title }} Purchase's</a></h2>
 				<div>
-					<button href="/user/payouts/connect" class="form-btn bd" style="font-weight:600; background-color:var(--c-code); color:white; padding-left: 1rem; padding-right:1rem;">Connect account</button>
-					<p style="color:var(--c-grey);">You will be redirected to stripe</p>
-				</div>
-				<div style="margin-top:2rem;">
-					<button class="form-btn bd" style="font-weight:600; background-color:var(--c-code); color:white; padding-left: 1rem; padding-right:1rem;">Collect pay ${{ .GetCurrentTotalCoursePayoutAmountLogError }}</button>
-				</div>
-				<div>
+					<p>Payout amount ${{ .GetCurrentTotalCoursePayoutAmountLogError }} USD</p>
 					<h3>Purchases</h3>
 					{{ range .GetPurchasesLogError }}
 						<div class="thin-grey bd" style="padding:1rem;">
