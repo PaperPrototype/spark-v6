@@ -22,7 +22,7 @@ go to stripes docs and you can use the publicly available test key. Or if you ar
 
 ## running
 Use `go run .` once you have the config files created and set.
-
+You may need to install dependancies using `go mod tidy`.
 
 TODO
 - generate coupon for 5% off on 404 not found page
