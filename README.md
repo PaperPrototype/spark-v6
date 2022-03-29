@@ -20,7 +20,7 @@ if you are using postgres you can create a db using the `createdb` command. TO f
 ## stripeconfig
 go to stripes docs and you can use the publicly available test key. Or if you are logged in, use the test key provided and paste it into a `stripeconfig` file
 
-## running
+# running
 Use `go run .` once you have the config files created and set.
 You may need to install dependancies using `go mod tidy`.
 
