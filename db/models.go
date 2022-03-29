@@ -81,7 +81,7 @@ type StripeConnection struct {
 }
 
 type Session struct {
-	TokenUUID string `sql:"UNIQUE" gorm:"primaryKey"` // this is the session id
+	TokenUUID string `gorm:"primaryKey, unique"` // this is the session id
 	DeleteAt  time.Time
 	UserID    uint64 `gorm:"not null"`
 }
