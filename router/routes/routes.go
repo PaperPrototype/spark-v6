@@ -61,7 +61,7 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/user/payouts/connect", mustBeLoggedIn, getPayoutsConnect) // connect account to stripe so we can pay out to teachers
 	router.GET("/user/payouts/refresh", mustBeLoggedIn, getPayoutsRefresh)
 	router.GET("/user/payouts/connect/return", mustBeLoggedIn, getPayoutsConnectFinished)
-	router.GET("/user/payouts/payout", mustBeLoggedIn, getPayout)
+	router.GET("/user/payouts/payout", mustBeLoggedIn, getPayoutsPayout)
 
 	router.GET("/courses", getCourses) // search courses with possible url query
 	/*
