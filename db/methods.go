@@ -138,8 +138,7 @@ func (course *Course) GetNewestPublicCourseReleaseLogError() *Release {
 }
 
 // get course that the user has posted a post to
-// VERY EXPENSIVE QUERY
-func (user *User) GetCourses() ([]Course, error) {
+func (user *User) GetPurchasedCourses() ([]Course, error) {
 	releaseIDs := gormDB.Model(&Purchase{}).Select("release_id").Where("user_id = ?", user.ID)
 
 	courseIDs := gormDB.Model(&Release{}).Select("course_id").Where("id IN (?)", releaseIDs)

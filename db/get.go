@@ -5,6 +5,12 @@ import (
 	"main/markdown"
 )
 
+func GetAuthorsCourses(authorUserID uint64) ([]Course, error) {
+	courses := []Course{}
+	err := gormDB.Model(&Course{}).Where("user_id = ?", authorUserID).Find(&courses).Error
+	return courses, err
+}
+
 func GetUserFromSession(token string) (*User, error) {
 	session, err := GetSession(token)
 	if err != nil {

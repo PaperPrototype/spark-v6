@@ -433,7 +433,7 @@ func getUser(c *gin.Context) {
 		return
 	}
 
-	courses, err1 := profileUser.GetCourses()
+	courses, err1 := profileUser.GetPurchasedCourses()
 	if err1 != nil {
 		log.Println("routes ERROR getting courses for user:", err1)
 	}

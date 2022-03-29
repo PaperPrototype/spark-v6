@@ -10,10 +10,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go/transfer"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
+	"github.com/stripe/stripe-go/v72/transfer"
 )
 
 func getUserPayouts(c *gin.Context) {
@@ -261,6 +261,10 @@ func getPayoutsPayout(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
+
+	courses, err2 := db.GetAuthorsCourses(user.ID)
+
+	var totalPayoutAmount float64 = 
 
 	// See https://stripe.com/docs/connect/add-and-pay-out-guide#with-code-pay-out-to-user
 	// TODO test if stripe connection can handle money transfers to it
