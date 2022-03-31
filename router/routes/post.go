@@ -38,6 +38,12 @@ func postNew(c *gin.Context) {
 		return
 	}
 
+	if !user.Verified {
+		msg.SendMessage(c, "You must verify your account before you can upload courses.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
 	// raw name variable
 	// lowercase all unique course names
 	uncleanName := c.PostForm("name")
