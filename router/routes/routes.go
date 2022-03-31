@@ -9,13 +9,6 @@ func AddRoutes(router *gin.Engine) {
 	// landing page
 	router.GET("/", getLanding) // index
 
-	// user page
-	router.GET("/:username", getUser)         // get user profile
-	router.GET("/:username/media/:mediaName") // where the user can upload and access images or gifs
-	/*
-		user setting on a cog wheel button, but don't offer settings menu as a url route
-	*/
-
 	// course landing pages
 	router.GET("/:username/:course", getCourse)                    // course page, gives newest release
 	router.GET("/:username/:course/:releaseNum", getCourseRelease) // course page, gives specific release
@@ -47,21 +40,29 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/media/:versionID/name/:mediaName", getNameMedia)
 	router.GET("/media/:versionID/id/:mediaID")
 
+	// user's public profile page
+	router.GET("/:username", getUser)         // get user profile
+	router.GET("/:username/media")            // where the user can upload and access images or gifs
+	router.GET("/:username/media/:mediaName") // where the user can upload and access images or gifs
+	/*
+		user setting on a cog wheel button, but don't offer settings menu as a url route
+	*/
+
 	// auth
 	router.GET("/signup", getSignup) // make a new account
 	router.POST("/signup", postSignup)
-	router.GET("/login", getLogin)   // log into existing account
-	router.POST("/login", postLogin) // signinto account
-	router.GET("/login/verify")      // verify account
-	router.GET("/login/forgot")      // forgot password
-	router.GET("/logout", getLogout) // logout
+	router.GET("/login", getLogin)                     // log into existing account
+	router.POST("/login", postLogin)                   // signinto account
+	router.GET("/login/verify/:verifyUUID", getVerify) // verify account
+	router.GET("/login/verify/new", getNewVerify)      // verify account
+	router.GET("/login/forgot")                        // forgot password
+	router.GET("/logout", getLogout)                   // logout
 
-	// Payouts (for logged in users only)
-	router.GET("/user/payouts", mustBeLoggedIn, getUserPayouts)            // get user payouts
-	router.GET("/user/payouts/connect", mustBeLoggedIn, getPayoutsConnect) // connect account to stripe so we can pay out to teachers
-	router.GET("/user/payouts/refresh", mustBeLoggedIn, getPayoutsRefresh)
-	router.GET("/user/payouts/connect/return", mustBeLoggedIn, getPayoutsConnectFinished)
-	router.GET("/user/payouts/payout", mustBeLoggedIn, getPayoutsPayout)
+	// for logged in users only
+	router.GET("/settings", mustBeLoggedIn, getSettings)                      // users landing page
+	router.GET("/settings/stripe/connect", mustBeLoggedIn, getPayoutsConnect) // connect account to stripe so we can pay out to teachers
+	router.GET("/settings/stripe/connect/refresh", mustBeLoggedIn, getPayoutsRefresh)
+	router.GET("/settings/stripe/connect/return", mustBeLoggedIn, getPayoutsConnectFinished)
 
 	router.GET("/courses", getCourses) // search courses with possible url query
 	/*

@@ -20,9 +20,22 @@ func (stripeConnection *StripeConnection) DetailsSubmitted() (bool, error) {
 func (stripeConnection *StripeConnection) DetailsSubmittedLogError() bool {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
 	if err != nil {
-		log.Println("db/methods_stripePayouts ERROR getting DetailsSubmitted param:", err)
+		log.Println("db/methods_stripe_payments ERROR getting DetailsSubmitted param:", err)
 	}
 	return connectedAccount.DetailsSubmitted
+}
+
+func (stripeConnection *StripeConnection) ChargesEnabled() (bool, error) {
+	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
+	return connectedAccount.ChargesEnabled, err
+}
+
+func (stripeConnection *StripeConnection) ChargesEnabledLogError() bool {
+	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
+	if err != nil {
+		log.Println("db/methods_stripe_payments ERROR getting ChargesEnabled param:", err)
+	}
+	return connectedAccount.ChargesEnabled
 }
 
 // get the total amount we owe teacher from a course

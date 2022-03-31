@@ -72,7 +72,7 @@ func GetLoggedInUser(c *gin.Context) (*db.User, error) {
 	return user, err
 }
 
-func GetLoggedInUserHideError(c *gin.Context) *db.User {
+func GetLoggedInUserLogError(c *gin.Context) *db.User {
 	// delete expired sessions
 	err := db.DeleteExpiredSessions()
 	if err != nil {

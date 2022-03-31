@@ -201,3 +201,7 @@ func (purchase *Purchase) GetCourseLogError() *Course {
 
 	return &course
 }
+
+func (user *User) SetVerifiedTrue() error {
+	return gormDB.Model(&User{}).Where("id = ?", user.ID).Update("verified", true).Error
+}

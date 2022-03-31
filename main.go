@@ -1,22 +1,22 @@
 package main
 
 import (
-	"main/conn"
-	"main/db"
-	"main/payments"
-	"main/router"
+	"main/mailer"
 )
 
 func main() {
-	payments.Setup()
+	// mailer.Setup()
+	mailer.Setup()
 
-	router.Setup()
+	// payments.Setup()
 
-	db.Setup()
+	// router.Setup()
 
-	conn.Setup()
+	// db.Setup()
 
-	router.Run()
+	// conn.Setup()
 
-	conn.Close()
+	// router.Run()
+
+	// conn.Close()
 }

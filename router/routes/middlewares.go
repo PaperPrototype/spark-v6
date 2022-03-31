@@ -86,7 +86,7 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 		return
 	}
 
-	user := session.GetLoggedInUserHideError(c)
+	user := session.GetLoggedInUserLogError(c)
 
 	// if not owner of course
 	if course.UserID != user.ID {

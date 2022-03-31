@@ -3,6 +3,7 @@ config vars are stored in single key files. These files must be in the repos roo
 ```
 dbconfig
 stripeconfig
+sendgridconfig
 ```
 
 ## dbconfig
@@ -19,6 +20,10 @@ if you are using postgres you can create a db using the `createdb` command. TO f
 
 ## stripeconfig
 go to stripes docs and you can use the publicly available test key. Or if you are logged in, use the test key provided and paste it into a `stripeconfig` file
+
+
+## sendgridconfig
+go to app.sendgrid.com docs and you can create a free account. Or if you are logged in, use the test key provided and paste it into a `sendgridconfig` file
 
 # Running
 Use `go run .` once you have the config files created and set.

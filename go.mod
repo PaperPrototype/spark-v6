@@ -10,6 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/mholt/archiver v3.1.1+incompatible
+	github.com/sendgrid/sendgrid-go v3.11.1+incompatible
 	github.com/stripe/stripe-go/v72 v72.96.0
 	github.com/yuin/goldmark v1.4.11
 	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594
@@ -49,10 +50,12 @@ require (
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/sendgrid/rest v2.6.9+incompatible // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/sys v0.0.0-20220325203850-36772127a21f // indirect
+	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
+	golang.org/x/sys v0.0.0-20220330033206-e17cdc41300f // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

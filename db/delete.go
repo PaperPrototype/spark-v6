@@ -94,3 +94,7 @@ func DeleteRelease(releaseID string) error {
 func DeleteReleaseVersions(releaseID string) error {
 	return gormDB.Model(&Version{}).Where("release_id = ?", releaseID).Delete(&Version{}).Error
 }
+
+func DeleteExpiredVerify() error {
+	return gormDB.Delete(&Verify{}, "expires_at < ?", time.Now()).Error
+}

@@ -22,3 +22,10 @@ body, html {
 [x-cloak] {
 	display: none !important;
 }
+
+label {
+	display: block;
+	margin-left: 0.1rem;
+	margin-bottom: 0.2rem;
+	margin-top: 1rem;
+}

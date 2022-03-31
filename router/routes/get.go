@@ -8,6 +8,7 @@ import (
 
 	"main/conn"
 	"main/db"
+	"main/mailer"
 	"main/markdown"
 	"main/msg"
 	"main/router/session"
@@ -42,7 +43,7 @@ func getCourse(c *gin.Context) {
 			gin.H{
 				"Course":   course,
 				"Messages": msg.GetMessages(c),
-				"User":     session.GetLoggedInUserHideError(c),
+				"User":     session.GetLoggedInUserLogError(c),
 				"LoggedIn": session.IsLoggedInValid(c),
 				"Meta":     metaDefault,
 			},
@@ -77,7 +78,7 @@ func getCourse(c *gin.Context) {
 			"Course":    course,
 			"Release":   release,
 			"Messages":  msg.GetMessages(c),
-			"User":      session.GetLoggedInUserHideError(c),
+			"User":      session.GetLoggedInUserLogError(c),
 			"LoggedIn":  session.IsLoggedInValid(c),
 			"Meta":      metaDefault,
 		},
@@ -93,7 +94,7 @@ func getCourses(c *gin.Context) {
 		"courses.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Search":   search,
 			"Sort":     sort,
@@ -108,7 +109,7 @@ func getLanding(c *gin.Context) {
 		"landing.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
@@ -128,7 +129,7 @@ func getLogin(c *gin.Context) {
 		gin.H{
 			"RedirectURL": redirectURL,
 			"Messages":    msg.GetMessages(c),
-			"User":        session.GetLoggedInUserHideError(c),
+			"User":        session.GetLoggedInUserLogError(c),
 			"LoggedIn":    session.IsLoggedInValid(c),
 			"Meta":        metaDefault,
 		},
@@ -141,7 +142,7 @@ func getNew(c *gin.Context) {
 		"new.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
@@ -154,7 +155,7 @@ func getSignup(c *gin.Context) {
 		"signup.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
@@ -210,7 +211,7 @@ func getLost(c *gin.Context) {
 		"notFound.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
@@ -275,7 +276,7 @@ func getCourseVersion(c *gin.Context) {
 			"Version":  version,
 			"Section":  section,
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 			"Progress": progress,
@@ -306,7 +307,7 @@ func getCourseRelease(c *gin.Context) {
 			gin.H{
 				"Course":   course,
 				"Messages": msg.GetMessages(c),
-				"User":     session.GetLoggedInUserHideError(c),
+				"User":     session.GetLoggedInUserLogError(c),
 				"LoggedIn": session.IsLoggedInValid(c),
 				"Meta":     metaDefault,
 			},
@@ -341,7 +342,7 @@ func getCourseRelease(c *gin.Context) {
 			"Course":    course,
 			"Release":   release,
 			"Messages":  msg.GetMessages(c),
-			"User":      session.GetLoggedInUserHideError(c),
+			"User":      session.GetLoggedInUserLogError(c),
 			"LoggedIn":  session.IsLoggedInValid(c),
 			"Meta":      metaDefault,
 		},
@@ -408,7 +409,7 @@ func getCourseVersionSection(c *gin.Context) {
 			"Version":  version,
 			"Section":  section,
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 			"Progress": progress,
@@ -443,7 +444,7 @@ func getUser(c *gin.Context) {
 		"user.html",
 		gin.H{
 			"Messages":       msg.GetMessages(c),
-			"User":           session.GetLoggedInUserHideError(c),
+			"User":           session.GetLoggedInUserLogError(c),
 			"ProfileUser":    profileUser,
 			"ProfileCourses": courses,
 			"LoggedIn":       session.IsLoggedInValid(c),
@@ -482,7 +483,7 @@ func getReleaseDelete(c *gin.Context) {
 		"confirmDelete.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserHideError(c),
+			"User":     session.GetLoggedInUserLogError(c),
 			"LoggedIn": session.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 
@@ -491,6 +492,81 @@ func getReleaseDelete(c *gin.Context) {
 			"Message": "Confirm you want to delete release " + fmt.Sprint(release.Num),
 			"Data":    release.ID,
 			"Further": "This will also delete all versions and user content in this release!",
+		},
+	)
+}
+
+func getVerify(c *gin.Context) {
+	verifyUUID := c.Params.ByName("verifyUUID")
+	verify, err := db.GetVerify(verifyUUID)
+	if err != nil {
+		log.Println("routes/get ERROR getting verify in getVerify:", err)
+		msg.SendMessage(c, "Error or link has expired.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	user, err1 := db.GetUser(verify.UserID)
+	if err1 != nil {
+		log.Println("routes/get ERROR getting user in getVerify:", err)
+		msg.SendMessage(c, "Error user.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	message := "Failed to verify user"
+	err2 := user.SetVerifiedTrue()
+	if err2 != nil {
+		log.Println("routes/get ERROR setting verified to true in getVerify:", err2)
+	} else {
+		message = "You've been verified!"
+	}
+
+	c.HTML(
+		http.StatusOK,
+		"verify.html",
+		gin.H{
+			"Message":  message,
+			"Messages": msg.GetMessages(c),
+			"User":     session.GetLoggedInUserLogError(c),
+			"LoggedIn": session.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
+}
+
+func getNewVerify(c *gin.Context) {
+	user, err := session.GetLoggedInUser(c)
+	if err != nil {
+		log.Println("routes/get ERROR getting logged in user in getNewVerify:", err)
+		msg.SendMessage(c, "Error getting logged in user")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	err1 := mailer.SendVerification(user.ID)
+	if err1 != nil {
+		log.Println("routes/get ERROR sending verification email in getNewVerify:", err1)
+		msg.SendMessage(c, "Error sending verification email")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	msg.SendMessage(c, "Sent verification link to your email. Make sure to check your spam folder.")
+	c.Redirect(http.StatusFound, "/settings")
+}
+
+func getSettings(c *gin.Context) {
+	user := session.GetLoggedInUserLogError(c)
+
+	c.HTML(
+		http.StatusOK,
+		"settings.html",
+		gin.H{
+			"User":     user,
+			"Messages": msg.GetMessages(c),
+			"LoggedIn": session.IsLoggedInValid(c),
+			"Meta":     metaDefault,
 		},
 	)
 }

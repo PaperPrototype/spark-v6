@@ -13,7 +13,6 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
-	"github.com/stripe/stripe-go/v72/transfer"
 )
 
 func getUserPayouts(c *gin.Context) {
@@ -115,7 +114,7 @@ func getPayoutsConnect(c *gin.Context) {
 			- The account has been rejected.
 			The refresh_url should call Account Links again on your server with the same parameters and redirect the user to the Connect Onboarding flow to create a seamless experience.
 		*/
-		RefreshURL: stripe.String(helpers.GetHost() + "/user/payouts/refresh"),
+		RefreshURL: stripe.String(helpers.GetHost() + "/user/payouts/connect/refresh"),
 
 		/*
 			Stripe issues a redirect to this URL when the user completes the Connect
@@ -174,7 +173,7 @@ func getPayoutsRefresh(c *gin.Context) {
 			- The account has been rejected.
 			The refresh_url should call Account Links again on your server with the same parameters and redirect the user to the Connect Onboarding flow to create a seamless experience.
 		*/
-		RefreshURL: stripe.String(helpers.GetHost() + "/user/payouts/refresh"),
+		RefreshURL: stripe.String(helpers.GetHost() + "/user/payouts/connect/refresh"),
 
 		/*
 			Stripe issues a redirect to this URL when the user completes the Connect
@@ -246,32 +245,5 @@ func getPayoutsConnectFinished(c *gin.Context) {
 
 // Time to pay the teachers
 func getPayoutsPayout(c *gin.Context) {
-	user, err := auth.GetLoggedInUser(c)
-	if err != nil {
-		log.Println("routes/payments ERROR getting user in getPayoutsConnectFinished:", err)
-		msg.SendMessage(c, "You must be logged in!")
-		c.Redirect(http.StatusFound, "/")
-		return
-	}
-
-	stripeConnection, err1 := db.GetStripeConnection(user.ID)
-	if err1 != nil {
-		log.Println("routes/payments ERROR getting user in getPayoutsConnectFinished:", err1)
-		msg.SendMessage(c, "You must be logged in!")
-		c.Redirect(http.StatusFound, "/")
-		return
-	}
-
-	courses, err2 := db.GetAuthorsCourses(user.ID)
-
-	var totalPayoutAmount float64 = 
-
-	// See https://stripe.com/docs/connect/add-and-pay-out-guide#with-code-pay-out-to-user
-	// TODO test if stripe connection can handle money transfers to it
-	params := &stripe.TransferParams{
-		Amount:      stripe.Int64(1000),
-		Currency:    stripe.String(string(stripe.CurrencyUSD)),
-		Destination: stripe.String(stripeConnection.StripeAccountID),
-	}
-	transferResult, err2 := transfer.New(params)
+	log.Println("TODO getPayoutsPayout")
 }

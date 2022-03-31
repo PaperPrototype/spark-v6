@@ -76,3 +76,23 @@ func GetHost() string {
 
 	return env
 }
+
+func GetSendgridKey() string {
+	if FileExists("./sendgridconfig") {
+		data, err := os.ReadFile("./sendgridconfig")
+		if err != nil {
+			log.Println("config: error reading stripeconfig file")
+			panic(err)
+		}
+
+		return string(data)
+	}
+
+	env := os.Getenv("SENDGRID_API_KEY")
+
+	if env == "" {
+		panic(errors.New("empty env variable for STRIPE_KEY"))
+	}
+
+	return env
+}

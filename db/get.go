@@ -206,3 +206,14 @@ func GetUserCourses(userID uint64) ([]Course, error) {
 	err := gormDB.Model(&Course{}).Where("user_id = ?", userID).Find(&courses).Error
 	return courses, err
 }
+
+func GetVerify(verifyUUID string) (*Verify, error) {
+	err1 := DeleteExpiredVerify()
+	if err1 != nil {
+		return nil, err1
+	}
+
+	verify := Verify{}
+	err := gormDB.Model(&Verify{}).Where("verify_uuid = ?", verifyUUID).First(&verify).Error
+	return &verify, err
+}

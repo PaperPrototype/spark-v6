@@ -70,11 +70,21 @@ type User struct {
 	Email    string `gorm:"unique"`
 	Bio      string
 
+	Verified bool `gorm:"not null, default:f"`
+
 	Purchases        []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	StripeConnection StripeConnection
 }
 
+type Verify struct {
+	UserID     uint64
+	VerifyUUID string
+	ExpiresAt  time.Time
+}
+
 // stripe connection
+// existence of this means they can make courses
+// stripe connection cannot be made until they verify their email
 type StripeConnection struct {
 	StripeAccountID string
 	UserID          uint64 `gorm:"not null,unique"`
