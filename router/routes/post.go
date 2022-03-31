@@ -44,6 +44,12 @@ func postNew(c *gin.Context) {
 		return
 	}
 
+	if !user.HasStripeConnection() {
+		msg.SendMessage(c, "You must connect your account to stripe before you can upload courses.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
 	// raw name variable
 	// lowercase all unique course names
 	uncleanName := c.PostForm("name")

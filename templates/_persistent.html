@@ -30,9 +30,11 @@
 	<li>
 		<a href="/courses">courses</a>
 	</li>
-	<li>
-		<a href="/new">new</a>
-	</li>
+	{{ if .User.HasStripeConnection }}
+		<li>
+			<a href="/new">new</a>
+		</li>
+	{{ end }}
 	<li>
 		<a href="/{{ .User.Username }}">@{{ .User.Username }}</a>
 	</li>

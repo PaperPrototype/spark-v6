@@ -137,6 +137,32 @@ func getLogin(c *gin.Context) {
 }
 
 func getNew(c *gin.Context) {
+	if !session.IsLoggedInValid(c) {
+		msg.SendMessage(c, "You must be logged in to create a new course.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	user, err2 := session.GetLoggedInUser(c)
+	if err2 != nil {
+		log.Println("ERROR getting logged in user:", err2)
+		msg.SendMessage(c, "Error getting logged in user.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	if !user.Verified {
+		msg.SendMessage(c, "You must verify your account before you can upload courses.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
+	if !user.HasStripeConnection() {
+		msg.SendMessage(c, "You must connect your account to stripe before you can upload courses.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"new.html",

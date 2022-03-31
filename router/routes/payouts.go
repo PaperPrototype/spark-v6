@@ -64,14 +64,20 @@ func getPayoutsConnect(c *gin.Context) {
 	if err2 != nil {
 		log.Println("routes/payments ERROR getting logged in user:", err2)
 		msg.SendMessage(c, "Error getting user.")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	if !user.Verified {
+		msg.SendMessage(c, "Error getting user.")
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
 	if user.HasStripeConnection() {
 		// user already has account connection
 		// they just need to "link" aka input info for their account with stripe
-		c.Redirect(http.StatusFound, "/user/payouts/refresh")
+		c.Redirect(http.StatusFound, "/settings/payouts/refresh")
 		return
 	}
 
@@ -84,7 +90,7 @@ func getPayoutsConnect(c *gin.Context) {
 	if err != nil {
 		log.Println("routes/payments ERROR creating connected stripe account:", err)
 		msg.SendMessage(c, "Error creating connected account.")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
@@ -98,7 +104,7 @@ func getPayoutsConnect(c *gin.Context) {
 	if err3 != nil {
 		log.Println("routes/payments ERROR creating stripeConnection in db:", err3)
 		msg.SendMessage(c, "Error connecting accouint to stripe.")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
@@ -114,7 +120,7 @@ func getPayoutsConnect(c *gin.Context) {
 			- The account has been rejected.
 			The refresh_url should call Account Links again on your server with the same parameters and redirect the user to the Connect Onboarding flow to create a seamless experience.
 		*/
-		RefreshURL: stripe.String(helpers.GetHost() + "/user/payouts/connect/refresh"),
+		RefreshURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/refresh"),
 
 		/*
 			Stripe issues a redirect to this URL when the user completes the Connect
@@ -129,7 +135,7 @@ func getPayoutsConnect(c *gin.Context) {
 			- Listening to account.updated events.
 			- Calling the Accounts API (with expressAccount.ID) and inspecting the returned object.
 		*/
-		ReturnURL: stripe.String(helpers.GetHost() + "/user/payouts/connect/return"),
+		ReturnURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/return"),
 		Type:      stripe.String("account_onboarding"),
 	}
 
@@ -137,7 +143,7 @@ func getPayoutsConnect(c *gin.Context) {
 	if err1 != nil {
 		log.Println("routes/payments ERROR creating connected account link:", err1)
 		msg.SendMessage(c, "Error creating connected account link.")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
@@ -149,7 +155,7 @@ func getPayoutsRefresh(c *gin.Context) {
 	if err != nil {
 		log.Println("routes/payments ERROR getting user for getPayoutsRefresh:", err)
 		msg.SendMessage(c, "Error getting user")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
@@ -157,7 +163,7 @@ func getPayoutsRefresh(c *gin.Context) {
 	if err2 != nil {
 		log.Println("routes/payments ERROR getting stripe connection for getPayoutsRefresh:", err2)
 		msg.SendMessage(c, "Error getting stripe connection")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
@@ -173,7 +179,7 @@ func getPayoutsRefresh(c *gin.Context) {
 			- The account has been rejected.
 			The refresh_url should call Account Links again on your server with the same parameters and redirect the user to the Connect Onboarding flow to create a seamless experience.
 		*/
-		RefreshURL: stripe.String(helpers.GetHost() + "/user/payouts/connect/refresh"),
+		RefreshURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/refresh"),
 
 		/*
 			Stripe issues a redirect to this URL when the user completes the Connect
@@ -188,7 +194,7 @@ func getPayoutsRefresh(c *gin.Context) {
 			- Listening to account.updated events.
 			- Calling the Accounts API (with expressAccount.ID) and inspecting the returned object.
 		*/
-		ReturnURL: stripe.String(helpers.GetHost() + "/user/payouts/connect/return"),
+		ReturnURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/return"),
 		Type:      stripe.String("account_onboarding"),
 	}
 
@@ -196,7 +202,7 @@ func getPayoutsRefresh(c *gin.Context) {
 	if err1 != nil {
 		log.Println("routes/payments ERROR creating connected account link getPayoutsRefresh:", err1)
 		msg.SendMessage(c, "Error creating connected account link.")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
@@ -220,7 +226,7 @@ func getPayoutsConnectFinished(c *gin.Context) {
 	if err1 != nil {
 		log.Println("routes/payments ERROR getting stripeConnection in getPayoutsConnectFinished:", err1)
 		msg.SendMessage(c, "Error getting stripe connection")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
@@ -233,17 +239,12 @@ func getPayoutsConnectFinished(c *gin.Context) {
 
 	if !submitted {
 		msg.SendMessage(c, "Finish filling out account details by clicking 'Connect account' again. Make sure to use the same email.")
-		c.Redirect(http.StatusFound, "/user/payouts")
+		c.Redirect(http.StatusFound, "/settings/payouts")
 		return
 	}
 
 	// user is successfully connected
 	msg.SendMessage(c, "Successfully connected account!")
 	// user is successfully connected
-	c.Redirect(http.StatusFound, "/user/payouts")
-}
-
-// Time to pay the teachers
-func getPayoutsPayout(c *gin.Context) {
-	log.Println("TODO getPayoutsPayout")
+	c.Redirect(http.StatusFound, "/settings/payouts")
 }
