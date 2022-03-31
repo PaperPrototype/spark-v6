@@ -10,6 +10,7 @@ func migrate() {
 		// auth
 		&User{},
 		&Session{},
+		&Verify{},
 
 		// course
 		&Course{},
