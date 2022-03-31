@@ -1,0 +1,25 @@
+{{ template "_header.html" . }}
+
+<link href="/resources/css/courses.css" rel="stylesheet">
+
+<style>
+	#settings{{ .Menu }} {
+		background-color: var(--c-code);
+	}
+
+	.settingsMenuItem {
+		border-radius: 0.5rem;
+		padding: 0.5rem;
+	}
+</style>
+
+<div class="pad-sides-5 pad-top-5rem text-center">
+	<h2>Settings</h2>
+</div>
+<div style="display:flex; flex-wrap:wrap;">
+	<div class="pad-sides-5 pad-top-2rem">
+		<p class="settingsMenuItem" href="/settings" id="settingsGeneral">General</p>
+		<p class="settingsMenuItem" href="/settings/payouts" id="settingsPayouts">Payouts</p>
+	</div>
+	<div>
+		

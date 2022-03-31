@@ -1,0 +1,17 @@
+{{ template "settings_header.html" . }}
+
+<div class="pad-sides-5 pad-top-5rem">
+	<form action="/new">
+		<h1>Teacher</h1>
+		{{ if not .User.Verified }}
+			<p class="c-grey">You must verify your email before you can upload courses or accept payouts.</p>
+		{{ else }}
+			<button type="submit" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">New Course</button>
+		{{ end }}
+	</form>
+	<form action="/settings/stripe/connect" style="margin-bottom:3rem;">
+		<h1>Payouts</h1>
+	</form>
+</div>
+
+{{ template "settings_footer.html" . }}

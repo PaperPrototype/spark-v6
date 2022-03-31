@@ -3,7 +3,8 @@ package api
 import (
 	"log"
 	"main/db"
-	"main/router/session"
+	"main/router/auth"
+	session "main/router/auth"
 	"net/http"
 	"strconv"
 	"strings"
@@ -13,13 +14,13 @@ import (
 )
 
 func courseVersionNewPost(c *gin.Context) {
-	if !session.IsLoggedInValid(c) {
+	if !auth.IsLoggedInValid(c) {
 		log.Println("api LOG not logged in valid")
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	user, err1 := session.GetLoggedInUser(c)
+	user, err1 := auth.GetLoggedInUser(c)
 	if err1 != nil {
 		log.Println("api ERROR couldn't get logged in user:", err1)
 		c.AbortWithStatus(http.StatusInternalServerError)

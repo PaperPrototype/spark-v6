@@ -10,6 +10,7 @@ import (
 	"main/helpers"
 	"main/msg"
 	"main/payments"
+	"main/router/auth"
 	"main/router/session"
 	"main/upload"
 	"net/http"
@@ -24,7 +25,7 @@ import (
 )
 
 func postNew(c *gin.Context) {
-	if !session.IsLoggedInValid(c) {
+	if !auth.IsLoggedInValid(c) {
 		msg.SendMessage(c, "You must be logged in to create a new course.")
 		c.Redirect(http.StatusFound, "/")
 		return
@@ -149,7 +150,7 @@ func postLogin(c *gin.Context) {
 		return
 	}
 
-	session.Login(c, sessionToken)
+	auth.Login(c, sessionToken)
 
 	if redirectURL == "" {
 		c.Redirect(http.StatusFound, "/courses")
@@ -233,7 +234,7 @@ func postSignup(c *gin.Context) {
 		return
 	}
 
-	session.Login(c, sessionToken)
+	auth.Login(c, sessionToken)
 
 	msg.SendMessage(c, "Signed up and logged in!")
 	c.Redirect(http.StatusFound, "/courses")
@@ -462,7 +463,7 @@ func postReleaseDeleteConfirm(c *gin.Context) {
 	releaseID := c.PostForm("data")
 	password := c.PostForm("password")
 
-	user, err := session.GetLoggedInUser(c)
+	user, err := auth.GetLoggedInUser(c)
 	if err != nil {
 		msg.SendMessage(c, "You must be logged in to access that page.")
 		c.Redirect(http.StatusFound, "/login")

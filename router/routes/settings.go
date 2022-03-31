@@ -5,8 +5,7 @@ import (
 	"main/db"
 	"main/helpers"
 	"main/msg"
-	"main/router/session"
-	auth "main/router/session"
+	"main/router/auth"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,51 +14,39 @@ import (
 	"github.com/stripe/stripe-go/v72/accountlink"
 )
 
-func getUserPayouts(c *gin.Context) {
-	if !session.IsLoggedInValid(c) {
-		msg.SendMessage(c, "You must be logged in to access payouts.")
-		c.Redirect(http.StatusFound, "/")
-		return
-	}
-
-	user, err := session.GetLoggedInUser(c)
-	if err != nil {
-		msg.SendMessage(c, "Error getting logged in user")
-		c.Redirect(http.StatusFound, "/")
-		return
-	}
-
-	courses, err1 := db.GetUserCourses(user.ID)
-	if err1 != nil {
-		log.Println("routes ERROR getting user courses from getUserPayouts:", err1)
-	}
-
-	var totalPayout float64 = 0
-	for _, course := range courses {
-		totalPayout += course.GetCurrentTotalCoursePayoutAmountLogError()
-	}
-
-	stripeConnection, err2 := db.GetStripeConnection(user.ID)
-	if err2 != nil {
-		log.Println("routes/get ERROR getting stripe connection for getUserPayouts:", err2)
-	}
+func getSettings(c *gin.Context) {
+	user := auth.GetLoggedInUserLogError(c)
 
 	c.HTML(
 		http.StatusOK,
-		"payout.html",
+		"settings.html",
 		gin.H{
-			"TotalPayout":      totalPayout,
-			"StripeConnection": stripeConnection,
-			"Courses":          courses,
-			"Messages":         msg.GetMessages(c),
-			"User":             user,
-			"LoggedIn":         session.IsLoggedInValid(c),
-			"Meta":             metaDefault,
+			"Menu":     "General",
+			"User":     user,
+			"Messages": msg.GetMessages(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
+			"Meta":     metaDefault,
 		},
 	)
 }
 
-func getPayoutsConnect(c *gin.Context) {
+func getSettingsPayouts(c *gin.Context) {
+	user := auth.GetLoggedInUserLogError(c)
+
+	c.HTML(
+		http.StatusOK,
+		"settings.html",
+		gin.H{
+			"Menu":     "General",
+			"User":     user,
+			"Messages": msg.GetMessages(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
+}
+
+func getStripeConnect(c *gin.Context) {
 	user, err2 := auth.GetLoggedInUser(c)
 	if err2 != nil {
 		log.Println("routes/payments ERROR getting logged in user:", err2)
@@ -150,7 +137,7 @@ func getPayoutsConnect(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, accountLink.URL)
 }
 
-func getPayoutsRefresh(c *gin.Context) {
+func getStripeRefresh(c *gin.Context) {
 	user, err := auth.GetLoggedInUser(c)
 	if err != nil {
 		log.Println("routes/payments ERROR getting user for getPayoutsRefresh:", err)
@@ -209,7 +196,7 @@ func getPayoutsRefresh(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, accountLink.URL)
 }
 
-func getPayoutsConnectFinished(c *gin.Context) {
+func getStripeConnectFinished(c *gin.Context) {
 	// TODO test if user successfully connected in stripe (check the state of the details_submitted parameter)
 	// see https://stripe.com/docs/connect/express-accounts#return_url
 	// code example https://stripe.com/docs/api/accounts/retrieve

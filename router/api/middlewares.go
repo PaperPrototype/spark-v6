@@ -3,7 +3,7 @@ package api
 import (
 	"log"
 	"main/db"
-	"main/router/session"
+	session "main/router/auth"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

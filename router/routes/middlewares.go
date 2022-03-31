@@ -4,21 +4,21 @@ import (
 	"log"
 	"main/db"
 	"main/msg"
-	"main/router/session"
+	"main/router/auth"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func mustBeCourseEditor(c *gin.Context) {
-	loggedInValid := session.IsLoggedInValid(c)
+	loggedInValid := auth.IsLoggedInValid(c)
 
 	if !loggedInValid {
 		notFound(c)
 		return
 	}
 
-	user, err := session.GetLoggedInUser(c)
+	user, err := auth.GetLoggedInUser(c)
 	if err != nil {
 		notFound(c)
 		return
@@ -42,7 +42,7 @@ func mustBeCourseEditor(c *gin.Context) {
 }
 
 func mustBeLoggedIn(c *gin.Context) {
-	if !session.IsLoggedInValid(c) {
+	if !auth.IsLoggedInValid(c) {
 		msg.SendMessage(c, "We kinda need you to be logged in to access that page...")
 		c.Redirect(http.StatusFound, "/login")
 		return
@@ -86,7 +86,7 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 		return
 	}
 
-	user := session.GetLoggedInUserLogError(c)
+	user := auth.GetLoggedInUserLogError(c)
 
 	// if not owner of course
 	if course.UserID != user.ID {

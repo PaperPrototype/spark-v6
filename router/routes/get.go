@@ -11,7 +11,7 @@ import (
 	"main/mailer"
 	"main/markdown"
 	"main/msg"
-	"main/router/session"
+	"main/router/auth"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,8 +43,8 @@ func getCourse(c *gin.Context) {
 			gin.H{
 				"Course":   course,
 				"Messages": msg.GetMessages(c),
-				"User":     session.GetLoggedInUserLogError(c),
-				"LoggedIn": session.IsLoggedInValid(c),
+				"User":     auth.GetLoggedInUserLogError(c),
+				"LoggedIn": auth.IsLoggedInValid(c),
 				"Meta":     metaDefault,
 			},
 		)
@@ -62,7 +62,7 @@ func getCourse(c *gin.Context) {
 	purchased := false
 
 	if release.Price != 0 {
-		user, err2 := session.GetLoggedInUser(c)
+		user, err2 := auth.GetLoggedInUser(c)
 		if err2 == nil {
 			if user.HasPurchasedRelease(release.ID) {
 				purchased = true
@@ -78,8 +78,8 @@ func getCourse(c *gin.Context) {
 			"Course":    course,
 			"Release":   release,
 			"Messages":  msg.GetMessages(c),
-			"User":      session.GetLoggedInUserLogError(c),
-			"LoggedIn":  session.IsLoggedInValid(c),
+			"User":      auth.GetLoggedInUserLogError(c),
+			"LoggedIn":  auth.IsLoggedInValid(c),
 			"Meta":      metaDefault,
 		},
 	)
@@ -94,8 +94,8 @@ func getCourses(c *gin.Context) {
 		"courses.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Search":   search,
 			"Sort":     sort,
 			"Meta":     metaDefault,
@@ -109,8 +109,8 @@ func getLanding(c *gin.Context) {
 		"landing.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
 	)
@@ -129,21 +129,21 @@ func getLogin(c *gin.Context) {
 		gin.H{
 			"RedirectURL": redirectURL,
 			"Messages":    msg.GetMessages(c),
-			"User":        session.GetLoggedInUserLogError(c),
-			"LoggedIn":    session.IsLoggedInValid(c),
+			"User":        auth.GetLoggedInUserLogError(c),
+			"LoggedIn":    auth.IsLoggedInValid(c),
 			"Meta":        metaDefault,
 		},
 	)
 }
 
 func getNew(c *gin.Context) {
-	if !session.IsLoggedInValid(c) {
+	if !auth.IsLoggedInValid(c) {
 		msg.SendMessage(c, "You must be logged in to create a new course.")
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
-	user, err2 := session.GetLoggedInUser(c)
+	user, err2 := auth.GetLoggedInUser(c)
 	if err2 != nil {
 		log.Println("ERROR getting logged in user:", err2)
 		msg.SendMessage(c, "Error getting logged in user.")
@@ -168,8 +168,8 @@ func getNew(c *gin.Context) {
 		"new.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
 	)
@@ -181,20 +181,20 @@ func getSignup(c *gin.Context) {
 		"signup.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
 	)
 }
 
 func getLogout(c *gin.Context) {
-	session.Logout(c)
+	auth.Logout(c)
 	c.Redirect(http.StatusFound, "/")
 }
 
 func getCourseSettings(c *gin.Context) {
-	if !session.IsLoggedInValid(c) {
+	if !auth.IsLoggedInValid(c) {
 		msg.SendMessage(c, "You must be logged in to access a settings page.")
 		notFound(c)
 		return
@@ -223,7 +223,7 @@ func getCourseSettings(c *gin.Context) {
 		gin.H{
 			"Messages": msg.GetMessages(c),
 			"User":     user,
-			"LoggedIn": session.IsLoggedInValid(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Course":   course,
 			"Releases": course.GetAllCourseReleasesLogError(),
 			"Meta":     metaDefault,
@@ -237,8 +237,8 @@ func getLost(c *gin.Context) {
 		"notFound.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
 	)
@@ -273,8 +273,8 @@ func getCourseVersion(c *gin.Context) {
 
 	var progress int64
 
-	if session.IsLoggedInValid(c) {
-		user, _ := session.GetLoggedInUser(c)
+	if auth.IsLoggedInValid(c) {
+		user, _ := auth.GetLoggedInUser(c)
 
 		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
 		total := version.SectionsCountLogError()
@@ -302,8 +302,8 @@ func getCourseVersion(c *gin.Context) {
 			"Version":  version,
 			"Section":  section,
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 			"Progress": progress,
 		},
@@ -333,8 +333,8 @@ func getCourseRelease(c *gin.Context) {
 			gin.H{
 				"Course":   course,
 				"Messages": msg.GetMessages(c),
-				"User":     session.GetLoggedInUserLogError(c),
-				"LoggedIn": session.IsLoggedInValid(c),
+				"User":     auth.GetLoggedInUserLogError(c),
+				"LoggedIn": auth.IsLoggedInValid(c),
 				"Meta":     metaDefault,
 			},
 		)
@@ -352,7 +352,7 @@ func getCourseRelease(c *gin.Context) {
 	purchased := false
 
 	if release.Price != 0 {
-		user, err2 := session.GetLoggedInUser(c)
+		user, err2 := auth.GetLoggedInUser(c)
 		if err2 == nil {
 			if user.HasPurchasedRelease(release.ID) {
 				purchased = true
@@ -368,8 +368,8 @@ func getCourseRelease(c *gin.Context) {
 			"Course":    course,
 			"Release":   release,
 			"Messages":  msg.GetMessages(c),
-			"User":      session.GetLoggedInUserLogError(c),
-			"LoggedIn":  session.IsLoggedInValid(c),
+			"User":      auth.GetLoggedInUserLogError(c),
+			"LoggedIn":  auth.IsLoggedInValid(c),
 			"Meta":      metaDefault,
 		},
 	)
@@ -406,8 +406,8 @@ func getCourseVersionSection(c *gin.Context) {
 
 	var progress int64
 
-	if session.IsLoggedInValid(c) {
-		user, _ := session.GetLoggedInUser(c)
+	if auth.IsLoggedInValid(c) {
+		user, _ := auth.GetLoggedInUser(c)
 
 		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
 		total := version.SectionsCountLogError()
@@ -435,8 +435,8 @@ func getCourseVersionSection(c *gin.Context) {
 			"Version":  version,
 			"Section":  section,
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 			"Progress": progress,
 		},
@@ -470,10 +470,10 @@ func getUser(c *gin.Context) {
 		"user.html",
 		gin.H{
 			"Messages":       msg.GetMessages(c),
-			"User":           session.GetLoggedInUserLogError(c),
+			"User":           auth.GetLoggedInUserLogError(c),
 			"ProfileUser":    profileUser,
 			"ProfileCourses": courses,
-			"LoggedIn":       session.IsLoggedInValid(c),
+			"LoggedIn":       auth.IsLoggedInValid(c),
 			"Meta":           metaDefault,
 		},
 	)
@@ -509,8 +509,8 @@ func getReleaseDelete(c *gin.Context) {
 		"confirmDelete.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 
 			// special params for confirmDelete.html
@@ -554,15 +554,15 @@ func getVerify(c *gin.Context) {
 		gin.H{
 			"Message":  message,
 			"Messages": msg.GetMessages(c),
-			"User":     session.GetLoggedInUserLogError(c),
-			"LoggedIn": session.IsLoggedInValid(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
 		},
 	)
 }
 
 func getNewVerify(c *gin.Context) {
-	user, err := session.GetLoggedInUser(c)
+	user, err := auth.GetLoggedInUser(c)
 	if err != nil {
 		log.Println("routes/get ERROR getting logged in user in getNewVerify:", err)
 		msg.SendMessage(c, "Error getting logged in user")
@@ -580,19 +580,4 @@ func getNewVerify(c *gin.Context) {
 
 	msg.SendMessage(c, "Sent verification link to your email. Make sure to check your spam folder.")
 	c.Redirect(http.StatusFound, "/settings")
-}
-
-func getSettings(c *gin.Context) {
-	user := session.GetLoggedInUserLogError(c)
-
-	c.HTML(
-		http.StatusOK,
-		"settings.html",
-		gin.H{
-			"User":     user,
-			"Messages": msg.GetMessages(c),
-			"LoggedIn": session.IsLoggedInValid(c),
-			"Meta":     metaDefault,
-		},
-	)
 }

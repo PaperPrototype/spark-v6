@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	// mailer.Setup()
 	mailer.Setup()
 
 	payments.Setup()

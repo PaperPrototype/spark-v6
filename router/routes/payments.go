@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	auth "main/router/session"
+	"main/router/auth"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v72"

@@ -1,63 +1,42 @@
-{{ template "_header.html" . }}
+{{ template "settings_header.html" . }}
 
-<link href="/resources/css/courses.css" rel="stylesheet">
-
-<div class="pad-sides-5 pad-top-5rem text-center">
-	<h2>Settings</h2>
-</div>
-<div style="display:flex; flex-wrap:wrap;">
-	<div class="pad-sides-5 pad-top-2rem">
+<div class="pad-sides-5 pad-top-5rem">
+	<form action="/settings/edit/user" style="margin-bottom:3rem;">
+		<h1>User</h1>
+		<label>Name</label>
 		<div>
-			Menu
+			<input style="padding:0.5rem"  class="bg bd thin-grey" value="{{ .User.Name }}">
 		</div>
-		<a href="/settings/payouts">Payouts</a>
-	</div>
-	<div class="pad-sides-5 pad-top-5rem">
-		<form action="/settings/edit/user" style="margin-bottom:3rem;">
-			<h1>User</h1>
-			<label>Name</label>
-			<div>
-				<input style="padding:0.5rem"  class="bg bd thin-grey" value="{{ .User.Name }}">
-			</div>
-			<label>Username</label>
-			<div>
-				<input style="padding:0.5rem" class="bd bg thin-grey" placeholder="username" value="{{ .User.Username }}">
-			</div>
-			<label>Bio</label>
-			<div>
-				<textarea style="padding:0.5rem"  class="bg bd thin-grey">{{ .User.Bio }}</textarea>
-			</div>
-			<div style="margin-top:1rem;">
-				<button type="submit" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" type="submit">Save</button>
-			</div>
-		</form>
-		<form action="/settings/edit/email" style="margin-bottom:3rem;">
-			<h1>Email</h1>
-			<label>
-				Email {{ if not .User.Verified }} <i class="fa-solid fa-triangle-exclamation"></i> {{ end }}
-			</label>
-			<div>
-				<input style="padding:0.5rem"  class="bg bd thin-grey" placeholder="email" value="{{ .User.Email }}">
-			</div>
-			{{ if not .User.Verified }}
-			<p>
-				<a href="/login/verify/new">verify email</a>
-				<p class="c-grey">We will send you an email with a verification link</p>
-			</p>
-			{{ end }}
-			<div style="margin-top:1rem;">
-				<button style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">Save</button>
-			</div>
-		</form>
-		<form action="/settings/stripe/connect" style="margin-bottom:3rem;">
-			<h1>Teacher</h1>
-			{{ if not .User.Verified }}
-				<p class="c-grey">You must verify your email before you can upload courses or accept payouts.</p>
-			{{ else }}
-				<button href="/new" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">New Course</button>
-			{{ end }}
-		</form>
-	</div>
+		<label>Username</label>
+		<div>
+			<input style="padding:0.5rem" class="bd bg thin-grey" placeholder="username" value="{{ .User.Username }}">
+		</div>
+		<label>Bio</label>
+		<div>
+			<textarea style="padding:0.5rem"  class="bg bd thin-grey">{{ .User.Bio }}</textarea>
+		</div>
+		<div style="margin-top:1rem;">
+			<button type="submit" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" type="submit">Save</button>
+		</div>
+	</form>
+	<form action="/settings/edit/email" style="margin-bottom:3rem;">
+		<h1>Email</h1>
+		<label>
+			Email {{ if not .User.Verified }} <i class="fa-solid fa-triangle-exclamation"></i> {{ end }}
+		</label>
+		<div>
+			<input style="padding:0.5rem"  class="bg bd thin-grey" placeholder="email" value="{{ .User.Email }}">
+		</div>
+		{{ if not .User.Verified }}
+		<p>
+			<a href="/login/verify/new">verify email</a>
+			<p class="c-grey">We will send you an email with a verification link</p>
+		</p>
+		{{ end }}
+		<div style="margin-top:1rem;">
+			<button style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">Save</button>
+		</div>
+	</form>
 </div>
 
-{{ template "_footer.html" . }}
+{{ template "settings_footer.html" . }}
