@@ -13,8 +13,6 @@ var client *sendgrid.Client
 
 func Setup() {
 	client = sendgrid.NewSendClient(helpers.GetSendgridKey())
-
-	SendgridTestEmail()
 }
 
 func SendgridTestEmail() {

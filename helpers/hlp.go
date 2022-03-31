@@ -41,7 +41,6 @@ func FileExists(path string) bool {
 	_, err := os.Stat(path)
 
 	if os.IsNotExist(err) {
-		log.Println("helper: NO DBCONFIG FILE!!!", err)
 		return false
 	}
 
@@ -91,7 +90,7 @@ func GetSendgridKey() string {
 	env := os.Getenv("SENDGRID_API_KEY")
 
 	if env == "" {
-		panic(errors.New("empty env variable for STRIPE_KEY"))
+		panic(errors.New("empty env variable for SENDGRID_API_KEY"))
 	}
 
 	return env
