@@ -4,7 +4,6 @@ import (
 	"log"
 	"main/db"
 	"main/router/auth"
-	session "main/router/auth"
 	"net/http"
 	"strconv"
 	"strings"
@@ -48,7 +47,7 @@ func courseVersionNewPost(c *gin.Context) {
 
 	// check if user has purchased the course
 	if !db.UserCanAccessCourseRelease(user.ID, version) {
-		release, err4 := db.GetRelease(version.ReleaseID)
+		release, err4 := db.GetPublicRelease(version.ReleaseID)
 		if err4 != nil {
 			log.Println("api ERROR getting release:", err4)
 			c.AbortWithStatus(http.StatusInternalServerError)
@@ -63,6 +62,7 @@ func courseVersionNewPost(c *gin.Context) {
 				ReleaseID:  release.ID,
 				CourseID:   release.CourseID,
 				AmountPaid: 0,
+				AuthorsCut: 0,
 				CreatedAt:  time.Now(),
 			}
 
@@ -124,12 +124,12 @@ func courseVersionNewPost(c *gin.Context) {
 }
 
 func postUpdatePost(c *gin.Context) {
-	if !session.IsLoggedInValid(c) {
+	if !auth.IsLoggedInValid(c) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	user, err1 := session.GetLoggedInUser(c)
+	user, err1 := auth.GetLoggedInUser(c)
 	if err1 != nil {
 		log.Println("api ERROR couldn't get logged in user:", err1)
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -166,12 +166,12 @@ func postEditSectionContent(c *gin.Context) {
 	contentMarkdown := c.PostForm("content")
 	versionID := c.PostForm("versionID")
 
-	if !session.IsLoggedInValid(c) {
+	if !auth.IsLoggedInValid(c) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	user, err1 := session.GetLoggedInUser(c)
+	user, err1 := auth.GetLoggedInUser(c)
 	if err1 != nil {
 		log.Println("api ERROR couldn't get logged in user:", err1)
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -185,7 +185,7 @@ func postEditSectionContent(c *gin.Context) {
 		return
 	}
 
-	release, err4 := db.GetRelease(version.ReleaseID)
+	release, err4 := db.GetAllRelease(version.ReleaseID)
 	if err4 != nil {
 		log.Println("api ERROR getting release:", err4)
 		c.AbortWithStatus(http.StatusInternalServerError)

@@ -73,6 +73,10 @@
 	padding-bottom: 5rem;
 }
 
+.thin-grey-right {
+	border-right: 0.08rem solid var(--c-grey);
+}
+
 .thin-light {
 	border: 0.08rem solid var(--c-light);
 }

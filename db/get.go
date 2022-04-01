@@ -145,9 +145,15 @@ func GetUserWithUsername(username string) (*User, error) {
 	return &user, err
 }
 
-func GetRelease(releaseID uint64) (*Release, error) {
+func GetPublicRelease(releaseID interface{}) (*Release, error) {
 	release := Release{}
 	err := gormDB.Model(&Release{}).Where("id = ?", releaseID).Where("public = ?", true).First(&release).Error
+	return &release, err
+}
+
+func GetAllRelease(releaseID interface{}) (*Release, error) {
+	release := Release{}
+	err := gormDB.Model(&Release{}).Where("id = ?", releaseID).First(&release).Error
 	return &release, err
 }
 
@@ -175,15 +181,15 @@ func GetAllNewestCourseRelease(courseID uint64) (*Release, error) {
 	return &release, err
 }
 
-func GetBuyRelease(buyReleaseID string) (*BuyRelease, error) {
+func GetBuyRelease(stripeSessionID string) (*AttemptBuyRelease, error) {
 	err := DeleteExpiredBuyReleases()
 	if err != nil {
 		log.Println("db ERROR deleting expired releases:", err)
 		return nil, err
 	}
 
-	buyRelease := BuyRelease{}
-	err1 := gormDB.Model(&BuyRelease{}).Where("stripe_session_id = ?", buyReleaseID).First(&buyRelease).Error
+	buyRelease := AttemptBuyRelease{}
+	err1 := gormDB.Model(&AttemptBuyRelease{}).Where("stripe_session_id = ?", stripeSessionID).First(&buyRelease).Error
 	return &buyRelease, err1
 }
 

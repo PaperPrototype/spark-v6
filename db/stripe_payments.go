@@ -7,7 +7,6 @@ package db
 
 import (
 	"log"
-	"main/payments"
 
 	"github.com/stripe/stripe-go/v72/account"
 )
@@ -36,29 +35,6 @@ func (stripeConnection *StripeConnection) ChargesEnabledLogError() bool {
 		log.Println("db/methods_stripe_payments ERROR getting ChargesEnabled param:", err)
 	}
 	return connectedAccount.ChargesEnabled
-}
-
-// get the total amount we owe teacher from a course
-func (purchase *Purchase) CalculatePayout() float32 {
-	spark3DsCut := float32(purchase.AmountPaid) * payments.PercentageShare
-	return float32(purchase.AmountPaid) - spark3DsCut
-}
-
-func (course *Course) GetCurrentTotalCoursePayoutAmountLogError() float64 {
-	releaseIDs := gormDB.Model(&Release{}).Select("id").Where("course_id = ?", course.ID)
-
-	purchases := []Purchase{}
-	err := gormDB.Model(&Purchase{}).Where("release_id IN (?)", releaseIDs).Find(&purchases).Error
-	if err != nil {
-		log.Println("db ERROR getting GetCurrentTotalCoursePayoutAmount:", err)
-	}
-
-	var total float64 = 0
-	for _, purchase := range purchases {
-		total += float64(purchase.CalculatePayout())
-	}
-
-	return total
 }
 
 func (course *Course) GetPurchasesLogError() []Purchase {
@@ -103,20 +79,6 @@ func (user *User) HasPurchasedRelease(releaseID uint64) bool {
 	}
 
 	return true
-}
-
-func GetCurrentTotalCoursePayoutAmount(courseID uint64) (float64, error) {
-	releaseIDs := gormDB.Model(&Release{}).Select("id").Where("course_id = ?", courseID)
-
-	purchases := []Purchase{}
-	err := gormDB.Model(&Purchase{}).Where("release_id IN (?)", releaseIDs).Where("payed_out = ?", false).Find(&purchases).Error
-
-	var total float64 = 0
-	for _, purchase := range purchases {
-		total += float64(purchase.CalculatePayout())
-	}
-
-	return total, err
 }
 
 func GetStripeConnection(userID interface{}) (*StripeConnection, error) {

@@ -167,6 +167,7 @@ func getNew(c *gin.Context) {
 		http.StatusOK,
 		"new.html",
 		gin.H{
+			"Course":   db.Course{},
 			"Messages": msg.GetMessages(c),
 			"User":     auth.GetLoggedInUserLogError(c),
 			"LoggedIn": auth.IsLoggedInValid(c),
@@ -261,8 +262,8 @@ func getCourseVersion(c *gin.Context) {
 	version, err := course.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes ERROR getting version from db:", err)
-		msg.SendMessage(c, "That course upload may have been deleted!")
-		c.Redirect(http.StatusFound, "/"+courseName)
+		msg.SendMessage(c, "That course upload may have been deleted.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
 		return
 	}
 

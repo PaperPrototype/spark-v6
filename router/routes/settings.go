@@ -30,14 +30,20 @@ func getSettings(c *gin.Context) {
 	)
 }
 
-func getSettingsPayouts(c *gin.Context) {
+func getSettingsCourses(c *gin.Context) {
 	user := auth.GetLoggedInUserLogError(c)
+
+	courses, err := user.GetAuthorCourses()
+	if err != nil {
+		log.Println("routes/settings ERROR getting AuthorCourses in getSettingsCourses:", err)
+	}
 
 	c.HTML(
 		http.StatusOK,
-		"settings.html",
+		"settingsCourses.html",
 		gin.H{
-			"Menu":     "General",
+			"Courses":  courses,
+			"Menu":     "Courses",
 			"User":     user,
 			"Messages": msg.GetMessages(c),
 			"LoggedIn": auth.IsLoggedInValid(c),
@@ -64,7 +70,7 @@ func getStripeConnect(c *gin.Context) {
 	if user.HasStripeConnection() {
 		// user already has account connection
 		// they just need to "link" aka input info for their account with stripe
-		c.Redirect(http.StatusFound, "/settings/payouts/refresh")
+		c.Redirect(http.StatusFound, "/settings/stripe/connect/refresh")
 		return
 	}
 
@@ -81,7 +87,6 @@ func getStripeConnect(c *gin.Context) {
 		return
 	}
 
-	// TODO
 	// create stripeConnection in db with expressAccount.ID
 	stripeConnection := db.StripeConnection{
 		StripeAccountID: expressAccount.ID,
@@ -91,7 +96,7 @@ func getStripeConnect(c *gin.Context) {
 	if err3 != nil {
 		log.Println("routes/payments ERROR creating stripeConnection in db:", err3)
 		msg.SendMessage(c, "Error connecting accouint to stripe.")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/courses")
 		return
 	}
 
@@ -107,7 +112,7 @@ func getStripeConnect(c *gin.Context) {
 			- The account has been rejected.
 			The refresh_url should call Account Links again on your server with the same parameters and redirect the user to the Connect Onboarding flow to create a seamless experience.
 		*/
-		RefreshURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/refresh"),
+		RefreshURL: stripe.String(helpers.GetHost() + "/settings/stripe/connect/refresh"),
 
 		/*
 			Stripe issues a redirect to this URL when the user completes the Connect
@@ -122,7 +127,7 @@ func getStripeConnect(c *gin.Context) {
 			- Listening to account.updated events.
 			- Calling the Accounts API (with expressAccount.ID) and inspecting the returned object.
 		*/
-		ReturnURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/return"),
+		ReturnURL: stripe.String(helpers.GetHost() + "/settings/stripe/connect/return"),
 		Type:      stripe.String("account_onboarding"),
 	}
 
@@ -166,7 +171,7 @@ func getStripeRefresh(c *gin.Context) {
 			- The account has been rejected.
 			The refresh_url should call Account Links again on your server with the same parameters and redirect the user to the Connect Onboarding flow to create a seamless experience.
 		*/
-		RefreshURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/refresh"),
+		RefreshURL: stripe.String(helpers.GetHost() + "/settings/stripe/connect/refresh"),
 
 		/*
 			Stripe issues a redirect to this URL when the user completes the Connect
@@ -181,7 +186,7 @@ func getStripeRefresh(c *gin.Context) {
 			- Listening to account.updated events.
 			- Calling the Accounts API (with expressAccount.ID) and inspecting the returned object.
 		*/
-		ReturnURL: stripe.String(helpers.GetHost() + "/settings/payouts/connect/return"),
+		ReturnURL: stripe.String(helpers.GetHost() + "/settings/stripe/connect/return"),
 		Type:      stripe.String("account_onboarding"),
 	}
 
@@ -189,7 +194,7 @@ func getStripeRefresh(c *gin.Context) {
 	if err1 != nil {
 		log.Println("routes/payments ERROR creating connected account link getPayoutsRefresh:", err1)
 		msg.SendMessage(c, "Error creating connected account link.")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/courses")
 		return
 	}
 
@@ -213,7 +218,7 @@ func getStripeConnectFinished(c *gin.Context) {
 	if err1 != nil {
 		log.Println("routes/payments ERROR getting stripeConnection in getPayoutsConnectFinished:", err1)
 		msg.SendMessage(c, "Error getting stripe connection")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/courses")
 		return
 	}
 
@@ -226,12 +231,12 @@ func getStripeConnectFinished(c *gin.Context) {
 
 	if !submitted {
 		msg.SendMessage(c, "Finish filling out account details by clicking 'Connect account' again. Make sure to use the same email.")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/courses")
 		return
 	}
 
 	// user is successfully connected
 	msg.SendMessage(c, "Successfully connected account!")
 	// user is successfully connected
-	c.Redirect(http.StatusFound, "/settings/payouts")
+	c.Redirect(http.StatusFound, "/settings/courses")
 }

@@ -31,11 +31,6 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/:username/:course/view/:versionID/posts/user/:username")                                               // view posts by a specific user
 	router.GET("/:username/:course/view/:versionID/chat")                                                               // view the live chatroom
 
-	// payments routes for courses
-	router.POST("/:username/:course/buy/:releaseID", mustBeLoggedIn, postBuyRelease)
-	router.GET("/:username/:course/success", mustBeLoggedIn, getBuySuccess)
-	router.GET("/:username/:course/cancel", mustBeLoggedIn, getBuyCancel)
-
 	// course media assets (zip, png, gif)
 	router.GET("/media/:versionID/name/:mediaName", getNameMedia)
 	router.GET("/media/:versionID/id/:mediaID")
@@ -58,12 +53,21 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/login/forgot")                        // forgot password
 	router.GET("/logout", getLogout)                   // logout
 
+	// payments routes for courses
+	router.POST("/:username/:course/buy/:releaseID", mustBeLoggedIn, postBuyRelease)
+	router.GET("/:username/:course/buy/success", mustBeLoggedIn, getBuySuccess)
+	router.GET("/:username/:course/buy/cancel", mustBeLoggedIn, getBuyCancel)
+
 	// for logged in users only
 	router.GET("/settings", mustBeLoggedIn, getSettings)                     // users landing page
-	router.GET("/settings/payouts", mustBeLoggedIn, getSettingsPayouts)      // users landing page
+	router.GET("/settings/courses", mustBeLoggedIn, getSettingsCourses)      // users landing page
 	router.GET("/settings/stripe/connect", mustBeLoggedIn, getStripeConnect) // connect account to stripe so we can pay out to teachers
 	router.GET("/settings/stripe/connect/refresh", mustBeLoggedIn, getStripeRefresh)
 	router.GET("/settings/stripe/connect/return", mustBeLoggedIn, getStripeConnectFinished)
+
+	// editing settings
+	router.POST("/settings/edit/user", mustBeLoggedIn)
+	router.POST("/settings/edit/email", mustBeLoggedIn)
 
 	router.GET("/courses", getCourses) // search courses with possible url query
 	/*

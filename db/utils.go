@@ -151,5 +151,22 @@ func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
 }
 
 func DeleteExpiredBuyReleases() error {
-	return gormDB.Where("expires_at < ?", time.Now()).Delete(&BuyRelease{}).Error
+	return gormDB.Where("expires_at < ?", time.Now()).Delete(&AttemptBuyRelease{}).Error
+}
+
+func (release *Release) HasVersions() bool {
+	var count int64 = 0
+	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Count(&count).Error
+
+	// if err then not valid
+	if err != nil {
+		return false
+	}
+
+	// if nothing exists
+	if count == 0 {
+		return false
+	}
+
+	return true
 }

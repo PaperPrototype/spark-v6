@@ -23,7 +23,7 @@ func migrate() {
 
 		// purchases
 		&Purchase{},
-		&BuyRelease{},
+		&AttemptBuyRelease{},
 
 		// stripe payouts
 		&StripeConnection{},
@@ -34,24 +34,34 @@ func migrate() {
 	)
 }
 
-type BuyRelease struct {
-	StripeSessionID string `gorm:"primaryKey"`
-	ReleaseID       uint64
-	UserID          uint64
-	AmountPaying    uint16
-	ExpiresAt       time.Time
+type AttemptBuyRelease struct {
+	StripeSessionID       string `gorm:"primaryKey"`
+	StripePaymentIntentID string
+	ReleaseID             uint64
+	UserID                uint64
+	AmountPaying          uint64
+	ExpiresAt             time.Time
 }
 
 type Purchase struct {
 	ID     uint64 `gorm:"primaryKey"`
 	UserID uint64 `gorm:"not null"`
 
+	// id of the successful payment session
+	StripeSessionID string
+
+	// id of successful payment
+	StripePaymentIntentID string
+
 	CreatedAt  time.Time `gorm:"not null"`
-	AmountPaid uint16    `gorm:"default 0"`
+	AmountPaid uint64    `gorm:"default:0"`
+	AuthorsCut uint64    `gorm:"default:0"`
+
+	Desc string
 
 	// the purchases courseID
 	// course ID
-	CourseID uint64 `gorm:"default:1; not null"`
+	CourseID uint64 `gorm:"not null"`
 
 	// a specific course release
 	ReleaseID uint64
@@ -60,6 +70,7 @@ type Purchase struct {
 	// also set to newest version when user first buys a course
 	VersionID uint64
 
+	// Preloading the user (from UserID) who owns this pruchase
 	User User // don't add tag for cascading on delete cause it will delete the user when trying to delete the purchase
 }
 
@@ -115,7 +126,7 @@ type Course struct {
 
 type Release struct {
 	ID       uint64 `gorm:"primaryKey"`
-	Price    uint16 `gorm:"default:0"`
+	Price    uint64 `gorm:"default:0"`
 	Num      uint16 `gorm:"default:0"`
 	Markdown template.HTML
 	CourseID uint64 `gorm:"not null"`

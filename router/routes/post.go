@@ -11,7 +11,6 @@ import (
 	"main/msg"
 	"main/payments"
 	"main/router/auth"
-	"main/router/session"
 	"main/upload"
 	"net/http"
 	"os"
@@ -31,7 +30,7 @@ func postNew(c *gin.Context) {
 		return
 	}
 
-	user, err2 := session.GetLoggedInUser(c)
+	user, err2 := auth.GetLoggedInUser(c)
 	if err2 != nil {
 		log.Println("ERROR getting logged in user:", err2)
 		msg.SendMessage(c, "Error getting logged in user.")
@@ -46,7 +45,7 @@ func postNew(c *gin.Context) {
 	}
 
 	if !user.HasStripeConnection() {
-		msg.SendMessage(c, "You must connect your account to stripe before you can upload courses.")
+		msg.SendMessage(c, "You must connect your account to stripe before you can upload a course.")
 		c.Redirect(http.StatusFound, "/settings")
 		return
 	}
@@ -65,12 +64,12 @@ func postNew(c *gin.Context) {
 	title := c.PostForm("title")
 	title = strings.Trim(title, " ")
 
-	desc := c.PostForm("desc")
+	subtitle := c.PostForm("subtitle")
 
 	course := db.Course{
 		Name:     name,
 		Title:    title,
-		Subtitle: desc,
+		Subtitle: subtitle,
 		UserID:   user.ID,
 	}
 
@@ -86,7 +85,7 @@ func postNew(c *gin.Context) {
 		return
 	}
 
-	if uncleanName == "" || title == "" || desc == "" {
+	if uncleanName == "" || title == "" || subtitle == "" {
 		c.HTML(
 			http.StatusOK,
 			"new.html",
@@ -288,7 +287,7 @@ func postNewRelease(c *gin.Context) {
 		return
 	}
 
-	priceNum, err2 := strconv.ParseUint(price, 10, 64)
+	priceNumIncorrect, err2 := strconv.ParseUint(price, 10, 64)
 	if err2 != nil {
 		log.Println("routes ERROR getting course:", err2)
 		msg.SendMessage(c, "Error parsing price.")
@@ -296,7 +295,9 @@ func postNewRelease(c *gin.Context) {
 		return
 	}
 
-	if uint16(priceNum) > payments.MaxCoursePrice {
+	correctPriceNum := priceNumIncorrect * 100
+
+	if correctPriceNum > payments.MaxCoursePrice {
 		msg.SendMessage(c, "THe max price of a course is $10 USD")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 		return
@@ -306,7 +307,7 @@ func postNewRelease(c *gin.Context) {
 		Num:      course.GetAllNewestCourseReleaseNumLogError() + 1,
 		Markdown: template.HTML(desc),
 		CourseID: course.ID,
-		Price:    uint16(priceNum),
+		Price:    correctPriceNum,
 	}
 
 	err1 := db.CreateRelease(&release)
@@ -423,16 +424,45 @@ func postEditRelease(c *gin.Context) {
 	price := c.PostForm("price")
 	publicStr := c.PostForm("public")
 
+	release, err1 := db.GetAllRelease(releaseID)
+	if err1 != nil {
+		msg.SendMessage(c, "Error updating release.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	priceNumIncorrect, err2 := strconv.ParseUint(price, 10, 64)
+	if err2 != nil {
+		log.Println("routes ERROR getting course:", err2)
+		msg.SendMessage(c, "Error parsing price.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	correctPriceNum := priceNumIncorrect * 100
+
+	if correctPriceNum > payments.MaxCoursePrice {
+		msg.SendMessage(c, "THe max price of a course is $10 USD")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
 	var public bool = false
-	if publicStr != "" {
+	if publicStr != "" && release.HasVersions() {
 		public = true
 	}
 
-	err := db.UpdateRelease(releaseID, desc, price, public)
+	err := db.UpdateRelease(releaseID, desc, correctPriceNum, public)
 	if err != nil {
 		log.Println("routes ERROR updating release:", err)
 		msg.SendMessage(c, "Error updating release.")
 		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	if !release.HasVersions() {
+		msg.SendMessage(c, "Release must have uploads before you can make it public.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 		return
 	}
 

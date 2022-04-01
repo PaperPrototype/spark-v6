@@ -1,0 +1,57 @@
+{{ template "settings_header.html" . }}
+
+<div class="pad-sides-5">
+	<div style="margin-bottom:3rem;">
+		<h1>Courses</h1>
+		{{ if not .User.Verified }}
+			<p class="c-grey">You must verify your email before you can upload courses or accept payouts.</p>
+		{{ else }}
+			{{ if not .User.HasStripeConnection }}
+			<button href="/settings/stripe/connect" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;">
+				Connect to Stripe
+			</button>
+			<p class="c-grey">You must verify your email before you can upload courses or accept payouts.</p>
+			{{ else }}
+				<p>
+					<button href="/settings/stripe/connect" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;">
+						Update Stripe Info
+					</button>
+				</p>
+				<form action="/new" method="post">
+					<button type="submit" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">
+						New Course
+					</button>
+				</form>
+			{{ end }}
+		{{ end }}
+	</div>
+	<h1>Payouts</h1>
+	<p class="c-grey">
+		We take a 15% cut per sale.
+	</p>
+	<div>
+		{{ if .Courses }}
+			{{ range .Courses }}
+				<div class="thin-all bd" style="padding:0.5rem; margin-bottom:1rem;">
+					<h2>{{ .Title }}</h2>
+					{{ if not .GetPurchasesLogError }}
+						<p class="c-grey">No purchases on this course yet</p>
+					{{ else }}
+						{{ range .GetPurchasesLogError }}
+							<div style="margin-bottom:0.5rem;">
+								<p>Paid: ${{ .GetAmountPaidUSD }} USD</p>
+								<p>Your cut: ${{ .GetAuthorsCutUSD }} USD <span class="c-grey"> (Estimated. Not including taxes or transfer fees)</span></p>
+							</div>
+						{{ end }}
+					{{ end }}
+				</div>
+			{{ end }}
+		{{ else }}
+			<p class="c-grey">You don't have any purchases yet.</p>
+		{{ end }}
+	</div>
+	<form action="/settings/stripe/connect" style="margin-bottom:3rem;">
+	</form>
+</div>
+
+{{ template "settings_footer.html" . }}

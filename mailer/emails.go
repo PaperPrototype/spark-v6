@@ -41,11 +41,10 @@ func SendVerification(userID uint64) error {
 
 	from := mail.NewEmail("Sparker", "spark3dsoftware@gmail.com")
 
-	to := mail.NewEmail("You", "a.spytech360@gmail.com")
+	to := mail.NewEmail("You", user.Email)
 
-	subject := "Sending with SendGrid is Fun"
-	plainTextContent := "and easy to do anywhere, even with Go"
-	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+	subject := "Verify your Sparker account"
+	message := mail.NewSingleEmail(from, subject, to, helpers.GetHost()+"/login/verify/"+verify.VerifyUUID, htmlContent)
 	response, err := client.Send(message)
 	if err != nil {
 		log.Println("mailer/emails ERROR sending verification email", err)

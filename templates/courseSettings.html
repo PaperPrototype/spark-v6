@@ -44,9 +44,8 @@
 	</form>
 </div>
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
-	<h2>Payouts</h2>
-	<p>Total payout amount ${{ .Course.GetCurrentTotalCoursePayoutAmountLogError }} (USD)</p>
-	<a href="/user/payouts">Go to payouts</a>
+	<h2>Purchases</h2>
+	<a href="/settings/courses">See purchases</a>
 </div>
 <div x-data="{ open: false }" class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
 	{{ if .Releases }}
@@ -68,7 +67,7 @@
 							<input hidden name="releaseID" value="{{ .ID }}">
 							<label>Price USD</label>
 							<div style="margin-bottom: 1rem;">
-								<input max="10" step="1" name="price" class="form-input" type="number" value="{{ .Price }}">
+								<input max="10" step="1" name="price" class="form-input" type="number" value="{{ .GetPriceUSD }}">
 							</div>
 							<label style="margin-top: 0.5rem;">Markdown Description</label>
 							<div style="margin-bottom: 1rem;">

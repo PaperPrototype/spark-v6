@@ -15,7 +15,7 @@
 			</button>
 		{{ else }}
 			<!-- if release has versions -->
-			{{ if ne .Release.GetNewestVersionLogError.ID 0 }}
+			{{ if .Release.HasVersions }}
 				<!-- if the user owns the course -->
 				{{ if eq .Course.UserID .User.ID }}
 					<button
@@ -28,7 +28,7 @@
 						<button type="submit"
 						style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
 						padding-left:2rem; padding-right:2rem;"
-						class="form-btn bd">Buy Course ${{ .Release.Price }} (USD)</button>
+						class="form-btn bd">Buy Course ${{ .Release.GetPriceUSD }} (USD)</button>
 					</form>
 					<p style="color:var(--c-grey);">You will be directed to stripe for payments</p>
 				{{ end }}

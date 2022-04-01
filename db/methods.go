@@ -6,6 +6,12 @@ import (
 	"main/markdown"
 )
 
+func (user *User) GetAuthorCourses() ([]Course, error) {
+	courses := []Course{}
+	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Find(&courses).Error
+	return courses, err
+}
+
 func (course *Course) GetPublicCourseReleasesLogError() []Release {
 	releases := []Release{}
 	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Where("public = ?", true).Order("num DESC").Find(&releases).Error

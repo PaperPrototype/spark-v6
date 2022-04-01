@@ -71,18 +71,29 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 		return
 	}
 
+	redirect := false
 	version, err := course.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting version:", err)
-		msg.SendMessage(c, "That version may have been deleted!")
-		notFound(c)
+		msg.SendMessage(c, "That course upload may have been deleted.")
+		redirect = true
+	}
+
+	if redirect {
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
 		return
 	}
 
-	release, err1 := db.GetRelease(version.ReleaseID)
+	redirectRelease := false
+	release, err1 := db.GetPublicReleaseWithID(version.ReleaseID)
 	if err1 != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting release:", err1)
-		notFound(c)
+		msg.SendMessage(c, "No course releases available.")
+		redirectRelease = true
+	}
+
+	if redirectRelease {
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
 		return
 	}
 
