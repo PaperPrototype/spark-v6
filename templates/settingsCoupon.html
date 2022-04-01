@@ -1,0 +1,14 @@
+{{ template "settings_header.html" . }}
+
+<div class="pad-sides-5">
+	<div style="margin-bottom:3rem;">
+		<h1>Coupons</h1>
+		{{ if .Courses }}
+			<p class="c-grey">Coupons do not work yet.</p>
+		{{ else }}
+			<p class="c-grey">You must upload at least one course.</p>
+		{{ end }}
+	</div>
+</div>
+
+{{ template "settings_footer.html" . }}

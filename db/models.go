@@ -102,6 +102,9 @@ type StripeConnection struct {
 	UserID          uint64 `gorm:"not null,unique"`
 }
 
+type StripeSubscription struct {
+}
+
 type Session struct {
 	TokenUUID string `gorm:"primaryKey, unique"` // this is the session id
 	DeleteAt  time.Time
@@ -122,6 +125,19 @@ type Course struct {
 
 	Releases []Release `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Versions []Version `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+type Coupon struct {
+	StripeCouponID string `gorm:"primaryKey"`
+	CourseID       uint64
+	// TODO
+	/*
+		- CreateCoupon(ExpiresBy)
+		- Use methods to check coupons abaility
+			- GetNumAvailable
+			- Available
+			- GetStripeData
+	*/
 }
 
 type Release struct {

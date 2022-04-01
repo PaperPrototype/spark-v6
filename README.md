@@ -30,4 +30,6 @@ Use `go run .` once you have the config files created and set.
 You may need to install dependancies using `go mod tidy`.
 
 TODO
-- generate coupon for 5% off on 404 not found page
+- generate 5% off coupon when users land on 404 not found page
+- Course hierarchy system.
+	- if Course.Level <= 1 it has to be free.

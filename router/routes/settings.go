@@ -327,3 +327,25 @@ func postSettingsEditEmail(c *gin.Context) {
 	msg.SendMessage(c, "Successfully updated email.")
 	c.Redirect(http.StatusFound, "/settings")
 }
+
+func getSettingsCoupons(c *gin.Context) {
+	user := auth.GetLoggedInUserLogError(c)
+
+	courses, err := user.GetAuthorCourses()
+	if err != nil {
+		log.Println("routes/settings ERROR getting AuthorCourses in getSettingsCourses:", err)
+	}
+
+	c.HTML(
+		http.StatusOK,
+		"settingsCoupon.html",
+		gin.H{
+			"Courses":  courses,
+			"Menu":     "Coupons",
+			"User":     user,
+			"Messages": msg.GetMessages(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
+}
