@@ -240,3 +240,90 @@ func getStripeConnectFinished(c *gin.Context) {
 	// user is successfully connected
 	c.Redirect(http.StatusFound, "/settings/courses")
 }
+
+func postSettingsEditUser(c *gin.Context) {
+	user, err := auth.GetLoggedInUser(c)
+	if err != nil {
+		log.Println("routes/settings ERROR getting user in postSettingsEditUser:", err)
+		msg.SendMessage(c, "Error getting logged in user.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	username := c.PostForm("username")
+	name := c.PostForm("name")
+	bio := c.PostForm("bio")
+
+	log.Println("bio:", bio)
+
+	// if username changed
+	if username != user.Username {
+		if !db.UsernameAvailableLogError(username) {
+			err2 := db.UpdateUser(user.ID, user.Username, name, bio, user.Email)
+			if err2 != nil {
+				log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err2)
+				msg.SendMessage(c, "Error updating user.")
+				c.Redirect(http.StatusFound, "/settings")
+				return
+			}
+
+			msg.SendMessage(c, "That username is already taken.")
+			c.Redirect(http.StatusFound, "/settings")
+			return
+		}
+	}
+
+	err1 := db.UpdateUser(user.ID, username, name, bio, user.Email)
+	if err1 != nil {
+		log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err1)
+		msg.SendMessage(c, "Error updating username.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
+	msg.SendMessage(c, "Successfully updated user.")
+	c.Redirect(http.StatusFound, "/settings")
+}
+
+func postSettingsEditEmail(c *gin.Context) {
+	user, err := auth.GetLoggedInUser(c)
+	if err != nil {
+		log.Println("routes/settings ERROR getting user in postSettingsEditUser:", err)
+		msg.SendMessage(c, "Error getting logged in user.")
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	email := c.PostForm("email")
+
+	if user.Email == email {
+		msg.SendMessage(c, "Email is the same. Nothing to update.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	} else {
+		if !db.EmailAvailable(email) {
+			msg.SendMessage(c, "That email is taken.")
+			c.Redirect(http.StatusFound, "/settings")
+			return
+		}
+
+		err2 := user.SetVerified(false)
+		if err2 != nil {
+			log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err2)
+			msg.SendMessage(c, "Error updating user's email.")
+			c.Redirect(http.StatusFound, "/settings")
+			return
+		}
+
+		err1 := db.UpdateUser(user.ID, user.Username, user.Name, user.Bio, email)
+		if err1 != nil {
+			log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err1)
+			msg.SendMessage(c, "Error updating user's email.")
+			c.Redirect(http.StatusFound, "/settings")
+			return
+		}
+	}
+
+	msg.SendMessage(c, "Successfully updated email.")
+	c.Redirect(http.StatusFound, "/settings")
+}

@@ -66,8 +66,8 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/settings/stripe/connect/return", mustBeLoggedIn, getStripeConnectFinished)
 
 	// editing settings
-	router.POST("/settings/edit/user", mustBeLoggedIn)
-	router.POST("/settings/edit/email", mustBeLoggedIn)
+	router.POST("/settings/edit/user", mustBeLoggedIn, postSettingsEditUser)
+	router.POST("/settings/edit/email", mustBeLoggedIn, postSettingsEditEmail)
 
 	router.GET("/courses", getCourses) // search courses with possible url query
 	/*

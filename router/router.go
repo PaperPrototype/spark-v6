@@ -13,6 +13,9 @@ var router *gin.Engine
 
 func Setup() {
 	router = gin.Default()
+	router.RemoveExtraSlash = true
+	router.RedirectTrailingSlash = true
+
 	router.SetFuncMap(template.FuncMap{
 		// a sictionary util that can be used to pass input to templates
 		// much like gin.H{}

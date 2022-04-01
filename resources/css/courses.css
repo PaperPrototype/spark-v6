@@ -6,7 +6,7 @@
 
 .course-card {
 	width: 12rem;
-	height: 12rem;
+	height: 100%;
 	padding-top: 0.5rem;
 	padding: 1rem;
 	border-radius: 0.5rem;

@@ -184,15 +184,9 @@ func postSignup(c *gin.Context) {
 		return
 	}
 
-	emailAvailable, err2 := db.EmailAvailable(email)
+	emailAvailable := db.EmailAvailable(email)
 	if !emailAvailable {
 		msg.SendMessage(c, "That email is already taken.")
-		c.Redirect(http.StatusFound, "/signup")
-		return
-	}
-
-	if err2 != nil {
-		msg.SendMessage(c, "Email taken or error.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}

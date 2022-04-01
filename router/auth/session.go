@@ -79,9 +79,9 @@ func GetLoggedInUserLogError(c *gin.Context) *db.User {
 		log.Println("session ERROR deleting old session? (possilbe there is no sessions):", err)
 	}
 
-	user, err := db.GetUserFromSession(GetSessionToken(c))
-	if err != nil {
-		log.Println("ERROR finding user for that session:", err)
+	user, err1 := db.GetUserFromSession(GetSessionToken(c))
+	if err1 != nil {
+		log.Println("ERROR finding user for that session:", err1)
 	}
 
 	return user

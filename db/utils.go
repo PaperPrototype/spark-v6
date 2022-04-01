@@ -70,20 +70,38 @@ func UsernameAvailable(username string) (bool, error) {
 	return true, nil
 }
 
-func EmailAvailable(email string) (bool, error) {
+func UsernameAvailableLogError(username string) bool {
+	var count int64 = 0
+	err := gormDB.Model(&User{}).Where("username = ?", username).Count(&count).Error
+	// if err then taken
+	if err != nil {
+		log.Println("db/utils ERROR checking if username is available in UsernameAvailableLogError:", err)
+		return false
+	}
+
+	// if there is another user with that name taken
+	if count != 0 {
+		return false
+	}
+
+	return true
+}
+
+func EmailAvailable(email string) bool {
 	var count int64 = 0
 	err := gormDB.Model(&User{}).Where("email = ?", email).Count(&count).Error
 	// if err then taken
 	if err != nil {
-		return false, err
+		log.Println("db/utils ERROR checking if email is available in EmailAvailable:", err)
+		return false
 	}
 
 	// if there is another user with that email
 	if count != 0 {
-		return false, nil
+		return false
 	}
 
-	return true, nil
+	return true
 }
 
 func SessionExists(tokenUUID string) bool {

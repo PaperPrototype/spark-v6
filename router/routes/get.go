@@ -542,7 +542,7 @@ func getVerify(c *gin.Context) {
 	}
 
 	message := "Failed to verify user"
-	err2 := user.SetVerifiedTrue()
+	err2 := user.SetVerified(true)
 	if err2 != nil {
 		log.Println("routes/get ERROR setting verified to true in getVerify:", err2)
 	} else {
