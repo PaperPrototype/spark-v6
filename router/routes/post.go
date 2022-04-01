@@ -165,26 +165,19 @@ func postSignup(c *gin.Context) {
 	confirm := c.PostForm("confirm")
 	email := c.PostForm("email")
 
-	available, err := db.UsernameAvailable(username)
+	available := db.UsernameAvailableLogError(username)
 	if !available {
 		msg.SendMessage(c, "Username already taken.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
-
-	if err != nil {
-		msg.SendMessage(c, "Username taken or error.")
-		c.Redirect(http.StatusFound, "/signup")
-		return
-	}
-
 	if strings.Contains(username, " ") {
 		msg.SendMessage(c, "Username cannot have spaces.")
 		c.Redirect(http.StatusFound, "/signup")
 		return
 	}
 
-	emailAvailable := db.EmailAvailable(email)
+	emailAvailable := db.EmailAvailableLogError(email)
 	if !emailAvailable {
 		msg.SendMessage(c, "That email is already taken.")
 		c.Redirect(http.StatusFound, "/signup")

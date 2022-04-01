@@ -301,7 +301,7 @@ func postSettingsEditEmail(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/settings")
 		return
 	} else {
-		if !db.EmailAvailable(email) {
+		if !db.EmailAvailableLogError(email) {
 			msg.SendMessage(c, "That email is taken.")
 			c.Redirect(http.StatusFound, "/settings")
 			return
