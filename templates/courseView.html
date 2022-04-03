@@ -111,15 +111,17 @@
 	white-space: -pre-wrap;
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
-	{{ if eq .Course.UserID .User.ID }}
-		<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings">Course Settings</a>
-	{{ end }}
 	{{ if not .LoggedIn }}
 		<p>
 			<a href="/login">
 				login to view your progress!
 			</a>
 		</p>
+	{{ end }}
+	{{ if eq .Course.UserID .User.ID }}
+		<div style="text-align:right;" >
+			<i class="fa-solid fa-gear hoverable bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
+		</div>
 	{{ end }}
 </div>
 <div x-data>
@@ -217,10 +219,12 @@
 	<!-- course contents-->
 	<div x-show="$store.courseView.view === 'contents'" id="courseMain" class="bg-overlay" style="padding-top:1rem; padding-bottom:2rem;">
 		<div class="bd thin-light mar-sides-5">
-			<div style="display:flex;" class="thin-bot">
-				<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="$store.courseView.editingContent = ! $store.courseView.editingContent; loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
-				<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = ! $store.courseView.editingContent" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
-			</div>
+			{{ if eq .Course.UserID .User.ID }}
+				<div style="display:flex;" class="thin-bot">
+					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="$store.courseView.editingContent = ! $store.courseView.editingContent; loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
+					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = ! $store.courseView.editingContent" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
+				</div>
+			{{ end }}
 			<div x-show="$store.courseView.editingContent === false" style="padding-right:2%; padding-left:2%;" id="courseContent">
 
 			</div>
