@@ -51,6 +51,11 @@ func getCourse(c *gin.Context) {
 		return
 	}
 
+	if release.Price == 0 {
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
+		return
+	}
+
 	// convert release desc to support markdown
 	releaseMarkdowned, err5 := markdown.Convert([]byte(release.Markdown))
 	if err5 != nil {
@@ -313,10 +318,10 @@ func getCourseVersion(c *gin.Context) {
 
 func getCourseRelease(c *gin.Context) {
 	username := c.Params.ByName("username")
-	name := c.Params.ByName("course")
+	courseName := c.Params.ByName("course")
 	releaseNum := c.Params.ByName("releaseNum")
 
-	course, err := db.GetUserCoursePreloadUser(username, name)
+	course, err := db.GetUserCoursePreloadUser(username, courseName)
 	if err != nil {
 		log.Println("ERROR getting course:", err)
 		notFound(c)
@@ -339,6 +344,11 @@ func getCourseRelease(c *gin.Context) {
 				"Meta":     metaDefault,
 			},
 		)
+		return
+	}
+
+	if release.Price == 0 {
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
 		return
 	}
 
