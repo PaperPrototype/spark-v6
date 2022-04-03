@@ -48,7 +48,7 @@
 	{{ end }}
 </ul>
 
-<div @click.outside="$store.sideNav.show = false" x-data x-cloak x-show="$store.sideNav.show" style="position:fixed; top:3.5rem; right:1rem; box-shadow: 0rem 0rem 0.5rem grey;" class="bd bg-overlay">
+<div @click.outside="$store.sideNav.show = false" x-data x-cloak x-show="$store.sideNav.show" style="position:fixed; top:3.5rem; right:5%; box-shadow: 0rem 0rem 0.5rem grey; padding-right:1rem;" class="bd bg-overlay">
 	<div class="nav" style="padding:0.5rem;">
 		{{ if .LoggedIn }}
 			<li>
