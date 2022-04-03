@@ -80,4 +80,6 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/new", postNew)
 
 	router.GET("/lost", getLost)
+
+	router.GET("/about", getAbout)
 }

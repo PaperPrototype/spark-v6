@@ -592,3 +592,16 @@ func getNewVerify(c *gin.Context) {
 	msg.SendMessage(c, "Sent verification link to your email. Make sure to check your spam folder.")
 	c.Redirect(http.StatusFound, "/settings")
 }
+
+func getAbout(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"about.html",
+		gin.H{
+			"Messages": msg.GetMessages(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
+}
