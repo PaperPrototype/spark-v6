@@ -1,6 +1,6 @@
 <!-- Persistent stuff like the top nav bar menu or chat box that should always be available -->
 
-<ul class="nav nav-row pad-sides-05rem bg-overlay" id="topNav" style="z-index: -1; border-bottom:0.09rem solid var(--c-grey);">
+<ul class="nav nav-row pad-sides-5 bg-overlay" id="topNav" style="z-index: -1; border-bottom:0.09rem solid var(--c-grey);">
 	{{ if not .LoggedIn }}
 		<img href="/" class="nav-logo" style="width: 3rem; height:3rem; display: inline-block; position: relative;">
 		<li>
@@ -21,7 +21,7 @@
 		<li>
 			<a class="hoverable" href="/signup">signup</a>
 		</li>
-		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show" style="padding-right:1rem;">
+		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show">
 			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
 		</li>
 	{{ else }}
@@ -42,7 +42,7 @@
 		<li class="nav-search-hidden-stick-right">
 			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/{{ .User.Username }}"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
 		</li>
-		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show" style="padding-right:1rem;">
+		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show">
 			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
 		</li>
 	{{ end }}
