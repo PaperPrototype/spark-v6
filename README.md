@@ -33,3 +33,7 @@ TODO
 - generate 5% off coupon when users land on 404 not found page
 - Course hierarchy system.
 	- if Course.Level <= 1 it has to be free.
+- In case if user forgets to claim purchase use stripe webhook to verify and claim purchase for the user
+	- much more robust
+
+- 

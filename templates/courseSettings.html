@@ -109,7 +109,7 @@
 									</div>
 									{{ if .Error }}
 										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<form action="/{{ $.Course.Name }}/settings/version/delete" method="post">
+											<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/delete" method="post">
 												<input hidden name="versionID" value="{{ .ID }}">
 												<button class="form-btn bd" style="background-color: var(--c-code);" type="submit">Delete upload</button>
 											</form>

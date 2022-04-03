@@ -1,8 +1,8 @@
 package db
 
 import (
-	"log"
 	"main/markdown"
+	"time"
 )
 
 func GetAuthorsCourses(authorUserID uint64) ([]Course, error) {
@@ -182,14 +182,8 @@ func GetAllNewestCourseRelease(courseID uint64) (*Release, error) {
 }
 
 func GetBuyRelease(stripeSessionID string) (*AttemptBuyRelease, error) {
-	err := DeleteExpiredBuyReleases()
-	if err != nil {
-		log.Println("db ERROR deleting expired releases:", err)
-		return nil, err
-	}
-
 	buyRelease := AttemptBuyRelease{}
-	err1 := gormDB.Model(&AttemptBuyRelease{}).Where("stripe_session_id = ?", stripeSessionID).First(&buyRelease).Error
+	err1 := gormDB.Model(&AttemptBuyRelease{}).Where("stripe_session_id = ?", stripeSessionID).Where("expires_at > ?", time.Now()).First(&buyRelease).Error
 	return &buyRelease, err1
 }
 

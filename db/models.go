@@ -147,9 +147,16 @@ type Release struct {
 	Markdown template.HTML
 	CourseID uint64 `gorm:"not null"`
 	Public   bool   `gorm:"default:f"`
+	Level    uint32 `gorm:"default:0; not null"`
 
 	Versions  []Version  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+// points to a parent course
+type Hierarchy struct {
+	ReleaseID    uint64
+	NextCourseID uint64
 }
 
 type Version struct {
