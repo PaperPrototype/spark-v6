@@ -9,6 +9,11 @@
 	--c-code: rgb(255, 38, 135);
 }
 
+.nav-logo {
+	content:url('/resources/images/spark_dark.png');
+}
+
+/* dark mode */
 @media (prefers-color-scheme: dark) {
 	:root {
 		--c-black: rgb(0, 0, 0);
@@ -22,6 +27,14 @@
 	a {
 		color: rgb(113, 208, 255);
 	}
+
+	.nav-logo {
+		content:url('/resources/images/spark_white.png');
+	}
+}
+
+.hoverable:hover {
+	background-color: var(--c-bg);
 }
 
 .c-grey {
@@ -30,6 +43,10 @@
 
 .bd {
 	border-radius: 0.5rem;
+}
+
+.pad-05 {
+	padding: 0.5rem;
 }
 
 .pad-sides-05rem {
@@ -116,11 +133,14 @@
 
 .nav {
 	margin: 0;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
 	list-style: none;
+}
+
+.nav-row {
 	display: flex;
 	flex-direction: row;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
 }
 
 .nav li {

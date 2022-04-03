@@ -5,7 +5,7 @@
 		<title>{{ .Meta.Title }}</title>
 
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=0.9">
+		<meta name="viewport" content="width=device-width, initial-scale=0.7">
 
 		<script defer src="/resources/scripts/alpine.js"></script>
 
@@ -38,7 +38,6 @@
 		</script>
 	</head>
 	<body>
-
-		<img src="/resources/images/homepage.png" style="position: absolute; top: 0; z-index: -3; left: 0; opacity: 0.25;">
+		<img src="/resources/images/homepage.png" style="position: fixed; top: 0; z-index: -3; left: 0; bottom:0; opacity: 0.1; overflow-x:hidden;">
 		<main>
 		{{ template "_persistent.html" . }}

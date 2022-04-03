@@ -3,9 +3,10 @@ async function SendMessage(messageText) {
 
 	// message
 	let messageNode = document.createElement("h4");
-	messageNode.style = "padding: 1rem;";
+	messageNode.style = "padding: 1rem; display:flex; flex-wrap:nowrap;";
 	messageNode.setAttribute("hideOnClick", "");
-	messageNode.innerText = messageText;
+	messageNode.innerHTML = 
+	`<span>` + messageText + `</span>` + ` <i style="margin-left:auto;" class="fa-solid fa-xmark"></i>`;
 
 	messagesMount.appendChild(messageNode);
 

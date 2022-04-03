@@ -16,3 +16,9 @@ function convertHrefs() {
 document.addEventListener("DOMContentLoaded", function(event) {
 	convertHrefs();
 });
+
+document.addEventListener("alpine:init", function(event) {
+	Alpine.store("sideNav", {
+		show: false,
+	});
+});

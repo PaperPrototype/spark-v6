@@ -15,9 +15,9 @@ import (
 
 const MediaChunkSize int = 16384
 
-// represents 10000000 bytes
-// or 10 MB's
-const MaxMediaChunkSize int64 = 10000000
+// 15728640 bytes
+// 15 MB's
+const MaxMediaChunkSize int64 = 15728640
 
 var ErrMediaTooLarge error = errors.New("media size exceeded max asset size of 10 MB.")
 

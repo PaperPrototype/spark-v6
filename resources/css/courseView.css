@@ -42,6 +42,7 @@
 	background-color: var(--c-black) !important;
 	font-family: 'Red Hat Mono', monospace;
 	overflow-x: scroll;
+	border-radius: 0.5rem;
 }
 
 [markdown] > pre > * {
