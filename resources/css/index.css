@@ -7,6 +7,7 @@
 	--c-bg: rgb(229, 229, 229);
 	--c-text: rgb(0, 0, 0);
 	--c-code: rgb(255, 33, 133);
+	--c-code-hover: rgb(227, 0, 102);
 	--c-shadow: rgb(198, 198, 198);
 }
 
@@ -38,6 +39,10 @@
 
 .hoverable:hover {
 	background-color: var(--c-bg);
+}
+
+.hoverable-bg-code:hover {
+	background-color: var(--c-code-hover);
 }
 
 .hoverable-bg-overlay:hover {
