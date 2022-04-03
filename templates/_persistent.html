@@ -2,58 +2,69 @@
 
 <ul class="nav nav-row pad-sides-05rem" id="topNav" style="z-index: -1;">
 	{{ if not .LoggedIn }}
-		<img href="/" class="nav-logo" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;">
+		<img href="/" class="hoverable bd nav-logo" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;">
 		<li>
-			<a href="/">
+			<a href="/" class="hoverable">
 				sparker
 			</a>
 		</li>
 		<li>
-			<a href="/login">login</a>
+			<a class="hoverable" href="/login">login</a>
 		</li>
 		<li>
-			<a href="/signup">signup</a>
+			<a class="hoverable" href="/signup">signup</a>
 		</li>
 		<li>
-			<a href="/courses">courses</a>
+			<a class="hoverable" href="/courses">courses</a>
 		</li>
 		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show" style="margin-left:auto; padding-right:1rem;">
-			<i class="fa-solid fa-bars"></i>
+			<i class="fa-solid fa-bars hoverable bd" style="padding:0.5rem;"></i>
 		</li>
 	{{ else }}
 		<!-- Logged in -->
-
-		<img href="/" class="nav-logo" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;">
+		<img href="/" class="hoverable bd nav-logo" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;">
 		<li>
-			<a href="/">sparker</a>
+			<a href="/" class="hoverable">sparker</a>
 		</li>
-			<a style="margin-left:auto;" href="/{{ .User.Username }}">@{{ .User.Username }}</a>
+			<a class="hoverable" style="margin-left:auto; margin-top:0.7rem; padding-bottom:0.5rem; margin-bottom:auto;" href="/{{ .User.Username }}">@{{ .User.Username }}</a>
 		</li>
 		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show" style="padding-right:1rem;">
-			<i class="fa-solid fa-bars"></i>
+			<i class="fa-solid fa-bars hoverable bd" style="padding:0.5rem;"></i>
 		</li>
 	{{ end }}
 </ul>
 
-<div x-data x-show="$store.sideNav.show" style="position:fixed; top:3rem; right:1rem;" class="bd bg-overlay">
+<div @click.outside="$store.sideNav.show = false" x-data x-show="$store.sideNav.show" style="position:fixed; top:3.5rem; right:1rem;" class="bd bg-overlay">
 	<div class="nav thin-light bd" style="text-align:right; padding:0.5rem;">
-		<li>
-			<a href="/logout">logout</a>
-		</li>
-		<li>
-			<a href="/courses">courses</a>
-		</li>
-		{{ if .User.HasStripeConnection }}
+		{{ if .LoggedIn }}
 			<li>
-				<a href="/new">new</a>
+				<a class="hoverable" href="/logout">logout</a>
+			</li>
+			<li>
+				<a class="hoverable" href="/courses">courses</a>
+			</li>
+			{{ if .User.HasStripeConnection }}
+				<li>
+					<a class="hoverable" href="/new">new</a>
+				</li>
+			{{ end }}
+			<li>
+				<a class="hoverable" href="/{{ .User.Username }}">@{{ .User.Username }}</a>
+			</li>
+			<li>
+				<a class="hoverable" href="/settings">settings</a>
+			</li>
+		{{ else }}
+			<li>
+				<a class="hoverable" href="/courses">courses</a>
+			</li>
+			<li>
+				<a class="hoverable" href="/login">login</a>
+			</li>
+			<li>
+				<a class="hoverable" href="/signup">signup</a>
 			</li>
 		{{ end }}
-		<li>
-			<a href="/{{ .User.Username }}">@{{ .User.Username }}</a>
-		</li>
-		<li>
-			<a href="/settings">settings</a>
-		</li>
 	</div>
 </div>
 
