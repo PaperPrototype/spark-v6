@@ -8,10 +8,7 @@
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
 	<h1 style="margin-bottom:0;">{{ .Course.Title }}</h1>
 	{{ if .Release }}
-		<div style="color:var(--c-code); color:white; margin-bottom:3rem;">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</div>
-	{{ end }}
-	{{ if eq .Course.UserID .User.ID }}
-		<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings">Settings</a>
+		<div style="margin-bottom:3rem;">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</div>
 	{{ end }}
 	<!-- allow line breaks in the pre tag -->
 	<pre style="
@@ -22,6 +19,11 @@
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
 	{{ template "course_buyOrOpenButton.html" . }}
+	{{ if eq .Course.UserID .User.ID }}
+		<div style="text-align:right;">
+			<i class="fa-solid fa-gear hoverable-bg-overlay bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
+		</div>
+	{{ end }}
 </div>
 {{ if .Release }}
 	<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">

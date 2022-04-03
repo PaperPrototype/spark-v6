@@ -9,7 +9,7 @@
 	width: 100%;
 }
 
-/* when width larger than 900px */
+/* when width larger than 800px */
 @media only screen and (min-width: 800px){
 	.landing-width {
 		width: 50%;

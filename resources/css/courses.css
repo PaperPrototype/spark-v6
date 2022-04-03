@@ -6,12 +6,13 @@
 
 .course-card {
 	width: 12rem;
-	height: 100%;
+	height: auto;
 	padding-top: 0.5rem;
 	padding: 1rem;
 	border-radius: 0.5rem;
 	background-color: var(--c-bg-overlay);
 	margin: 1rem;
+	box-shadow: 0rem 0rem 0.5rem var(--c-shadow);
 }
 
 .course-card-temp {

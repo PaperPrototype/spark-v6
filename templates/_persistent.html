@@ -1,68 +1,82 @@
 <!-- Persistent stuff like the top nav bar menu or chat box that should always be available -->
 
-<ul class="nav nav-row pad-sides-05rem" id="topNav" style="z-index: -1;">
+<ul class="nav nav-row pad-sides-05rem bg-overlay" id="topNav" style="z-index: -1; border-bottom:0.09rem solid var(--c-grey);">
 	{{ if not .LoggedIn }}
-		<img href="/" class="hoverable bd nav-logo" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;">
+		<img href="/" class="nav-logo" style="width: 3rem; height:3rem; display: inline-block; position: relative;">
 		<li>
-			<a href="/" class="hoverable">
-				sparker
+			<a href="/" style="font-size:1.2rem;">
+				Sparker
 			</a>
 		</li>
-		<li>
+		<li style="margin-left:auto;" class="nav-search-bar-signup">
+			<form action="/courses" method="get">
+				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0rem;">
+					<i class="fa-solid fa-magnifying-glass"></i><input name="query" placeholder="search..." class="pad-05 bd-none bd hide-focus">
+				</label>
+			</form>
+		</li>
+		<li style="margin-left:auto;">
 			<a class="hoverable" href="/login">login</a>
 		</li>
 		<li>
 			<a class="hoverable" href="/signup">signup</a>
 		</li>
-		<li>
-			<a class="hoverable" href="/courses">courses</a>
-		</li>
-		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show" style="margin-left:auto; padding-right:1rem;">
-			<i class="fa-solid fa-bars hoverable bd" style="padding:0.5rem;"></i>
+		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show" style="padding-right:1rem;">
+			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
 		</li>
 	{{ else }}
 		<!-- Logged in -->
-		<img href="/" class="hoverable bd nav-logo" style="width: 3rem; display: inline-block; position: relative; margin-left:0.5rem;">
+		<img href="/" class="nav-logo" style="width: 3rem; height:3rem; display: inline-block; position: relative;">
 		<li>
-			<a href="/" class="hoverable">sparker</a>
+			<a href="/" style="font-size:1.2rem;">
+				Sparker
+			</a>
 		</li>
-			<a class="hoverable" style="margin-left:auto; margin-top:0.7rem; padding-bottom:0.5rem; margin-bottom:auto;" href="/{{ .User.Username }}">@{{ .User.Username }}</a>
+		<li style="margin-left:auto;" class="nav-search-bar">
+			<form action="/courses" method="get">
+				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0rem;">
+					<i class="fa-solid fa-magnifying-glass"></i><input name="query" placeholder="search..." class="pad-05 bd-none bd hide-focus">
+				</label>
+			</form>
+		</li>
+		<li class="nav-search-hidden-stick-right">
+			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/{{ .User.Username }}"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
 		</li>
 		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show" style="padding-right:1rem;">
-			<i class="fa-solid fa-bars hoverable bd" style="padding:0.5rem;"></i>
+			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
 		</li>
 	{{ end }}
 </ul>
 
-<div @click.outside="$store.sideNav.show = false" x-data x-show="$store.sideNav.show" style="position:fixed; top:3.5rem; right:1rem;" class="bd bg-overlay">
-	<div class="nav thin-light bd" style="text-align:right; padding:0.5rem;">
+<div @click.outside="$store.sideNav.show = false" x-data x-cloak x-show="$store.sideNav.show" style="position:fixed; top:3.5rem; right:1rem; box-shadow: 0rem 0rem 0.5rem grey;" class="bd bg-overlay">
+	<div class="nav" style="padding:0.5rem;">
 		{{ if .LoggedIn }}
 			<li>
-				<a class="hoverable" href="/logout">logout</a>
-			</li>
-			<li>
-				<a class="hoverable" href="/courses">courses</a>
+				<a class="hoverable" href="/courses"><i class="fa-solid fa-arrow-pointer" style="padding-left:0.3rem; padding-right:0.5rem;"></i> courses</a>
 			</li>
 			{{ if .User.HasStripeConnection }}
 				<li>
-					<a class="hoverable" href="/new">new</a>
+					<a class="hoverable" href="/new"><i class="fa-solid fa-code" style="padding-right:0.26rem;"></i> new</a>
 				</li>
 			{{ end }}
 			<li>
-				<a class="hoverable" href="/{{ .User.Username }}">@{{ .User.Username }}</a>
+				<a class="hoverable" href="/{{ .User.Username }}"><i class="fa-solid fa-at pad-right-05rem"></i> {{ .User.Username }}</a>
 			</li>
 			<li>
-				<a class="hoverable" href="/settings">settings</a>
+				<a class="hoverable" href="/settings"><i class="fa-solid fa-gear pad-right-05rem"></i> settings</a>
+			</li>
+			<li>
+				<a class="hoverable" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket pad-right-05rem"></i> logout</a>
 			</li>
 		{{ else }}
 			<li>
-				<a class="hoverable" href="/courses">courses</a>
+				<a class="hoverable" href="/courses"><i class="fa-solid fa-arrow-pointer" style="padding-left:0.2rem; padding-right:0.95rem;"></i> courses</a>
 			</li>
 			<li>
-				<a class="hoverable" href="/login">login</a>
+				<a class="hoverable" href="/login"><i class="fa-solid fa-right-to-bracket" style="padding-left:0.1rem; padding-right:0.7rem;"></i> login</a>
 			</li>
 			<li>
-				<a class="hoverable" href="/signup">signup</a>
+				<a class="hoverable" href="/signup"><i class="fa-solid fa-user-plus" style="padding-left:0.1rem; padding-right:0.5rem;"></i> signup</a>
 			</li>
 		{{ end }}
 	</div>

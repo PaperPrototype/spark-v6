@@ -111,16 +111,9 @@
 	white-space: -pre-wrap;
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
-	{{ if not .LoggedIn }}
-		<p>
-			<a href="/login">
-				login to view your progress!
-			</a>
-		</p>
-	{{ end }}
 	{{ if eq .Course.UserID .User.ID }}
 		<div style="text-align:right;" >
-			<i class="fa-solid fa-gear hoverable bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
+			<i class="fa-solid fa-gear hoverable-bg-overlay bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
 		</div>
 	{{ end }}
 </div>
@@ -156,14 +149,14 @@
 		<div @click="viewPosts(); loadPosts({{ .Version.ID }});"
 		class="bd hoverable"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.3rem; margin-left:auto; margin-right:0.5rem;">
-			<i class="fa-solid fa-file-lines"></i>
+			<i class="fa-regular fa-file"></i>
 		</div>
 
 		<!-- view chat -->
 		<div @click="viewChat()"
 		class="bd hoverable"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.4rem; padding-right:0.4rem; padding-top:0.4rem;">
-			<i class="fa-solid fa-message"></i>
+			<i class="fa-regular fa-message"></i>
 		</div>
 	</div>
 
@@ -238,8 +231,13 @@
 		</div>
 		<table class="bg-overlay pad-sides-5 pad-bot-2rem" style="width: 100%;">
 			<tr>
-				<td class="bd bg thin-light" style="cursor:pointer; padding: 0.5rem; width: 50%; text-align: center;" id="coursePrevious">Previous Section</td>
-				<td class="bd bg thin-light" style="cursor:pointer; padding: 0.5rem; width: 50%; text-align: center;" id="courseNext">Next Section</td>
+				<td class="bd bg-overlay thin-light" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="coursePrevious">
+					<i class="fa-solid fa-arrow-left-long"></i> Previous Section 
+				</td>
+				<td style="width:20%;"></td>
+				<td class="bd bg-overlay thin-light" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="courseNext">
+					Next Section <i class="fa-solid fa-arrow-right-long"></i>
+				</td>
 			</tr>
 		</table>
 	</div>

@@ -6,11 +6,13 @@
 	--c-grey: rgb(188, 188, 188);
 	--c-bg: rgb(229, 229, 229);
 	--c-text: rgb(0, 0, 0);
-	--c-code: rgb(255, 38, 135);
+	--c-code: rgb(255, 33, 133);
+	--c-shadow: rgb(198, 198, 198);
 }
 
 .nav-logo {
-	content:url('/resources/images/spark_dark.png');
+	margin-top:0.4rem;
+	content:url('/resources/images/spark_code.png');
 }
 
 /* dark mode */
@@ -22,27 +24,44 @@
 		--c-grey: rgb(109, 111, 119);
 		--c-bg: rgb(20, 20, 20);
 		--c-text: rgb(255, 255, 255);
+		--c-shadow: rgb(214, 214, 214);
 	}
 
 	a {
 		color: rgb(113, 208, 255);
 	}
+}
 
-	.nav-logo {
-		content:url('/resources/images/spark_white.png');
-	}
+.hide-focus:focus {
+	outline: none;
 }
 
 .hoverable:hover {
 	background-color: var(--c-bg);
 }
 
+.hoverable-bg-overlay:hover {
+	background-color: var(--c-bg-overlay);
+}
+
 .c-grey {
 	color: var(--c-grey);
 }
 
+.c-code {
+	color: var(--c-code)
+}
+
 .bd {
 	border-radius: 0.5rem;
+}
+
+.bd-none {
+	border: none;
+}
+
+.pad-right-05rem {
+	padding-right:0.5rem;
 }
 
 .pad-05 {
@@ -131,6 +150,11 @@
 	background-color: var(--c-grey);
 }
 
+.bg-code {
+	color: white;
+	background-color: var(--c-code);
+}
+
 .nav {
 	margin: 0;
 	list-style: none;
@@ -139,20 +163,47 @@
 .nav-row {
 	display: flex;
 	flex-direction: row;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
 }
 
 .nav li {
-	margin-top: 0.8rem;
-	margin-bottom: 0.5rem;
+	margin-top: 0.7rem;
+	margin-bottom: 0.6rem;
 }
 
 .nav a {
+	display:block;
 	padding: 0.5rem;
 	border-radius: 1.5rem;
 	text-decoration: none;
 	color: var(--c-text);
+	font-weight: 600;
+}
+
+.nav-search-bar {
+	display: none;
+}
+
+
+.nav-search-hidden-stick-right {
+	margin-left:auto;
+}
+
+/* when width larger than 520px */
+@media only screen and (min-width: 520px){
+	.nav-search-bar {
+		display: block;
+	}
+}
+
+.nav-search-bar-signup {
+	display: none;
+}
+
+/* when width larger than 600px */
+@media only screen and (min-width: 600px){
+	.nav-search-bar-signup {
+		display: block;
+	}
 }
 
 /* forms */

@@ -5,13 +5,13 @@
 <!-- js that loads courses -->
 <script defer src="/resources/scripts/courses.js"></script>
 
-<div class="pad-sides-5 pad-top-5rem text-center">
+<div class="pad-sides-5 pad-bot-2rem pad-top-5rem text-center bg-overlay">
 	<h1>Courses</h1>
 	<div>
 		<form method="get" action="/courses">
 			<div>
-				<input class="form-input" name="query" placeholder="Search..." value="{{ .Search }}">
-				<button class="form-btn" type="submit">Search</button>
+				<input class="form-input bd" name="query" placeholder="Search..." value="{{ .Search }}">
+				<button class="form-btn bd" style="background-color:var(--c-code); color:white;" type="submit">Search</button>
 			</div>
 			<!-- hide this until it is needed -->
 			<div class="select" style="display: none;">
@@ -36,7 +36,7 @@
 	courses get loaded by js instead of server side
 	this speads up google search indexing, and prevents us from using db resources when the site is only being indexed
 -->
-<div class="pad-sides-5 pad-top-2rem course-cards" id="cards">
+<div class="pad-sides-5 pad-top-2rem pad-bot-5rem course-cards bg-overlay" id="cards">
 	<div class="course-card-temp">
 		temp 1
 	</div>

@@ -110,7 +110,7 @@ func (content *Content) GetMarkdownHTMLLogError() template.HTML {
 	return template.HTML(buf.Bytes())
 }
 
-// based on the number of posts in a course version
+// get the number of posts in a course version
 func (release *Release) UserPostsCountLogError(userID uint64) int64 {
 	postIDs := gormDB.Model(&PostToRelease{}).Select("post_id").Where("release_id = ?", release.ID)
 

@@ -64,7 +64,7 @@
 		<div>
 			<p>{{ .Progress }}% done</p>
 			<p class="c-grey">You need a total of {{ .Version.SectionsCountLogError }} posts to complete this course.</p>
-			<textarea class="bd bg thin-light"  id="course_submitNewPostMarkdown" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
+			<textarea class="bd bg-overlay thin-light"  id="course_submitNewPostMarkdown" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
 			placeholder=
 			"Write about what you made   
 
@@ -73,7 +73,7 @@ You can drag and drop screenshots (TODO)
 Youtube videos can be embedded!    
 ![my youtube video](https://www.youtube.com/watch?v=LC5B-vpMci8)" required></textarea>
 		</div>
-		<button @click="course_submitNewPost();" class="form-btn bd" style="color:white; background-color:var(--c-code); width: 100%;">Post</button>
+		<button @click="course_submitNewPost();" class="bd bd-none pad-05" style="color:white; background-color:var(--c-code); width: 100%;">Post</button>
 	{{ else }}
 		<p class="c-grey">You need to login if you want to write a post</p>
 		<textarea disabled class="bd bg-overlay thin-light" style="padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
@@ -84,7 +84,7 @@ You can drag and drop screenshots! (TODO)
 
 Youtube videos can be embedded!    
 ![my youtube video](https://www.youtube.com/watch?v=LC5B-vpMci8)" required></textarea>
-		<button disabled class="form-btn bd" style="color:white; background-color:var(--c-code); width: 100%;">Post</button>
+		<button disabled class="bd bd-none pad-05" style="color:white; background-color:var(--c-code); width: 100%;">Post</button>
 	{{ end }}
 </div>
 <div id="course_submitNewPostFormMessage" x-show="!$store.courseView.allowNewPost">
