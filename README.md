@@ -40,11 +40,37 @@ TODO
 	- github linkify
 		- when user edits course contents, allow special button for "commit changes to github"
 		- github based course serving??
-- blog posts, course palylists
+- blog posts, course post playlists
 - course settings
 - profile
 - chat
-- course menu, make recursive template
+- final project proposal posts
+	- posts chat
+	- proposer can accept participants.
+	- once more than 1 participant joins, they can begin project. 
+	- "Final Project" flow? db data layout?
+		- ideas
+			- allow for projects to be made outside of course, specifics
+			- projects go on "Projects" page of user
+			- project can just be a blog post? Added to a specific db relation "PostToProject"?
+			- private chat for PostToProject?
+			- Post (id, user_id)
+				- PostAuthors (post_id, user_id)
+				- PostToRelease (post_id, release_id)
+				- PostToProject (post_id, proposal)
+					- proposal: if the post is currently only a proposal
+				- Chat (post_id, private, id)
+					- Comments
+						- Comment (chat_id, user_id, )
+- user profile
+	- courses
+		- Authored
+		- Taking
+	- projects
+		- proposals
+		- projects
+	- posts
+		- playlists
 
 - dark mode button toggle
 	- dark

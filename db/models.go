@@ -255,11 +255,10 @@ type Message struct {
 }
 
 /* RELATIONS */
-// relate posts to a course release
+// relate posts to a course release and section
 type PostToRelease struct {
 	PostID    uint64 `gorm:"not null"`
 	ReleaseID uint64 `gorm:"not null"`
-	SectionID uint64
 }
 
 // maybe?
