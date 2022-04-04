@@ -31,9 +31,21 @@ You may need to install dependancies using `go mod tidy`.
 
 TODO
 - generate 5% off coupon when users land on 404 not found page
-- Course hierarchy system.
+- course hierarchy system.
 	- if Course.Level <= 1 it has to be free.
-- In case if user forgets to claim purchase use stripe webhook to verify and claim purchase for the user
+- in case if user forgets to claim purchase use stripe webhook to verify and claim purchase for the user
 	- much more robust
+	- user may close page and/or close the browser and lose their payment, but using webhooks solves this
+- github oauth
+	- github linkify
+		- when user edits course contents, allow special button for "commit changes to github"
+		- github based course serving??
+- blog posts, course palylists
+- course settings
+- profile
+- chat
 
-- 
+- dark mode button toggle
+	- dark
+	- light
+	- auto
