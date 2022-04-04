@@ -11,6 +11,7 @@
 
 input, textarea {
 	color: var(--c-text);
+	background-color: var(--c-bg-overlay);
 }
 
 body, html {
