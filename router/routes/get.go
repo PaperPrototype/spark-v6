@@ -507,6 +507,7 @@ func getNameMedia(c *gin.Context) {
 }
 
 func getReleaseDelete(c *gin.Context) {
+	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 	releaseID := c.Query("releaseID")
 
@@ -525,7 +526,7 @@ func getReleaseDelete(c *gin.Context) {
 			"Meta":     metaDefault,
 
 			// special params for confirmDelete.html
-			"Action":  "/" + courseName + "/settings/release/delete/confirm",
+			"Action":  "/" + username + "/" + courseName + "/settings/release/delete/confirm",
 			"Message": "Confirm you want to delete release " + fmt.Sprint(release.Num),
 			"Data":    release.ID,
 			"Further": "This will also delete all versions and user content in this release!",
