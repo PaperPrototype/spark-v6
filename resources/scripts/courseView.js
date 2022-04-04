@@ -235,6 +235,10 @@ function loadSection(sectionID) {
 		content.innerHTML = "";
 
 		let sectionTitle = document.getElementById("sectionTitle");
+		if (sectionTitle === null) {
+			throw new Error("sectionTitle was null!");
+		}
+
 		sectionTitle.innerText = sectionJson.Name;
 
 
@@ -251,6 +255,10 @@ function loadSection(sectionID) {
 		}
 
 		let courseContentsLanguage = document.getElementById("courseContentsLanguage")
+		if (courseContentsLanguage === null) {
+			throw new Error("courseContentsLanguage was null!");
+		}
+
 		courseContentsLanguage.innerText = sectionJson.Contents[0].Language;
 
 		let markdown = document.createElement("div");
