@@ -495,7 +495,7 @@ func getNameMedia(c *gin.Context) {
 	mediaName := c.Params.ByName("mediaName")
 	media, err := db.GetMedia(versionID, mediaName)
 	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 

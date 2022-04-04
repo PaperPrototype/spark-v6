@@ -77,4 +77,11 @@
 /* highlights selected section in menu */
 .selected {
 	background-color: var(--c-code);
+	color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+	.selected {
+		color: var(--c-text);
+	}
 }
