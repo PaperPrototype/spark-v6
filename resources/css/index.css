@@ -13,7 +13,7 @@
 
 .nav-logo {
 	margin-top:0.4rem;
-	content:url('/resources/images/spark_code.png');
+	content:url('/resources/images/spark_dark.png');
 }
 
 /* dark mode */
@@ -26,10 +26,19 @@
 		--c-bg: rgb(20, 20, 20);
 		--c-text: rgb(255, 255, 255);
 		--c-shadow: rgb(126, 126, 126);
+
+		--c-code: hsl(206, 100%, 56%);
+		--c-code-hover: hsl(206, 100%, 45%);
 	}
 
 	a {
 		color: rgb(113, 208, 255);
+	}
+
+
+	.nav-logo {
+		margin-top:0.4rem;
+		content:url('/resources/images/spark_white.png');
 	}
 }
 
