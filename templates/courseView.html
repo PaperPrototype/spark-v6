@@ -178,7 +178,7 @@
 	</div>
 
 	<!-- posts by students -->
-	<div x-cloak x-show="$store.courseView.view === 'posts'">
+	<div x-cloak x-show="$store.courseView.view === 'posts'" class="bg-overlay pad-top-2rem pad-bot-2rem">
 		<h1 class="pad-sides-5">Posts</h1>
 		<div x-show="$store.courseView.viewingPost" class="pad-sides-5" style="width: 100%;">
 			<div class="bg-overlay bd">
@@ -210,7 +210,7 @@
 	</div>
 
 	<!-- live chat -->
-	<div x-cloak x-show="$store.courseView.view === 'chat'">
+	<div x-cloak x-show="$store.courseView.view === 'chat'" class="bg-overlay pad-top-2rem pad-bot-2rem">
 		<h1 class="pad-sides-5">Chat</h1>
 		<div>
 			{{ template "courseView_chat.html" . }}
