@@ -35,7 +35,7 @@ func UploadCourse(conn *pgxpool.Pool, path string, versionID uint64) error {
 				return err2
 			}
 		} else {
-			err1 := recursiveUploadSections(conn, folder.Name(), path+"/"+folder.Name(), versionID)
+			err1 := recursiveUploadSections(conn, folder.Name(), path+"/"+folder.Name(), 0, versionID)
 			if err1 != nil {
 				return err1
 			}
@@ -45,9 +45,10 @@ func UploadCourse(conn *pgxpool.Pool, path string, versionID uint64) error {
 	return nil
 }
 
-func recursiveUploadSections(conn *pgxpool.Pool, parentFolderName string, path string, versionID uint64) error {
+func recursiveUploadSections(conn *pgxpool.Pool, parentFolderName string, path string, parentSectionID uint64, versionID uint64) error {
 	// save section
-	row := conn.QueryRow(context.Background(), "INSERT INTO sections (name, version_id) VALUES ($1, $2) RETURNING id", parentFolderName, versionID)
+	row := conn.QueryRow(context.Background(), "INSERT INTO sections (name, version_id, parent_id) VALUES ($1, $2, $3) RETURNING id", parentFolderName, versionID, parentSectionID)
+
 	var sectionID uint64
 	err := row.Scan(&sectionID)
 	if err != nil {
@@ -91,7 +92,7 @@ func recursiveUploadSections(conn *pgxpool.Pool, parentFolderName string, path s
 
 	// freach children folder
 	for _, folder := range childrenFolders {
-		err5 := recursiveUploadSections(conn, folder.Name(), path+"/"+folder.Name(), versionID)
+		err5 := recursiveUploadSections(conn, folder.Name(), path+"/"+folder.Name(), sectionID, versionID)
 		if err5 != nil {
 			log.Println("upload ERROR uploading sections for", folder.Name()+":", err5)
 			return err5

@@ -44,6 +44,7 @@ TODO
 - course settings
 - profile
 - chat
+- course menu, make recursive template
 
 - dark mode button toggle
 	- dark

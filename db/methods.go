@@ -81,7 +81,25 @@ func (version *Version) GetSectionsLogError() []Section {
 	sections := []Section{}
 	err := gormDB.Model(&Section{}).Where("version_id = ?", version.ID).Find(&sections).Error
 	if err != nil {
-		log.Println("db/methods ERROR getting sections for version:", err)
+		log.Println("db/methods ERROR getting sections for version in GetSectionsLogError:", err)
+	}
+	return sections
+}
+
+func (version *Version) GetBaseSectionsLogError() []Section {
+	sections := []Section{}
+	err := gormDB.Model(&Section{}).Where("version_id = ?", version.ID).Where("parent_id = ?", 0).Find(&sections).Error
+	if err != nil {
+		log.Println("db/methods ERROR getting sections for version in GetBaseSectionsLogError:", err)
+	}
+	return sections
+}
+
+func (section *Section) GetChildrenSectionsLogError() []Section {
+	sections := []Section{}
+	err := gormDB.Model(&Section{}).Where("parent_id = ?", section.ID).Find(&sections).Error
+	if err != nil {
+		log.Println("db/methods ERROR getting sections for version in GetBaseSectionsLogError:", err)
 	}
 	return sections
 }
@@ -90,15 +108,6 @@ func (version *Version) GetFirstSectionPreload() (*Section, error) {
 	section := Section{}
 	err := gormDB.Model(&Section{}).Preload("Contents").Where("version_id = ?", version.ID).First(&section).Error
 	return &section, err
-}
-
-func (section *Section) GetChildrenSectionsLogError() []Section {
-	sections := []Section{}
-	err := gormDB.Model(&Section{}).Where("parent_id = ?", section.ID).Find(&sections).Error
-	if err != nil {
-		log.Println("db/methods EROOR getting children sections for section:", err)
-	}
-	return sections
 }
 
 func (content *Content) GetMarkdownHTMLLogError() template.HTML {

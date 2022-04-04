@@ -1,0 +1,8 @@
+<div style="margin-left:2rem;">
+	{{ range .GetChildrenSectionsLogError }}
+		<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
+			{{ .Name }}
+		</div>
+		{{ template "courseView_menu.html" . }}
+	{{ end }}
+</div>

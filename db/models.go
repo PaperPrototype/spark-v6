@@ -173,9 +173,10 @@ type Version struct {
 type Section struct {
 	ID   uint64 `gorm:"primaryKey"`
 	Name string
+
 	// version this section is connected to
 	VersionID uint64 `gorm:"not null"`
-	ParentID  uint64 // parent section ID
+	ParentID  uint64 `gorm:"not null"` // parent section ID
 
 	// children contents
 	// special ORM parameter that can be preloaded with data
