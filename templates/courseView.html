@@ -186,18 +186,18 @@
 					<div style="padding: 0.5rem;">
 						by <span id="postMountUser"></span>
 					</div>
-					<div id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
-						edit
+					<div x-show="$store.courseView.editingPost === false" id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
+						<i class="fa-solid fa-pen-to-square"></i>
+					</div>
+					<div x-show="$store.courseView.editingPost === true" @click="$store.courseView.editingPost = false;" style="margin-left:auto; padding: 0.5rem;">
+						<i style="margin-left:auto;" class="fa-solid fa-xmark"></i>
 					</div>
 				</div>
 				<div x-show="$store.courseView.editingPost">
 					<div hidden id="editPostID"></div>
-					<textarea id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+					<textarea class="bd" id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
 					<div>
-						<button @click="updatePost()">Update</button>
-					</div>
-					<div>
-						<button @click="$store.courseView.editingPost = false;">Cancel</button>
+						<button class="bd bd-none bg-code pad-05" @click="updatePost()">Update</button>
 					</div>
 				</div>
 				<div x-show="!$store.courseView.editingPost" markdown id="postMount" style="padding: 0.5rem; width: 100%;"></div>
@@ -222,12 +222,12 @@
 		<div class="bd thin-light mar-sides-5">
 			{{ if eq .Course.UserID .User.ID }}
 				<div style="display:flex;" class="thin-bot">
+					<div class="hoverable pad-05 bd" id="courseContentsLanguage"></div>
 					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="$store.courseView.editingContent = ! $store.courseView.editingContent; loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
 					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = ! $store.courseView.editingContent" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
 				</div>
 			{{ end }}
 			<div x-show="$store.courseView.editingContent === false" style="padding-right:2%; padding-left:2%;" id="courseContent">
-
 			</div>
 		</div>
 		<div x-cloak x-show="$store.courseView.editingContent === true" class="pad-sides-5 bg-overlay">

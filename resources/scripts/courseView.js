@@ -237,6 +237,7 @@ function loadSection(sectionID) {
 		let sectionTitle = document.getElementById("sectionTitle");
 		sectionTitle.innerText = sectionJson.Name;
 
+
 		// TODO contents may be in english or spanish as well
 		/*
 			for (let i = 0; i < sectionJson.Contents.length; i++) {
@@ -248,6 +249,9 @@ function loadSection(sectionID) {
 			content.innerHTML = `<p>This section is empty!</p>`;
 			return
 		}
+
+		let courseContentsLanguage = document.getElementById("courseContentsLanguage")
+		courseContentsLanguage.innerText = sectionJson.Contents[0].Language;
 
 		let markdown = document.createElement("div");
 		markdown.innerHTML = sectionJson.Contents[0].Markdown;
