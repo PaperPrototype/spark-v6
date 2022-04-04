@@ -62,6 +62,10 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/settings", mustBeLoggedIn, getSettings)
 	router.GET("/settings/courses", mustBeLoggedIn, getSettingsCourses)
 	router.GET("/settings/coupons", mustBeLoggedIn, getSettingsCoupons)
+
+	router.GET("/settings/github/connect", mustBeLoggedIn, getGithubConnect)
+	router.GET("/settings/github/connect/return", mustBeLoggedIn, getGithubConnectFinished)
+
 	router.GET("/settings/stripe/connect", mustBeLoggedIn, getStripeConnect)
 	router.GET("/settings/stripe/connect/refresh", mustBeLoggedIn, getStripeRefresh)
 	router.GET("/settings/stripe/connect/return", mustBeLoggedIn, getStripeConnectFinished)

@@ -95,3 +95,12 @@ func GetSendgridKey() string {
 
 	return env
 }
+
+func GetGithubClientID() string {
+	// TODO use environment variable
+	return "43669c01e58ec6a1d37b"
+}
+
+func GetGithubClientSecret() string {
+	return "7b31b9979a0f3280033612a5191eb47d826b91ef"
+}

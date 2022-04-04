@@ -6,7 +6,12 @@ function convertHrefs() {
 		console.log("adding click + linkability to element");
 
 		hrefs[i].addEventListener("click", function(event) {
-			this.setAttribute("target", "_blank");
+			if (this.hasAttribute("external")) {
+				// open link in new window
+				window.open(this.getAttribute("href"), '_blank')
+				console.log("clicked");
+				return
+			}
 			window.location = this.getAttribute("href");
 			console.log("clicked");
 		});

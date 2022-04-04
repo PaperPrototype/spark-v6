@@ -55,3 +55,7 @@ func CreateStripeConnection(stripeConnection *StripeConnection) error {
 func CreateVerify(verify *Verify) error {
 	return gormDB.Create(verify).Error
 }
+
+func CreateGithubConnection(githubConnection *GithubConnection) error {
+	return gormDB.Create(githubConnection).Error
+}

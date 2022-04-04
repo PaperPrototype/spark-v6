@@ -111,11 +111,14 @@
 	white-space: -pre-wrap;
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
-	{{ if eq .Course.UserID .User.ID }}
-		<div style="text-align:right;" >
-			<i class="fa-solid fa-gear hoverable-bg-overlay bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
+		<div style="display:flex;">
+			<div class="hoverable-bg-overlay bd pad-05" href="https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO" external>
+				<i class="fa-brands fa-spotify"></i> focus music
+			</div>
+			{{ if eq .Course.UserID .User.ID }}
+				<i class="fa-solid fa-gear hoverable-bg-overlay bd pad-05" style="margin-left:auto;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
+			{{ end }}
 		</div>
-	{{ end }}
 </div>
 <div x-data>
 	<div class="pad-sides-5 bg-overlay course-menu" style="display: flex; padding-bottom: 0.5rem; margin-top:0; padding-top:0.5rem; margin-bottom:0; max-width:100%;" id="courseNavTop">

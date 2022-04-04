@@ -7,6 +7,7 @@ require (
 	github.com/13rac1/goldmark-embed v0.0.0-20201220231550-e6806f2de66a
 	github.com/alecthomas/chroma v0.10.0
 	github.com/gin-gonic/gin v1.7.7
+	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/mholt/archiver v3.1.1+incompatible
@@ -15,6 +16,7 @@ require (
 	github.com/yuin/goldmark v1.4.11
 	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064
+	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
 	gorm.io/driver/postgres v1.3.1
 	gorm.io/gorm v1.23.3
 	mvdan.cc/xurls/v2 v2.4.0
@@ -28,8 +30,10 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
-	github.com/golang/protobuf v1.3.3 // indirect
+	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.11.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -51,7 +55,10 @@ require (
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/appengine v1.6.6 // indirect
+	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

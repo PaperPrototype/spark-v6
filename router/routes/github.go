@@ -1,0 +1,111 @@
+package routes
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"main/db"
+	"main/helpers"
+	"main/msg"
+	"main/router/auth"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
+	githuboauth "golang.org/x/oauth2/github"
+)
+
+// You must register the app at https://github.com/settings/applications
+// Set callback to http://127.0.0.1:7000/github_oauth_cb
+// Set ClientId and ClientSecret to
+var (
+	oauthConfig = &oauth2.Config{
+		ClientID:     helpers.GetGithubClientID(),
+		ClientSecret: helpers.GetGithubClientSecret(),
+		RedirectURL:  helpers.GetHost() + "/settings/github/connect/return",
+
+		// select level of access you want https://developer.github.com/v3/oauth/#scopes
+		Scopes:   []string{"user:email", "repo"},
+		Endpoint: githuboauth.Endpoint,
+	}
+	// random string for oauth2 API calls to protect against CSRF
+	oauthStateString string = "jehwgjkbn3qeyi23y98oihnabieyfgh09weohg"
+)
+
+func getGithubConnect(c *gin.Context) {
+	url := oauthConfig.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
+	http.Redirect(c.Writer, c.Request, url, http.StatusTemporaryRedirect)
+}
+
+func tokenToJSON(token *oauth2.Token) (string, error) {
+	if d, err := json.Marshal(token); err != nil {
+		return "", err
+	} else {
+		return string(d), nil
+	}
+}
+
+func getGithubConnectFinished(c *gin.Context) {
+	state := c.Query("state")
+	if state != oauthStateString {
+		fmt.Printf("routes/github ERROR invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
+		msg.SendMessage(c, "Error connecting github account.")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		return
+	}
+
+	code := c.Query("code")
+	token, err := oauthConfig.Exchange(context.Background(), code)
+	if err != nil {
+		fmt.Printf("routes/github ERROR oauthConf.Exchange() failed with '%s'\n", err)
+		msg.SendMessage(c, "Error connecting github account.")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		return
+	}
+
+	jsonToken, err := tokenToJSON(token)
+	if err != nil {
+		log.Println("error converting token to json:", err)
+	}
+
+	loggedInUser, err2 := auth.GetLoggedInUser(c)
+	if err2 != nil {
+		log.Println("routes/github ERROR getting logged in user in getGithubConnectFinished:", err2)
+		msg.SendMessage(c, "Error connecting github account.")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		return
+	}
+
+	githubConnection := db.GithubConnection{
+		UserID:       loggedInUser.ID,
+		AccessToken:  token.AccessToken,
+		Expiry:       token.Expiry,
+		RefreshToken: token.RefreshToken,
+		TokenType:    token.TokenType,
+	}
+	err1 := db.CreateGithubConnection(&githubConnection)
+	if err1 != nil {
+		log.Println("routes/github ERROR creating github connection in getGithubConnectFinished:", err1)
+		msg.SendMessage(c, "Error connecting github account.")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		return
+	}
+
+	log.Println("routes/github GOT TOKEN:", jsonToken)
+
+	oauthClient := oauthConfig.Client(context.Background(), token)
+	client := github.NewClient(oauthClient)
+	user, _, err := client.Users.Get(context.Background(), "")
+	if err != nil {
+		fmt.Printf("routes/github ERROR client.Users.Get() faled with '%s'\n", err)
+		msg.SendMessage(c, "Error connecting github account.")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		return
+	}
+
+	fmt.Printf("routes/github SUCCESS Logged in as GitHub user: %s\n", *user.Login)
+	msg.SendMessage(c, "Successfully connected github account!")
+	c.Redirect(http.StatusFound, "/settings")
+}

@@ -102,7 +102,20 @@ type StripeConnection struct {
 	UserID          uint64 `gorm:"not null,unique"`
 }
 
-type StripeSubscription struct {
+type GithubConnection struct {
+	UserID uint64 `gorm:"not null"`
+
+	// the token for accessing the users github repos etc
+	AccessToken string
+
+	// when the token will expire
+	Expiry time.Time
+
+	// if token expires we use this to refresh it
+	RefreshToken string
+
+	// the type of token
+	TokenType string
 }
 
 type Session struct {
@@ -149,8 +162,17 @@ type Release struct {
 	Public   bool   `gorm:"default:f"`
 	Level    uint32 `gorm:"default:0; not null"`
 
+	UsingGithub   bool          `gorm:"default:f"` // defaults to false
+	ReleaseGithub ReleaseGithub // githbu repo info
+
 	Versions  []Version  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+type ReleaseGithub struct {
+	ReleaseID   uint64
+	TrackLatest bool
+	// TODO needed github repo info
 }
 
 // points to a parent course
@@ -165,9 +187,12 @@ type Version struct {
 	Patch     uint16 `gorm:"default:0"`
 	CourseID  uint64 `gorm:"not null"`
 	ReleaseID uint64 `gorm:"not null"`
-	Error     string `gorm:"default:null"`
 
+	Error    string    `gorm:"default:null"`
 	Sections []Section `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	// if using github repo
+	CommitHash string
 }
 
 type Section struct {
