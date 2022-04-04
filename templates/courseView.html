@@ -220,13 +220,13 @@
 	<!-- course contents-->
 	<div x-show="$store.courseView.view === 'contents'" id="courseMain" class="bg-overlay" style="padding-top:1rem; padding-bottom:2rem;">
 		<div class="bd thin-light mar-sides-5">
-			{{ if eq .Course.UserID .User.ID }}
-				<div style="display:flex;" class="thin-bot">
-					<div class="hoverable pad-05 bd" id="courseContentsLanguage"></div>
+			<div style="display:flex;" class="thin-bot">
+				<div class="hoverable pad-05 bd" id="courseContentsLanguage"></div>
+				{{ if eq .Course.UserID .User.ID }}
 					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="$store.courseView.editingContent = ! $store.courseView.editingContent; loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
 					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = ! $store.courseView.editingContent" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
-				</div>
-			{{ end }}
+				{{ end }}
+			</div>
 			<div x-show="$store.courseView.editingContent === false" style="padding-right:2%; padding-left:2%;" id="courseContent">
 			</div>
 		</div>
