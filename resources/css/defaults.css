@@ -9,6 +9,10 @@
   box-sizing: border-box;
 }
 
+input, textarea {
+	color: var(--c-text);
+}
+
 body, html {
 	padding: 0;
 	margin: 0;
