@@ -2,6 +2,8 @@
 
 <div style="display:none;" id="courseID" value="{{ .Course.ID }}"></div>
 
+<script defer type="module" src="/resources/scripts/courseSettings.js"></script>
+
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1>{{ .Course.Title }} Setting's</h1>
 	<p>
@@ -60,7 +62,7 @@
 							</h4>
 							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/delete" method="get">
 								<input hidden name="releaseID" value="{{ .ID }}">
-								<button type="submit" class="form-btn">Delete</button>
+								<button type="submit" class="bd-none bd bg pad-05">Delete</button>
 							</form>
 						</div>
 						<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/edit" method="post">
@@ -78,19 +80,30 @@
 								<input type="checkbox" name="public" {{ if .Public }} checked {{ end }}>
 							</div>
 							<div>
-								<button class="form-btn" type="submit">Submit Changes</button>
+								<button class="bd bd-none bg-code pad-05" type="submit">Save</button>
 							</div>
 						</form>
-						<div style="margin-top: 0.5rem; margin-bottom: 0.5rem;" @click="toggle()">
-							Uploads <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></i>
+						<div class="mar-top-2rem thin-top">
+							<h4>Github Connection</h4>
+							{{ if $.User.HasGithubConnection }}
+								<p class="c-grey">Connect this release to a github repo.</p>
+								<form action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/version/github" method="post">
+									<input name="releaseID" value="{{ .ID }}" hidden>
+									<div style="margin-bottom:0.5rem;">
+										<select name="repoID" class="bg-overlay bd pad-05 thin-light" style="color:white;" id="courseSettingsGithubConnectionSelect">
+											<option value="">None</option>
+										</select>
+									</div>
+									<div>
+										<button class="bd bd-none bg-code pad-05">Select Repo</button>
+									</div>
+								</form>
+							{{ else }}
+								<p class="c-grey">Github based courses. Go to <a href="/settings/courses">settings > Teacher > Github Courses</a> to enable this feature.</p>
+							{{ end }}
 						</div>
-					</div>
-					<div x-show="open === true" x-cloak>
-						<div class="thin-top-grey">
-							<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
-								<h5>New Upload</h5>
-							</div>
-							<!-- TODO handle zip files or git downloads and specific git branches -->
+						<div class="mar-top-2rem thin-top">
+							<h4>New Version</h4>
 							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/new" method="post" enctype="multipart/form-data">
 								<input hidden name="releaseID" value="{{ .ID }}">
 								<div>
@@ -101,6 +114,14 @@
 								</div>
 							</form>
 						</div>
+						{{ if .GetVersionsLogError }}
+							<div style="margin-top: 0.5rem; margin-bottom: 0.5rem;" @click="toggle()">
+								Versions <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></i>
+							</div>
+						{{ end }}
+					</div>
+					<div x-show="open === true" x-cloak>
+						
 						{{ range .GetVersionsLogError }}
 							<div style="margin-top: 2rem;" class="thin-top-grey">
 								<div style="display: flex;">

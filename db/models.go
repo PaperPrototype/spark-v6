@@ -25,8 +25,9 @@ func migrate() {
 		&Purchase{},
 		&AttemptBuyRelease{},
 
-		// stripe payouts
+		// third party apps
 		&StripeConnection{},
+		&GithubConnection{},
 
 		// posts
 		&Post{},
@@ -102,17 +103,12 @@ type StripeConnection struct {
 	UserID          uint64 `gorm:"not null,unique"`
 }
 
+// github access tokens never expire
 type GithubConnection struct {
 	UserID uint64 `gorm:"not null"`
 
 	// the token for accessing the users github repos etc
 	AccessToken string
-
-	// when the token will expire
-	Expiry time.Time
-
-	// if token expires we use this to refresh it
-	RefreshToken string
 
 	// the type of token
 	TokenType string

@@ -2,6 +2,8 @@
 package api
 
 import (
+	"main/router/middlewares"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,4 +17,10 @@ func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/posts/:postID", getPost)
 	group.GET("/posts/:postID/plaintext", getPostPlaintext)
 	group.POST("/posts/:postID/update", postUpdatePost)
+
+	// logged in users only
+	group.GET("/github/user/repos", middlewares.MustBeLoggedIn, getGithubUserRepos)
+
+	// not logged in users
+	group.GET("/github/users/:userID/repos")
 }

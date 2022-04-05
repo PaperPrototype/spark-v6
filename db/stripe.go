@@ -53,6 +53,7 @@ func (user *User) HasStripeConnection() bool {
 
 	// if err then not valid
 	if err != nil {
+		log.Println("db/stripe ERROR getting stripe connection:", err)
 		return false
 	}
 

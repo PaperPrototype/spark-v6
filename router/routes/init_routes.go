@@ -2,6 +2,8 @@
 package routes
 
 import (
+	"main/router/middlewares"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -54,25 +56,25 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/logout", getLogout)                   // logout
 
 	// payments routes for courses
-	router.POST("/:username/:course/buy/:releaseID", mustBeLoggedIn, postBuyRelease)
-	router.GET("/:username/:course/buy/success", mustBeLoggedIn, getBuySuccess)
-	router.GET("/:username/:course/buy/cancel", mustBeLoggedIn, getBuyCancel)
+	router.POST("/:username/:course/buy/:releaseID", middlewares.MustBeLoggedIn, postBuyRelease)
+	router.GET("/:username/:course/buy/success", middlewares.MustBeLoggedIn, getBuySuccess)
+	router.GET("/:username/:course/buy/cancel", middlewares.MustBeLoggedIn, getBuyCancel)
 
 	// for logged in users only
-	router.GET("/settings", mustBeLoggedIn, getSettings)
-	router.GET("/settings/courses", mustBeLoggedIn, getSettingsCourses)
-	router.GET("/settings/coupons", mustBeLoggedIn, getSettingsCoupons)
+	router.GET("/settings", middlewares.MustBeLoggedIn, getSettings)
+	router.GET("/settings/courses", middlewares.MustBeLoggedIn, getSettingsCourses)
+	router.GET("/settings/coupons", middlewares.MustBeLoggedIn, getSettingsCoupons)
 
-	router.GET("/settings/github/connect", mustBeLoggedIn, getGithubConnect)
-	router.GET("/settings/github/connect/return", mustBeLoggedIn, getGithubConnectFinished)
+	router.GET("/settings/github/connect", middlewares.MustBeLoggedIn, getGithubConnect)
+	router.GET("/settings/github/connect/return", middlewares.MustBeLoggedIn, getGithubConnectFinished)
 
-	router.GET("/settings/stripe/connect", mustBeLoggedIn, getStripeConnect)
-	router.GET("/settings/stripe/connect/refresh", mustBeLoggedIn, getStripeRefresh)
-	router.GET("/settings/stripe/connect/return", mustBeLoggedIn, getStripeConnectFinished)
+	router.GET("/settings/stripe/connect", middlewares.MustBeLoggedIn, getStripeConnect)
+	router.GET("/settings/stripe/connect/refresh", middlewares.MustBeLoggedIn, getStripeRefresh)
+	router.GET("/settings/stripe/connect/return", middlewares.MustBeLoggedIn, getStripeConnectFinished)
 
 	// editing settings
-	router.POST("/settings/edit/user", mustBeLoggedIn, postSettingsEditUser)
-	router.POST("/settings/edit/email", mustBeLoggedIn, postSettingsEditEmail)
+	router.POST("/settings/edit/user", middlewares.MustBeLoggedIn, postSettingsEditUser)
+	router.POST("/settings/edit/email", middlewares.MustBeLoggedIn, postSettingsEditEmail)
 
 	router.GET("/courses", getCourses) // search courses with possible url query
 	/*

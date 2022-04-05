@@ -17,6 +17,8 @@ import (
 	githuboauth "golang.org/x/oauth2/github"
 )
 
+// TODO refresh github oauth token? NOPE! github oauth tokens currently NEVER expire
+
 // You must register the app at https://github.com/settings/applications
 // Set callback to http://127.0.0.1:7000/github_oauth_cb
 // Set ClientId and ClientSecret to
@@ -35,6 +37,13 @@ var (
 )
 
 func getGithubConnect(c *gin.Context) {
+	user := auth.GetLoggedInUserLogError(c)
+	if user.HasGithubConnection() {
+		msg.SendMessage(c, "Your account is already connected to github")
+		c.Redirect(http.StatusFound, "/settings/courses")
+		return
+	}
+
 	url := oauthConfig.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
 	http.Redirect(c.Writer, c.Request, url, http.StatusTemporaryRedirect)
 }
@@ -70,20 +79,11 @@ func getGithubConnectFinished(c *gin.Context) {
 		log.Println("error converting token to json:", err)
 	}
 
-	loggedInUser, err2 := auth.GetLoggedInUser(c)
-	if err2 != nil {
-		log.Println("routes/github ERROR getting logged in user in getGithubConnectFinished:", err2)
-		msg.SendMessage(c, "Error connecting github account.")
-		c.Redirect(http.StatusTemporaryRedirect, "/settings")
-		return
-	}
-
+	loggedInUser := auth.GetLoggedInUserLogError(c)
 	githubConnection := db.GithubConnection{
-		UserID:       loggedInUser.ID,
-		AccessToken:  token.AccessToken,
-		Expiry:       token.Expiry,
-		RefreshToken: token.RefreshToken,
-		TokenType:    token.TokenType,
+		UserID:      loggedInUser.ID,
+		AccessToken: token.AccessToken,
+		TokenType:   token.TokenType,
 	}
 	err1 := db.CreateGithubConnection(&githubConnection)
 	if err1 != nil {
