@@ -19,10 +19,12 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/:username/:course/settings", mustBeCourseEditor, getCourseSettings)
 	router.POST("/:username/:course/settings/display", mustBeCourseEditor, postCourseSettingsDisplay)
 	router.POST("/:username/:course/settings/release/new", mustBeCourseEditor, postNewRelease)
+	router.POST("/:username/:course/settings/release/github", mustBeCourseEditor, postGithubRelease)
 	router.GET("/:username/:course/settings/release/delete", mustBeCourseEditor, getReleaseDelete)
 	router.POST("/:username/:course/settings/release/delete/confirm", mustBeCourseEditor, postReleaseDeleteConfirm)
 	router.POST("/:username/:course/settings/release/edit", mustBeCourseEditor, postEditRelease)
 	router.POST("/:username/:course/settings/version/new", mustBeCourseEditor, postNewVersion)
+	router.POST("/:username/:course/settings/version/new/github", mustBeCourseEditor, postNewGithubVersion)
 	router.POST("/:username/:course/settings/version/delete", mustBeCourseEditor, postDeleteVersion)
 
 	// view inside of course content

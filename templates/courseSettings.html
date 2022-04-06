@@ -2,13 +2,8 @@
 
 <div style="display:none;" id="courseID" value="{{ .Course.ID }}"></div>
 
-<script defer type="module" src="/resources/scripts/courseSettings.js"></script>
-
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
-	<h1>{{ .Course.Title }} Setting's</h1>
-	<p>
-		<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}">To landing page</a>
-	</p>
+	<h1><i class="fa-solid fa-arrow-left-long pad-05 bd hoverable-bg-overlay" href="/{{ .Course.User.Username }}/{{ .Course.Name }}"></i>{{ .Course.Title }} Setting's</h1>
 	{{ if ne .Course.GetNewestPublicCourseReleaseLogError.ID 0 }}
 		<p>
 			<a href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Course.GetNewestPublicCourseReleaseLogError.GetNewestVersionLogError.ID }}">View newest public version {{ .Course.GetNewestPublicCourseReleaseLogError.Num }}.{{ .Course.GetNewestPublicCourseReleaseLogError.GetNewestVersionNumLogError }}</a>
@@ -49,113 +44,214 @@
 	<h2>Purchases</h2>
 	<a href="/settings/courses">See purchases</a>
 </div>
-<div x-data="{ open: false }" class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
+<div class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
 	{{ if .Releases }}
-		<h2 x-cloak @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h2>
-		<div x-cloak x-show="open">
+		<h2>Releases</h2>
+		<div>
 			{{ range .Releases }}
 				<div x-data="dropdown" class="thin-grey bd" style="margin-bottom: 2rem; padding: 1rem;">
 					<div>
 						<div style="display:flex;">
-							<h4 style="margin-top: 0.5rem; margin-right: 0.5rem;">
+							<h4 style="margin-top: 0.5rem; margin-right: 0.5rem;" @click="toggle()">
 								Release {{ .Num }}.{{ .GetNewestVersionNumLogError }}.x
+								<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
 							</h4>
-							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/delete" method="get">
+							<form style="margin-left:auto;" action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/delete" method="get">
 								<input hidden name="releaseID" value="{{ .ID }}">
 								<button type="submit" class="bd-none bd bg pad-05">Delete</button>
 							</form>
 						</div>
-						<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/edit" method="post">
-							<input hidden name="releaseID" value="{{ .ID }}">
-							<label>Price USD</label>
-							<div style="margin-bottom: 1rem;">
-								<input max="10" step="1" name="price" class="form-input" type="number" value="{{ .GetPriceUSD }}">
-							</div>
-							<label style="margin-top: 0.5rem;">Markdown Description</label>
-							<div style="margin-bottom: 1rem;">
-								<textarea name="desc" class="form-input" style="min-width: 100%; max-width: 100%; height:10rem;" placeholder="Description">{{ .Markdown }}</textarea>
-							</div>
-							<label>Public</label>
-							<div style="margin-bottom: 1rem;">
-								<input type="checkbox" name="public" {{ if .Public }} checked {{ end }}>
-							</div>
-							<div>
-								<button class="bd bd-none bg-code pad-05" type="submit">Save</button>
-							</div>
-						</form>
-						<div class="mar-top-2rem thin-top">
-							<h4>Github Connection</h4>
-							{{ if $.User.HasGithubConnection }}
-								<p class="c-grey">Connect this release to a github repo.</p>
-								<form action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/version/github" method="post">
-									<input name="releaseID" value="{{ .ID }}" hidden>
-									<div style="margin-bottom:0.5rem;">
-										<select name="repoID" class="bg-overlay bd pad-05 thin-light" style="color:white;" id="courseSettingsGithubConnectionSelect">
-											<option value="">None</option>
-										</select>
-									</div>
-									<div>
-										<button class="bd bd-none bg-code pad-05">Select Repo</button>
-									</div>
-								</form>
-							{{ else }}
-								<p class="c-grey">Github based courses. Go to <a href="/settings/courses">settings > Teacher > Github Courses</a> to enable this feature.</p>
-							{{ end }}
-						</div>
-						<div class="mar-top-2rem thin-top">
-							<h4>New Version</h4>
-							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/new" method="post" enctype="multipart/form-data">
+						<div x-show="open">
+							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/edit" method="post">
 								<input hidden name="releaseID" value="{{ .ID }}">
-								<div>
-									<input name="zipFile" accept=".zip" type="file">
+								<label>Price USD</label>
+								<div style="margin-bottom: 1rem;">
+									<input max="10" step="1" name="price" class="form-input" type="number" value="{{ .GetPriceUSD }}">
+								</div>
+								<label style="margin-top: 0.5rem;">Markdown Description</label>
+								<div style="margin-bottom: 1rem;">
+									<textarea name="desc" class="form-input" style="min-width: 100%; max-width: 100%; height:10rem;" placeholder="Description">{{ .Markdown }}</textarea>
+								</div>
+								<label>Public</label>
+								<div style="margin-bottom: 1rem;">
+									<input type="checkbox" name="public" {{ if .Public }} checked {{ end }}>
 								</div>
 								<div>
-									<button type="submit">Upload</button>
+									<button class="bd bd-none bg-code pad-05" type="submit">Save</button>
+								</div>
+							</form>
+							<div x-data="dropdown" class="mar-top-2rem thin-top">
+								{{ if .HasGithubRelease }}
+									<h4 @click="toggle();">
+										Github Release
+										<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
+									</h4>
+									<p class="c-grey">Connected to {{ .GetGithubReleaseLogError.RepoName }}.</p>
+								{{ else }}
+									<h4 @click="toggle();">
+										Enable Github Release
+										<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
+									</h4>
+								{{ end }}
+								<div x-show="open">
+									{{ if $.User.HasGithubConnection }}
+										{{ if not .HasGithubRelease }}
+											<!-- create GithubRelease -->
+											<script defer src="/resources/scripts/courseSettingsGithubRelease.js"></script>
+											<p class="c-grey">Connect this release to a github repo.</p>
+											<form x-data="next" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
+												<input name="releaseID" value="{{ .ID }}" hidden>
+												<div style="margin-bottom:0.5rem;">
+													<select @change="testNext($el); $dispatch('next')" @click.once="loadRepos()" name="repoID" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelect required>
+														<option value="">None</option>
+													</select>
+												</div>
+												<div style="margin-bottom:0.5rem;">
+													<label>Select a Branch</label>
+													<select @next.window="loadDone($el)" name="branch" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectBranch required>
+														<option value="">None</option>
+													</select>
+												</div>
+												<div>
+													<button type="submit" class="bd bd-none bg-code pad-05">Connect</button>
+												</div>
+											</form>
+										{{ else }}
+											<!-- edit GithubRelease -->
+											<script defer src="/resources/scripts/courseSettingsUpdateGithubRelease.js"></script>
+											<script defer>
+												function loadBranchesIfFirstEdit(elem) {
+													// fetch and display branches for selected repo
+													fetch("/api/github/repo/" + {{ .GetGithubReleaseLogError.RepoID }} + "/branches", {
+														method: "GET",
+													})
+													.then(function(resp) {
+														if (!resp.ok) {
+															throw new Error("Error getting branches");
+														}
+
+														return resp.json()
+													})
+													.then(function(json) {
+														console.log("json is:", json);
+
+														elem.innerHTML = "";
+
+														for (let i = 0; i < json.length; i++) {
+															let option = document.createElement("option");
+															option.value = json[i].name;
+															option.innerHTML = json[i].name;
+															
+															elem.append(option);
+														}
+													})
+													.catch(function(err) {
+														console.error(err);
+													});
+												}
+											</script>
+											<p class="c-grey">Update this release's github repo.</p>
+											<form x-data="updateGithubRelease" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
+												<input name="releaseID" value="{{ .ID }}" hidden>
+												<div style="margin-bottom:0.5rem;">
+													<select @change="$dispatch('loadbranches');" @click.once="loadRepos(); $dispatch('loadbranches');" name="repoID" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelect required>
+														<option value="{{ .GetGithubReleaseLogError.RepoName }}">{{ .GetGithubReleaseLogError.RepoName }}</option>
+													</select>
+												</div>
+												<div style="margin-bottom:0.5rem;">
+													<label>Select a Branch</label>
+													<select 
+													@click.once="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
+													@loadbranches.window="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
+													name="branch" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectBranch required>
+														<option value="{{ .GetGithubReleaseLogError.Branch }}">{{ .GetGithubReleaseLogError.Branch }}</option>
+													</select>
+												</div>
+												<div>
+													<button type="submit" class="bd bd-none bg-code pad-05">Update</button>
+												</div>
+											</form>
+										{{ end }}
+									{{ else }}
+										<p class="c-grey">Github based courses. Go to <a href="/settings/courses">settings > Teacher > Github Courses</a> to enable this feature.</p>
+									{{ end }}
+								</div>
+							</div>
+						</div>
+					</div>
+					{{ if .HasGithubRelease }}
+						<div x-data="dropdown" class="mar-top-2rem thin-top">
+							<h4 @click="toggle()">
+								New Github Version
+								<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-circle-plus' "></i>
+							</h4>
+							<p class="c-grey">Github versions are connected to a specific github git commit.</p>
+							<script defer src="/resources/scripts/courseSettingsGithubVersion.js"></script>
+							<form x-show="open" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/version/new/github">
+								<input name="releaseID" value="{{ .ID }}" hidden>
+								<div>
+									<select name="commitHash" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectCommit>
+										<option value="">None</option>
+									</select>
 								</div>
 							</form>
 						</div>
-						{{ if .GetVersionsLogError }}
-							<div style="margin-top: 0.5rem; margin-bottom: 0.5rem;" @click="toggle()">
-								Versions <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></i>
+					{{ end }}
+					<div x-data="dropdown" class="mar-top-2rem thin-top">
+						<h4 @click="toggle()">
+							New Version
+							<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-circle-plus' "></i>
+						</h4>
+						<form x-show="open" action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/new" method="post" enctype="multipart/form-data">
+							<input hidden name="releaseID" value="{{ .ID }}">
+							<div>
+								<input class="bd bd-none pad-05" name="zipFile" accept=".zip" type="file">
 							</div>
-						{{ end }}
+							<div>
+								<button class="bg-code bd thin-light pad-05" type="submit">Upload Version</button>
+							</div>
+						</form>
 					</div>
-					<div x-show="open === true" x-cloak>
-						
-						{{ range .GetVersionsLogError }}
-							<div style="margin-top: 2rem;" class="thin-top-grey">
-								<div style="display: flex;">
-									<div>
-										<h5>Upload .{{ .Num }}.{{ .Patch }}</h5>
+					<div x-data="dropdown">
+						<div style="margin-top: 2rem; margin-bottom: 0.5rem; padding-top:1rem;" @click="toggle()" class="thin-top">
+							Versions <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></i>
+						</div>
+						<div x-show="open === true" x-cloak class="pad-sides-5">
+							{{ range .GetVersionsLogError }}
+								<div style="margin-top: 2rem;" class="thin-top-grey">
+									<div style="display: flex;">
+										<div>
+											<h5>Upload .{{ .Num }}.{{ .Patch }}</h5>
+										</div>
+										{{ if .Error }}
+											<div style="margin-top: 1rem; margin-left: 1rem;">
+												<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/delete" method="post">
+													<input hidden name="versionID" value="{{ .ID }}">
+													<button class="form-btn bd" style="background-color: var(--c-code);" type="submit">Delete upload</button>
+												</form>
+											</div>
+											<div style="margin-top: 1rem; margin-left: 1rem;">
+												<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
+											</div>
+										{{ else }}
+											<div style="margin-top: 1rem; margin-left: 1rem;">
+												<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
+											</div>
+										{{ end }}
 									</div>
 									{{ if .Error }}
-										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/delete" method="post">
-												<input hidden name="versionID" value="{{ .ID }}">
-												<button class="form-btn bd" style="background-color: var(--c-code);" type="submit">Delete upload</button>
-											</form>
-										</div>
-										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
-										</div>
-									{{ else }}
-										<div style="margin-top: 1rem; margin-left: 1rem;">
-											<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
+										<div>
+											An error occured
 										</div>
 									{{ end }}
-								</div>
-								{{ if .Error }}
 									<div>
-										An error occured
+										<p>
+											{{ .Error }}
+										</p>
 									</div>
-								{{ end }}
-								<div>
-									<p>
-										{{ .Error }}
-									</p>
 								</div>
-							</div>
-						{{ end }}
+							{{ end }}
+						</div>
 					</div>
 				</div>
 			{{ end }}

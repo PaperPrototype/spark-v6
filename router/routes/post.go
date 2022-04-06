@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"io"
@@ -335,18 +336,20 @@ func postNewVersion(c *gin.Context) {
 
 	uniqueName := uuid.NewString()
 
+	log.Println("routes/post CREATING .zip file.")
 	newFile, err4 := os.Create("./" + uniqueName + ".zip")
 	if err4 != nil {
-		log.Println("routes ERROR creating file:", err4)
+		log.Println("routes/post ERROR creating file:", err4)
 	}
 	defer newFile.Close()
 	defer os.Remove("./" + uniqueName + ".zip")
 
+	log.Println("routes/post COPYING zip file")
 	numBytesWritten, err5 := io.Copy(newFile, file)
 	if err5 != nil {
 		log.Println("routes ERROR writing bytes to new file:", err5)
 	}
-	log.Println("file downloaded. Bytes written =", numBytesWritten)
+	log.Println("routes/post COPIED file. Bytes written =", numBytesWritten)
 
 	// UNCOMPRESS ZIP FILE
 
@@ -504,4 +507,94 @@ func postReleaseDeleteConfirm(c *gin.Context) {
 
 	msg.SendMessage(c, "Incorrect password.")
 	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+}
+
+// create github release or update exisiting github release
+func postGithubRelease(c *gin.Context) {
+	username := c.Params.ByName("username")
+	courseName := c.Params.ByName("course")
+
+	releaseID := c.PostForm("releaseID")
+	repoID := c.PostForm("repoID")
+	branch := c.PostForm("branch")
+
+	if releaseID == "" || repoID == "" || branch == "" {
+		msg.SendMessage(c, "Blank fields not allowed.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	log.Println("releaseID:", releaseID, "repoID:", repoID)
+	releaseIDNum, err := strconv.ParseUint(releaseID, 10, 64)
+	if err != nil {
+		log.Println("routes/post ERROR parsing releaseID into uint in postNewGithubRelease:", err)
+		msg.SendMessage(c, "Error creating github release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	release, err4 := db.GetAllReleaseWithID(releaseIDNum)
+	if err4 != nil {
+		log.Println("routes/post ERROR getting release in pistGithubRelease:", err4)
+		msg.SendMessage(c, "Error getting release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	repoIDNum, err1 := strconv.ParseInt(repoID, 10, 64)
+	if err1 != nil {
+		log.Println("routes/post ERROR parsing repoID into int in postNewGithubRelease:", err1)
+		msg.SendMessage(c, "Error creating github release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	user := auth.GetLoggedInUserLogError(c)
+	context := context.Background()
+	client := user.GetGithubConnectionLogError().NewClient(context)
+
+	repo, _, err3 := client.Repositories.GetByID(context, repoIDNum)
+	if err3 != nil {
+		log.Println("routes/post ERROR getting repository by id of user:", err3)
+		msg.SendMessage(c, "Error gettign that repository")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	// if has github version, then user cannot change repo, but they can change the branch?
+	// create release
+	if !release.HasGithubRelease() {
+		githubRelease := db.GithubRelease{
+			Branch:    branch,
+			ReleaseID: releaseIDNum,
+			RepoID:    repoIDNum,
+			RepoName:  *repo.Name,
+		}
+		err2 := db.CreateGithubRelease(&githubRelease)
+		if err2 != nil {
+			log.Println("routes/post ERROR creating githubRelease in postNewGithubRelease:", err2)
+			msg.SendMessage(c, "Error creating github release.")
+			c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+			return
+		}
+
+		msg.SendMessage(c, "Successfully added github repository to release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	githubRelease := release.GetGithubReleaseLogError()
+	err2 := db.UpdateGithubRelease(githubRelease.ReleaseID, branch, repoIDNum, *repo.Name)
+	if err2 != nil {
+		msg.SendMessage(c, "Error updating github course release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	msg.SendMessage(c, "Successfully updated github course release.")
+	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+}
+
+func postNewGithubVersion(c *gin.Context) {
+
 }

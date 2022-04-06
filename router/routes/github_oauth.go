@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"main/db"
+	"main/githubapi"
 	"main/helpers"
 	"main/msg"
 	"main/router/auth"
@@ -80,7 +81,7 @@ func getGithubConnectFinished(c *gin.Context) {
 	}
 
 	loggedInUser := auth.GetLoggedInUserLogError(c)
-	githubConnection := db.GithubConnection{
+	githubConnection := githubapi.GithubConnection{
 		UserID:      loggedInUser.ID,
 		AccessToken: token.AccessToken,
 		TokenType:   token.TokenType,

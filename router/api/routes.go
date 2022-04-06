@@ -10,7 +10,7 @@ import (
 func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/courses", getCourses)
 	group.GET("/section/:sectionID", getSection)
-	group.GET("/section/:sectionID/plaintext", getSectionPlaintext)
+	group.GET("/section/:sectionID/plaintext", mustBeCourseAuthor, getSectionPlaintext)
 	group.POST("/section/:sectionID/content/:contentID/edit", postEditSectionContent)
 	group.POST("/version/:versionID/posts/new", courseVersionNewPost)
 	group.GET("/version/:versionID/posts", getVersionPosts)
@@ -20,7 +20,9 @@ func AddRoutes(group *gin.RouterGroup) {
 
 	// logged in users only
 	group.GET("/github/user/repos", middlewares.MustBeLoggedIn, getGithubUserRepos)
+	group.GET("/github/repo/:repoID/branches", middlewares.MustBeLoggedIn, getGithubRepoBranches)
+	group.GET("/github/repo/:repoID/branch/:branch/commits", middlewares.MustBeLoggedIn, getGithubRepoBranchCommits)
 
-	// not logged in users
-	group.GET("/github/users/:userID/repos")
+	group.GET("/github/users_id/:userID/repos")
+	group.GET("/github/users_username/:username/repos")
 }

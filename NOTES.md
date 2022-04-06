@@ -6,7 +6,8 @@ NOTES
 	- flow? layout?
 		- using version?
 			- less re-writing of things
-			- layouts
+			- layout
+				
 		- make whole new github versions?
 			- re-write a lot of stuff
 

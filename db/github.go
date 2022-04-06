@@ -3,14 +3,14 @@ package db
 import (
 	"context"
 	"log"
+	"main/githubapi"
 
 	"github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 )
 
 func (user *User) HasGithubConnection() bool {
 	var count int64 = 0
-	err := gormDB.Model(&GithubConnection{}).Where("user_id = ?", user.ID).Count(&count).Error
+	err := gormDB.Model(&githubapi.GithubConnection{}).Where("user_id = ?", user.ID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -26,9 +26,9 @@ func (user *User) HasGithubConnection() bool {
 	return true
 }
 
-func (user *User) GetGithubConnectionLogError() *GithubConnection {
-	githubConnection := GithubConnection{}
-	err := gormDB.Model(&GithubConnection{}).Where("user_id = ?", user.ID).First(&githubConnection).Error
+func (user *User) GetGithubConnectionLogError() *githubapi.GithubConnection {
+	githubConnection := githubapi.GithubConnection{}
+	err := gormDB.Model(&githubapi.GithubConnection{}).Where("user_id = ?", user.ID).First(&githubConnection).Error
 	if err != nil {
 		log.Println("db/github ERROR getting github connection:", err)
 	}
@@ -36,20 +36,9 @@ func (user *User) GetGithubConnectionLogError() *GithubConnection {
 	return &githubConnection
 }
 
-func (githubConnection *GithubConnection) NewClient() (*github.Client, context.Context) {
-	ctx := context.Background()
-
-	// put token into oauth struct
-	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubConnection.AccessToken})
-
-	// http client
-	client := oauth2.NewClient(ctx, tokenSource)
-	return github.NewClient(client), ctx
-}
-
-func (user *User) GetGithubConnection() (*GithubConnection, error) {
-	githubConnection := GithubConnection{}
-	err := gormDB.Model(&GithubConnection{}).Where("user_id = ?", user.ID).First(&githubConnection).Error
+func (user *User) GetGithubConnection() (*githubapi.GithubConnection, error) {
+	githubConnection := githubapi.GithubConnection{}
+	err := gormDB.Model(&githubapi.GithubConnection{}).Where("user_id = ?", user.ID).First(&githubConnection).Error
 	return &githubConnection, err
 }
 
@@ -59,9 +48,16 @@ func (user *User) GithubGetReposLogError() []*github.Repository {
 		log.Println("db/github ERROR getting github connection in GetReposLogError:", err)
 	}
 
-	client, ctx := connection.NewClient()
+	ctx := context.Background()
+	client := connection.NewClient(ctx)
 
-	repos, _, err1 := client.Repositories.List(ctx, "", nil)
+	repos, _, err1 := client.Repositories.List(ctx, "", &github.RepositoryListOptions{
+		Visibility: "all",
+		ListOptions: github.ListOptions{
+			Page:    1,
+			PerPage: 100,
+		},
+	})
 	if err1 != nil {
 		log.Println("db/github ERROR getting repos in GetReposLogError", err1)
 	}

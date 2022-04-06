@@ -1,6 +1,7 @@
 package db
 
 import (
+	"main/githubapi"
 	"time"
 
 	"github.com/google/uuid"
@@ -56,6 +57,10 @@ func CreateVerify(verify *Verify) error {
 	return gormDB.Create(verify).Error
 }
 
-func CreateGithubConnection(githubConnection *GithubConnection) error {
+func CreateGithubConnection(githubConnection *githubapi.GithubConnection) error {
 	return gormDB.Create(githubConnection).Error
+}
+
+func CreateGithubRelease(githubRelease *GithubRelease) error {
+	return gormDB.Create(githubRelease).Error
 }

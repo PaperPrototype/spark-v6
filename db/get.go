@@ -69,6 +69,24 @@ func GetUserCourseWithIDPreloadUser(username string, courseID interface{}) (*Cou
 	return &course, err1
 }
 
+func GetWithIDUserCoursePreloadUser(userID interface{}, courseID interface{}) (*Course, error) {
+	user := User{}
+	course := Course{}
+
+	err := gormDB.Model(&User{}).Where("id = ?", userID).First(&user).Error
+	if err != nil {
+		return &course, err
+	}
+
+	err1 := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("id = ?", courseID).First(&course).Error
+
+	// fill in user
+	course.User = user
+
+	// return
+	return &course, err1
+}
+
 func GetAllCoursesPreloadUser() ([]Course, error) {
 	courses := []Course{}
 	err := gormDB.Model(&Course{}).Preload("User").Find(&courses).Error

@@ -2,6 +2,7 @@ package db
 
 import (
 	"html/template"
+	"main/githubapi"
 	"time"
 )
 
@@ -21,13 +22,17 @@ func migrate() {
 		&Media{},
 		&MediaChunk{},
 
+		// github based courses
+		&GithubRelease{},
+		&GithubVersion{},
+
 		// purchases
 		&Purchase{},
 		&AttemptBuyRelease{},
 
 		// third party apps
 		&StripeConnection{},
-		&GithubConnection{},
+		&githubapi.GithubConnection{},
 
 		// posts
 		&Post{},
@@ -83,7 +88,7 @@ type User struct {
 	Email    string `gorm:"unique"`
 	Bio      string
 
-	Verified bool `gorm:"not null, default:f"`
+	Verified bool `gorm:"not null; default:f"`
 
 	Purchases        []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	StripeConnection StripeConnection
@@ -100,22 +105,11 @@ type Verify struct {
 // stripe connection cannot be made until they verify their email
 type StripeConnection struct {
 	StripeAccountID string
-	UserID          uint64 `gorm:"not null,unique"`
-}
-
-// github access tokens never expire
-type GithubConnection struct {
-	UserID uint64 `gorm:"not null"`
-
-	// the token for accessing the users github repos etc
-	AccessToken string
-
-	// the type of token
-	TokenType string
+	UserID          uint64 `gorm:"not null; unique"`
 }
 
 type Session struct {
-	TokenUUID string `gorm:"primaryKey, unique"` // this is the session id
+	TokenUUID string `gorm:"primaryKey; unique"` // this is the session id
 	DeleteAt  time.Time
 	UserID    uint64 `gorm:"not null"`
 }
@@ -158,17 +152,17 @@ type Release struct {
 	Public   bool   `gorm:"default:f"`
 	Level    uint32 `gorm:"default:0; not null"`
 
-	UsingGithub   bool          `gorm:"default:f"` // defaults to false
-	ReleaseGithub ReleaseGithub // githbu repo info
+	GithubRelease GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // githbu repo info
 
 	Versions  []Version  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-type ReleaseGithub struct {
-	ReleaseID   uint64
-	TrackLatest bool
-	// TODO needed github repo info
+type GithubRelease struct {
+	ReleaseID uint64 `gorm:"not null"`
+	RepoID    int64  `gorm:"not null"`
+	RepoName  string `gorm:"default:woops; not null"`
+	Branch    string `gorm:"default:main; not null"`
 }
 
 // points to a parent course
@@ -180,15 +174,23 @@ type Hierarchy struct {
 type Version struct {
 	ID        uint64 `gorm:"primaryKey"`
 	Num       uint16
-	Patch     uint16 `gorm:"default:0"`
+	Patch     uint16 `gorm:"not null; default:0"`
 	CourseID  uint64 `gorm:"not null"`
 	ReleaseID uint64 `gorm:"not null"`
 
+	// if using github version instead of manual upload with sections
+	UsingGithub   bool          `gorm:"default:f; not null;"`
+	GithubVersion GithubVersion `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	// if using manual uploading option with sections
 	Error    string    `gorm:"default:null"`
 	Sections []Section `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
 
-	// if using github repo
-	CommitHash string
+type GithubVersion struct {
+	VersionID uint64 `gorm:"not null"`
+	RepoID    int64  `gorm:"not null"`
+	Commit    string `gorm:"not null"`
 }
 
 type Section struct {

@@ -220,3 +220,13 @@ func (purchase *Purchase) GetCourseLogError() *Course {
 func (user *User) SetVerified(verified bool) error {
 	return gormDB.Model(&User{}).Where("id = ?", user.ID).Update("verified", verified).Error
 }
+
+func (release *Release) GetGithubReleaseLogError() *GithubRelease {
+	githubRelease := GithubRelease{}
+	err := gormDB.Model(&GithubRelease{}).Where("release_id = ?", release.ID).First(&githubRelease).Error
+	if err != nil {
+		log.Println("db/utils ERROR getting github release in HasGithubRelease:", err)
+	}
+
+	return &githubRelease
+}

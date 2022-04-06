@@ -4,6 +4,7 @@
 <div id="courseName" hidden>{{ .Course.Name }}</div>
 <div id="versionID" hidden>{{ .Version.ID }}</div>
 <div id="sectionID" hidden>{{ .Section.ID }}</div>
+<div id="courseID" hidden>{{ .Course.ID }}</div>
 
 <script defer src="/resources/scripts/courseView.js"></script>
 <link href="/resources/css/courseView.css" rel="stylesheet">
@@ -100,7 +101,9 @@
 </script>
 
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
-	<h1 style="margin-bottom:0;">{{ .Course.Title }}
+	<h1 style="margin-bottom:0;">
+		<i class="fa-solid fa-arrow-left-long pad-05 bd hoverable-bg-overlay" href="/{{ .Course.User.Username }}/{{ .Course.Name }}"></i>
+		{{ .Course.Title }}
 		<span style="color:var(--c-text); margin-top:2.3rem; font-size:1rem;">v{{ .Release.Num }}.{{ .Version.Num }}.{{ .Version.Patch }}</span>
 	</h1>
 	<pre style="
@@ -115,7 +118,7 @@
 		<div class="hoverable-bg-overlay bd pad-05" href="https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO" external>
 			<i class="fa-brands fa-spotify"></i> focus music
 		</div>
-		{{ if eq .Course.UserID .User.ID }}
+		{{ if eq .User.ID .Course.UserID }}
 			<i class="fa-solid fa-gear hoverable-bg-overlay bd pad-05" style="margin-left:auto;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
 		{{ end }}
 	</div>
@@ -225,9 +228,9 @@
 		<div class="bd thin-light mar-sides-5">
 			<div style="display:flex;" class="thin-bot">
 				<div class="hoverable pad-05 bd" id="courseContentsLanguage"></div>
-				{{ if eq .Course.UserID .User.ID }}
-					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="$store.courseView.editingContent = ! $store.courseView.editingContent; loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
-					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = ! $store.courseView.editingContent" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
+				{{ if eq .User.ID .Course.UserID }}
+					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
+					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = false" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
 				{{ end }}
 			</div>
 			<div x-show="$store.courseView.editingContent === false" style="padding-right:2%; padding-left:2%;" id="courseContent">

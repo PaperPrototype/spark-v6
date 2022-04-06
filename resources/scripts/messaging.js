@@ -10,7 +10,10 @@ async function SendMessage(messageText) {
 
 	messagesMount.appendChild(messageNode);
 
-	// set event listenr for onclick to hide
+	// scroll up so user see's the message?
+	window.scrollTo(0, 0);
+
+	// set event listener for onclick to hide message
 	setMessagesHideWhenClicked();
 }
 

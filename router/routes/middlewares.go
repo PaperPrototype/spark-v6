@@ -41,16 +41,6 @@ func mustBeCourseEditor(c *gin.Context) {
 	c.Next()
 }
 
-func mustBeLoggedIn(c *gin.Context) {
-	if !auth.IsLoggedInValid(c) {
-		msg.SendMessage(c, "We kinda need you to be logged in to access that page...")
-		c.Redirect(http.StatusFound, "/login")
-		return
-	}
-
-	c.Next()
-}
-
 // OVERVIEW
 // if not owner of course
 // 		if course release not public
@@ -85,7 +75,7 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 	}
 
 	redirectRelease := false
-	release, err1 := db.GetPublicReleaseWithID(version.ReleaseID)
+	release, err1 := db.GetAllReleaseWithID(version.ReleaseID)
 	if err1 != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting release:", err1)
 		msg.SendMessage(c, "No course releases available.")

@@ -31,3 +31,7 @@ func UpdateSectionContentAndIncreasePatch(sectionID string, contentID string, co
 	err2 := gormDB.Model(&Version{}).Where("id = ?", versionID).Update("patch", version.Patch+1).Error
 	return err2
 }
+
+func UpdateGithubRelease(releaseID uint64, branch string, repoID int64, repoName string) error {
+	return gormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).Update("branch", branch).Update("repo_id", repoID).Update("repo_name", repoName).Error
+}

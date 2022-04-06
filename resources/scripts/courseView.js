@@ -352,13 +352,16 @@ function menuFollowScroll() {
 function loadEditSectionPlaintext() {
 	let currentSectionID = Alpine.store("sections").current;
 
-	fetch("/api/section/"+ currentSectionID+ "/plaintext",{
-		method: "get",
+	let courseID = document.getElementById("courseID").innerText;
+
+	fetch("/api/section/"+ currentSectionID+ "/plaintext?course_id="+courseID,{
+		method: "GET",
 	})
 	.then(function(resp) {
 		console.log("got response");
 
 		if (!resp.ok) {
+			SendMessage("You must be the course author to edit this.")
 			throw new Error("Response for loadSection was not ok");
 		}
 
@@ -376,6 +379,8 @@ function loadEditSectionPlaintext() {
 
 		courseContentEditSaveButton.setAttribute("contentID",  sectionJson.Contents[0].ID);
 		courseContentEdit.value = sectionJson.Contents[0].Markdown;
+
+		Alpine.store("courseView").editingContent = true; 
 	})
 	.catch(function(err) {
 		SendMessage("Failed to load section plaintext.")
