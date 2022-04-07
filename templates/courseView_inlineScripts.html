@@ -6,6 +6,11 @@
 
 	// fill in sections info in courseView.html menu and Alpine.store.sections (see above)
 	async function initSectionsDataLoadFirstSection() {
+
+		// show loading message
+		let content = document.getElementById("courseContent");
+		content.innerHTML = "<p>Loading...</p>";
+
 		let versionID = document.getElementById("versionID").innerText;
 
 		if (document.getElementById("usingGithub").innerText === "true") {	

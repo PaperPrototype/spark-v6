@@ -1,7 +1,10 @@
 function loadGithubSection(tree_sha) {
 	console.log("loading github section...");
 
-	// set the current sectionID to the tree's sha
+	let content = document.getElementById("courseContent");
+	content.innerHTML = "<p>Loading...</p>";
+
+	// set the current id to the tree's sha
 	Alpine.store("sections").current = tree_sha;
 
 	Alpine.store("courseView").editingContent = false;
@@ -38,7 +41,6 @@ function loadGithubSection(tree_sha) {
 	console.log("blobs are:", blobs);
 
 	// clear course contents
-	let content = document.getElementById("courseContent");
 	content.innerHTML = "";
 
 	if (blobs.length === 0) {
@@ -67,7 +69,7 @@ function loadGithubSection(tree_sha) {
 			throw new Error("courseContentsLanguage was null!");
 		}
 
-		// courseContentsLanguage.innerText = json.Name;
+		courseContentsLanguage.innerText = json.Name;
 
 		let markdown = document.createElement("div");
 		markdown.innerHTML = json.Markdown;
@@ -106,7 +108,7 @@ function loadGithubSection(tree_sha) {
 	let courseURL = document.getElementById("courseURL").innerText;
 
 	// change location of window
-	window.history.replaceState("", "", courseURL + "/" + sectionID)
+	// window.history.replaceState("", "", courseURL + "/sha/" + tree_sha)
 }
 
 async function loadGithubBlob(versionID, sha, path) {

@@ -30,6 +30,7 @@ func AddRoutes(router *gin.Engine) {
 	// view inside of course content
 	router.GET("/:username/:course/view/:versionID", MustHaveAccessToCourseRelease, getCourseVersion)                   // view a version of the course
 	router.GET("/:username/:course/view/:versionID/:sectionID", MustHaveAccessToCourseRelease, getCourseVersionSection) // view a section of the course
+	router.GET("/:username/:course/view/:versionID/sha/:sha", MustHaveAccessToCourseRelease)                            // view a github versions content
 	router.GET("/:username/:course/view/:versionID/posts")                                                              // view posts
 	router.GET("/:username/:course/view/:versionID/posts/:postID")                                                      // view specific post
 	router.GET("/:username/:course/view/:versionID/posts/user/:username")                                               // view posts by a specific user

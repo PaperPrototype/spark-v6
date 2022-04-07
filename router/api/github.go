@@ -273,11 +273,15 @@ func getGithubRepoCommitContent(c *gin.Context) {
 
 	log.Println("markdown is:", html.String()[0:20])
 
+	name := *contentEncoded.Name
+
 	c.JSON(
 		http.StatusOK,
 		struct {
+			Name     string
 			Markdown string
 		}{
+			Name:     name[0 : len(*contentEncoded.Name)-3],
 			Markdown: html.String(),
 		},
 	)

@@ -2,6 +2,9 @@
 function loadUploadSection(sectionID) {
 	console.log("loading section...");
 
+	let content = document.getElementById("courseContent");
+	content.innerHTML = "<p>Loading...</p>";
+
 	fetch("/api/section/"+sectionID, {
 		method: "GET",
 	})
