@@ -262,8 +262,6 @@ func getGithubRepoCommitContent(c *gin.Context) {
 		return
 	}
 
-	log.Println("content is:", content[0:20])
-
 	html, err9 := markdown.Convert([]byte(content))
 	if err9 != nil {
 		log.Println("api/github ERROR converting content ot markdown in getGithubRepoCommitContent:", err9)
@@ -271,9 +269,11 @@ func getGithubRepoCommitContent(c *gin.Context) {
 		return
 	}
 
-	log.Println("markdown is:", html.String()[0:20])
-
 	name := *contentEncoded.Name
+
+	if len(name) != 0 {
+		name = name[0 : len(*contentEncoded.Name)-3]
+	}
 
 	c.JSON(
 		http.StatusOK,
@@ -281,7 +281,7 @@ func getGithubRepoCommitContent(c *gin.Context) {
 			Name     string
 			Markdown string
 		}{
-			Name:     name[0 : len(*contentEncoded.Name)-3],
+			Name:     name,
 			Markdown: html.String(),
 		},
 	)
