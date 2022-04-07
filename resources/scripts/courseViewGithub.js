@@ -1,62 +1,80 @@
 function loadGithubSection(tree_sha) {
 	console.log("loading github section...");
 
+	// set the current sectionID to the tree's sha
+	Alpine.store("sections").current = tree_sha;
+
+	Alpine.store("courseView").editingContent = false;
+
+	// get github tree
+	let fullTree = Alpine.store("githubTree").json;
+	let desiredTree = null;
+
+	// find tree with sha in github.tree
+	for (let i = 0; i < fullTree.tree.length; i++) {
+		if (fullTree.tree[i].sha === tree_sha) {
+			desiredTree = fullTree.tree[i];
+		}
+	}
+
+	if (desiredTree === null) {
+		console.log("tree for that section was null");
+		return
+	}
+
+	console.log("desired tree is:", desiredTree);
+
+	let blobs = [];
+	// use desiredTree path to check for other sub paths that lead to blobs that end in .md
+	for (let i = 0; i < fullTree.tree.length; i++) {
+		if (
+			fullTree.tree[i].path.includes(desiredTree.path + "/english.md") && 
+			fullTree.tree[i].type === "blob" &&
+			fullTree.tree[i].path.includes(".md")) {
+			blobs.push(fullTree.tree[i]);
+		}
+	}
+
+	console.log("blobs are:", blobs);
+
+	// clear course contents
+	let content = document.getElementById("courseContent");
+	content.innerHTML = "";
+
+	if (blobs.length === 0) {
+		// fill in "this section is empty"
+		content.innerHTML = `<p>This section is empty!</p>`;
+
+		console.log("no contents found for that section");
+
+		// show contents view
+		viewContents();
+
+		// close menu
+		Alpine.store("courseView").menuOpen = false;
+		return
+	}
+
 	let versionID = document.getElementById("versionID").innerText;
 
-	fetch("/api/github/version/" + versionID + "/trees/" + tree_sha, {
-		method: "GET",
-	})
-	.then(function(resp) {
-		console.log("got response");
-
-		if (!resp.ok) {
-			throw new Error("Response for loadGithubSection was not ok");
-		}
-
-		console.log("response converted to json");
-		return resp.json();
-	})
-	.then(function(treeJson) {
-		// clear the course lecture contents
-		let content = document.getElementById("courseContent");
-		content.innerHTML = "";
-
-		// set the title
-		let sectionTitle = treeJson.path;
-		if (sectionTitle === null) {
-			throw new Error("sectionTitle was null!");
-		}
-
-		sectionTitle.innerText = sectionJson.Name;
-
-
-		// TODO contents may be in english or spanish as well
-		/*
-			for (let i = 0; i < sectionJson.Contents.length; i++) {
-				sectionJson.Contents[i].Language
-				sectionJson.Contents[i].Markdown
-			}
-		*/
-		if (sectionJson.Contents[0] === undefined) {
-			content.innerHTML = `<p>This section is empty!</p>`;
-			return
-		}
+	// load first blob as section
+	let resp = loadGithubBlob(versionID, fullTree.sha, blobs[0].path)
+	resp.then(function(json) {
+		console.log("text is:", json);
 
 		let courseContentsLanguage = document.getElementById("courseContentsLanguage")
 		if (courseContentsLanguage === null) {
 			throw new Error("courseContentsLanguage was null!");
 		}
 
-		courseContentsLanguage.innerText = sectionJson.Contents[0].Language;
+		// courseContentsLanguage.innerText = json.Name;
 
 		let markdown = document.createElement("div");
-		markdown.innerHTML = sectionJson.Contents[0].Markdown;
+		markdown.innerHTML = json.Markdown;
 
 		// FIX IMAGE LINKS
 		let images = markdown.querySelectorAll("img")
 		console.log("links to fix are:", images);
-
-		let versionID = document.getElementById("versionID").innerText;
 
 		for (let i = 0; i < images.length; i++) {
 			let src = images[i].getAttribute("src")
@@ -73,18 +91,10 @@ function loadGithubSection(tree_sha) {
 
 		markdown.setAttribute("markdown", "");
 
+		content.append(markdown);
+
 		window.scroll(0, 0);
-
-		content.appendChild(markdown);
-
-		Alpine.store("courseView").editingContent = false;
-	})
-	.catch(function(err) {
-		console.error(err);
 	});
-
-	// set the current sectionID
-	Alpine.store("sections").current = sectionID;
 
 	// close menu
 	Alpine.store("courseView").menuOpen = false;
@@ -97,10 +107,9 @@ function loadGithubSection(tree_sha) {
 
 	// change location of window
 	window.history.replaceState("", "", courseURL + "/" + sectionID)
+}
 
-	// TODO
-	/*
-		- set next section button
-		- set previous section button
-	*/
+async function loadGithubBlob(versionID, sha, path) {
+	let response = await fetch("/api/github/version/"+versionID+"/content/"+sha+"/"+path);
+	return response.json();
 }

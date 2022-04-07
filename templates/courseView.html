@@ -12,6 +12,24 @@
 	<div id="usingGithub" hidden>false</div>
 {{ end }}
 
+<script>
+	document.addEventListener("alpine:init", function(event) {
+		Alpine.store('courseView', {
+			menuAvailable: true,
+			menuOpen: false,
+			allowNewPost: true,
+			viewingPost: false,
+			editingPost: false,
+			editingContent: false,
+			usingGithub: false,
+
+			// views
+			views: ['contents', 'chat', 'posts', 'menu'],
+			view: 'contents',
+		});
+	});
+</script>
+
 <script defer src="/resources/scripts/courseView.js"></script>
 <script defer src="/resources/scripts/courseViewGithub.js"></script>
 <script defer src="/resources/scripts/courseViewUpload.js"></script>

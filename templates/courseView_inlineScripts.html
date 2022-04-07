@@ -1,210 +1,41 @@
 <script>
+
 	document.addEventListener("alpine:init", function(event) {
-		Alpine.store('courseView', {
-			menuAvailable: true,
-			menuOpen: false,
-			allowNewPost: true,
-			viewingPost: false,
-			editingPost: false,
-			editingContent: false,
-
-			// views
-			views: ['contents', 'chat', 'posts', 'menu'],
-			view: 'contents',
-		});
-	});
-</script>
-
-{{ if not .Version.HasGithubVersion }}
-<script defer>
-	document.addEventListener("alpine:init", function(event) {
-		let courseNext = document.getElementById("courseNext");
-		courseNext.addEventListener("click", function() {
-			let sections = Alpine.store("sections").sections;
-			let current = Alpine.store("sections").current;
-
-			// find index of current
-			let index = 0;
-			for (let i = 0; i < sections.length; i++) {
-				if (sections[i] === current) {
-					index = i;
-					break
-				}
-			}
-
-			// prevent from loadin section out of bounds
-			let nextSectionIndex = index + 1;
-			if ((nextSectionIndex + 1) > sections.length) {
-				console.log("out of bounds!")
-				console.log("index:", index);
-				console.log("nextIndex:", nextSectionIndex);
-				console.log("currentID:", current);
-				return
-			}
-
-			let nextSectionID = Alpine.store("sections").sections[nextSectionIndex];
-
-			console.log("index:", index);
-			console.log("nextIndex:", nextSectionIndex);
-			console.log("nextID:", nextSectionID);
-			console.log("currentID:", current);
-
-			let versionID = document.getElementById("versionID").innerText;
-			let courseName = document.getElementById("courseName");
-
-			loadSection(nextSectionID);
-		});
-
-		let coursePrev = document.getElementById("coursePrevious");
-		coursePrev.addEventListener("click", function() {
-			let sections = Alpine.store("sections").sections;
-			let current = Alpine.store("sections").current;
-
-			// find index of current
-			let index = 0;
-			for (let i = 0; i < sections.length; i++) {
-				if (sections[i] === current) {
-					index = i;
-					break
-				}
-			}
-
-			// prevent from loading section out of bounds
-			let previousSectionIndex = index - 1;
-			if (previousSectionIndex < 0) {
-				console.log("out of bounds!")
-				console.log("index:", index);
-				console.log("previousIndex:", previousSectionIndex);
-				console.log("currentID:", current);
-				return
-			}
-
-			let previousSectionID = Alpine.store("sections").sections[previousSectionIndex];
-
-			console.log("index:", index);
-			console.log("previousIndex:", previousSectionIndex);
-			console.log("previousID:", previousSectionID);
-			console.log("currentID:", current);
-
-			let versionID = document.getElementById("versionID").innerText;
-			let courseName = document.getElementById("courseName");
-
-			loadSection(previousSectionID); 
-		});
-
-		Alpine.store("sections", {
-			sections: [
-				// use templating to store info about sections
-				{{ range .Version.GetSectionsLogError }}
-					{{ .ID }},
-				{{ end }}
-			],
-			current: {{ .Section.ID }},
-		});
-
-		console.log("section ids", Alpine.store("sections").sections);
-	});
-</script>
-{{ else }}
-<!-- js for courses that are hosted on github -->
-<script defer>
-	document.addEventListener("alpine:init", function(event) {
-		let courseNext = document.getElementById("courseNext");
-		courseNext.addEventListener("click", function() {
-			let sections = Alpine.store("sections").sections;
-			let current = Alpine.store("sections").current;
-
-			// find index of current
-			let index = 0;
-			for (let i = 0; i < sections.length; i++) {
-				if (sections[i] === current) {
-					index = i;
-					break
-				}
-			}
-
-			// prevent from loadin section out of bounds
-			let nextSectionIndex = index + 1;
-			if ((nextSectionIndex + 1) > sections.length) {
-				console.log("out of bounds!")
-				console.log("index:", index);
-				console.log("nextIndex:", nextSectionIndex);
-				console.log("currentID:", current);
-				return
-			}
-
-			let nextSectionID = Alpine.store("sections").sections[nextSectionIndex];
-
-			console.log("index:", index);
-			console.log("nextIndex:", nextSectionIndex);
-			console.log("nextID:", nextSectionID);
-			console.log("currentID:", current);
-
-			let versionID = document.getElementById("versionID").innerText;
-			let courseName = document.getElementById("courseName");
-
-			loadSection(nextSectionID);
-		});
-
-		let coursePrev = document.getElementById("coursePrevious");
-		coursePrev.addEventListener("click", function() {
-			let sections = Alpine.store("sections").sections;
-			let current = Alpine.store("sections").current;
-
-			// find index of current
-			let index = 0;
-			for (let i = 0; i < sections.length; i++) {
-				if (sections[i] === current) {
-					index = i;
-					break
-				}
-			}
-
-			// prevent from loading section out of bounds
-			let previousSectionIndex = index - 1;
-			if (previousSectionIndex < 0) {
-				console.log("out of bounds!")
-				console.log("index:", index);
-				console.log("previousIndex:", previousSectionIndex);
-				console.log("currentID:", current);
-				return
-			}
-
-			let previousSectionID = Alpine.store("sections").sections[previousSectionIndex];
-
-			console.log("index:", index);
-			console.log("previousIndex:", previousSectionIndex);
-			console.log("previousID:", previousSectionID);
-			console.log("currentID:", current);
-
-			let versionID = document.getElementById("versionID").innerText;
-			let courseName = document.getElementById("courseName");
-
-			loadSection(previousSectionID); 
-		});
-
-		// these get filled js fetch calls from github
-		Alpine.store("sections", {
-			sections: [],
-			current: "",
-		});
-		fillSectionsGithub() // fill store.sections using async js
-
-		console.log("section ids", Alpine.store("sections").sections);
-
-		// sectionID when page first loads
-		let sectionID = document.getElementById("sectionID").innerText;
-		if (usingGithub) {
-			let current = Alpine.store("sections").current;
-			loadGithubSection(current);
-		} else {
-			loadUploadSection(sectionID);
-		}
+		initSectionsDataLoadFirstSection();
 	});
 
 	// fill in sections info in courseView.html menu and Alpine.store.sections (see above)
-	function fillSectionsGithub() {
+	async function initSectionsDataLoadFirstSection() {
 		let versionID = document.getElementById("versionID").innerText;
+
+		if (document.getElementById("usingGithub").innerText === "true") {	
+			Alpine.store('courseView').usingGithub = true;
+			// init data
+			Alpine.store("sections", {
+				sections: [],
+				current: "",
+			});
+
+			Alpine.store("githubTree", {
+				json: [],
+			});
+		} else {
+			// not using github
+			Alpine.store("sections", {
+				sections: [
+					// use templating to store info about sections
+					{{ range .Version.GetSectionsLogError }}
+						{{ .ID }},
+					{{ end }}
+				],
+				current: {{ .Section.ID }},
+			});
+
+			loadUploadSection({{ .Section.ID }});
+
+			// prevent loadig github based sections with fetch
+			return
+		}
 
 		fetch("/api/github/version/" + versionID +"/tree", {
 			method: "GET",
@@ -221,6 +52,8 @@
 
 			let menu = document.getElementById("courseMenu")
 
+			let saveFirstSection = true;
+
 			for (let i = 0; i < json.tree.length; i++) {
 
 				// menu item
@@ -230,12 +63,11 @@
 				</div>
 				*/
 
-				let saveFirstSection = true;
-
 				// if it is a folder
 				if (json.tree[i].type === "tree") {
-					if (saveFirstSection) {
+					if (saveFirstSection === true) {
 						Alpine.store("sections").current = json.tree[i].sha;
+						console.log("first section is:", json.tree[i])
 						saveFirstSection = false;
 					}
 
@@ -247,15 +79,99 @@
 					let div = document.createElement('div');
 					div.setAttribute(":class", "$store.sections.current === '" + json.tree[i].sha + "' ? 'selected' : ''");
 					div.setAttribute("class", "bd pad-05");
-					div.setAttribute("x-on.click", "loadSection('" + json.tree[i].sha + "');");
+					div.setAttribute("x-on:click", "loadSection('" + json.tree[i].sha + "');");
 					div.innerText = json.tree[i].path;
 					menu.append(div);
 				}
 			}
+
+			Alpine.store("githubTree").json = json;
+
+			let current = Alpine.store("sections").current;
+			loadGithubSection(current);
 		})
 		.catch(function(err) {
 			console.error(err);
 		});
 	}
 </script>
-{{ end }}
+
+<script defer>
+	document.addEventListener("alpine:init", function(event) {
+		let courseNext = document.getElementById("courseNext");
+		courseNext.addEventListener("click", function() {
+			let sections = Alpine.store("sections").sections;
+			let current = Alpine.store("sections").current;
+
+			// find index of current
+			let index = 0;
+			for (let i = 0; i < sections.length; i++) {
+				if (sections[i] === current) {
+					index = i;
+					break
+				}
+			}
+
+			// prevent from loadin section out of bounds
+			let nextSectionIndex = index + 1;
+			if ((nextSectionIndex + 1) > sections.length) {
+				console.log("out of bounds!")
+				console.log("index:", index);
+				console.log("nextIndex:", nextSectionIndex);
+				console.log("currentID:", current);
+				return
+			}
+
+			let nextSectionID = Alpine.store("sections").sections[nextSectionIndex];
+
+			console.log("index:", index);
+			console.log("nextIndex:", nextSectionIndex);
+			console.log("nextID:", nextSectionID);
+			console.log("currentID:", current);
+
+			let versionID = document.getElementById("versionID").innerText;
+			let courseName = document.getElementById("courseName");
+
+			loadSection(nextSectionID);
+		});
+
+		let coursePrev = document.getElementById("coursePrevious");
+		coursePrev.addEventListener("click", function() {
+			let sections = Alpine.store("sections").sections;
+			let current = Alpine.store("sections").current;
+
+			// find index of current
+			let index = 0;
+			for (let i = 0; i < sections.length; i++) {
+				if (sections[i] === current) {
+					index = i;
+					break
+				}
+			}
+
+			// prevent from loading section out of bounds
+			let previousSectionIndex = index - 1;
+			if (previousSectionIndex < 0) {
+				console.log("out of bounds!")
+				console.log("index:", index);
+				console.log("previousIndex:", previousSectionIndex);
+				console.log("currentID:", current);
+				return
+			}
+
+			let previousSectionID = Alpine.store("sections").sections[previousSectionIndex];
+
+			console.log("index:", index);
+			console.log("previousIndex:", previousSectionIndex);
+			console.log("previousID:", previousSectionID);
+			console.log("currentID:", current);
+
+			let versionID = document.getElementById("versionID").innerText;
+			let courseName = document.getElementById("courseName");
+
+			loadSection(previousSectionID); 
+		});
+
+		console.log("section ids", Alpine.store("sections").sections);
+	});
+</script>

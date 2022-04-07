@@ -4,11 +4,13 @@ import (
 	"context"
 	"log"
 	"main/db"
+	"main/markdown"
 	"main/router/auth"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/go-github/github"
 )
 
 func getGithubUserRepos(c *gin.Context) {
@@ -169,12 +171,14 @@ func getGithubRepoCommitTree(c *gin.Context) {
 	)
 }
 
-func getGithubRepoCommitTrees(c *gin.Context) {
+func getGithubRepoCommitContent(c *gin.Context) {
 	/*
-		/api/github/version/:versionID/trees/:tree_sha
+		/api/github/version/:versionID/content/:commit_sha/*path
 	*/
+
 	versionID := c.Params.ByName("versionID")
-	tree_sha := c.Params.ByName("tree_sha")
+	commitSHA := c.Params.ByName("commit_sha")
+	path := c.Params.ByName("path")
 
 	if versionID == "" {
 		log.Println("api/github ERROR versionID is empty.")
@@ -185,7 +189,7 @@ func getGithubRepoCommitTrees(c *gin.Context) {
 	// get version
 	version, err := db.GetVersion(versionID)
 	if err != nil {
-		log.Println("api/github ERROR getting version in getGithubRepoCommitTree:", err)
+		log.Println("api/github ERROR getting version in getGithubRepoCommitContent:", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -193,7 +197,7 @@ func getGithubRepoCommitTrees(c *gin.Context) {
 	// get course owner
 	course, err2 := db.GetCourse(version.CourseID)
 	if err2 != nil {
-		log.Println("api/github ERROR getting course in getGithubRepoCommitTree:", err2)
+		log.Println("api/github ERROR getting course in getGithubRepoCommitContent:", err2)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -201,14 +205,14 @@ func getGithubRepoCommitTrees(c *gin.Context) {
 	// get version's githubVersion
 	githubVersion, err1 := version.GetGithubVersion()
 	if err1 != nil {
-		log.Println("api/github ERROR getting githubVersion in getGithubRepoCommitTree:", err1)
+		log.Println("api/github ERROR getting githubVersion in getGithubRepoCommitContent:", err1)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
 	user, err3 := db.GetUser(course.UserID)
 	if err3 != nil {
-		log.Println("api/github ERROR getting user in getGithubRepoCommitTree:", err3)
+		log.Println("api/github ERROR getting user in getGithubRepoCommitContent:", err3)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -216,7 +220,7 @@ func getGithubRepoCommitTrees(c *gin.Context) {
 	// get owner's github connection
 	connection, err4 := user.GetGithubConnection()
 	if err4 != nil {
-		log.Println("api/github ERROR getting user's github connection in getGithubRepoCommitTree:", err4)
+		log.Println("api/github ERROR getting user's github connection in getGithubRepoCommitContent:", err4)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -227,115 +231,54 @@ func getGithubRepoCommitTrees(c *gin.Context) {
 
 	githubUser, _, err5 := client.Users.Get(ctx, "")
 	if err5 != nil {
-		log.Println("api/github ERROR getting github user in getGithubRepoCommitTree:", err5)
+		log.Println("api/github ERROR getting github user in getGithubRepoCommitContent:", err5)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
 	repo, _, err6 := client.Repositories.GetByID(ctx, githubVersion.RepoID)
 	if err6 != nil {
-		log.Println("api/github ERROR getting repo by ID in getGithubRepoCommitTree:", err6)
+		log.Println("api/github ERROR getting repo by ID in getGithubRepoCommitContent:", err6)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
 	// get folders from repo with info from githubVersion
 	// use sha to get specific commit
-	tree, _, err7 := client.Git.GetTree(ctx, *githubUser.Login, *repo.Name, tree_sha, true)
+	contentEncoded, _, _, err7 := client.Repositories.GetContents(ctx, *githubUser.Login, *repo.Name, path, &github.RepositoryContentGetOptions{
+		Ref: commitSHA,
+	})
 	if err7 != nil {
-		log.Println("api/github ERROR getting repo contents in getGithubRepoCommitTree:", err7)
+		log.Println("api/github ERROR getting repo contents in getGithubRepoCommitContent:", err7)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+
+	// decode content
+	content, err8 := contentEncoded.GetContent()
+	if err8 != nil {
+		log.Println("api/github ERROR decoding", *contentEncoded.Encoding, "content in getGithubRepoCommitContent:", err8)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("content is:", content[0:20])
+
+	html, err9 := markdown.Convert([]byte(content))
+	if err9 != nil {
+		log.Println("api/github ERROR converting content ot markdown in getGithubRepoCommitContent:", err9)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("markdown is:", html.String()[0:20])
 
 	c.JSON(
 		http.StatusOK,
-		tree,
-	)
-}
-
-func getGithubRepoCommitBlobs(c *gin.Context) {
-	/*
-		/api/github/version/:versionID/blobs/:blob_sha
-	*/
-
-	versionID := c.Params.ByName("versionID")
-	blob_sha := c.Params.ByName("blob_sha")
-
-	if versionID == "" {
-		log.Println("api/github ERROR versionID is empty.")
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	// get version
-	version, err := db.GetVersion(versionID)
-	if err != nil {
-		log.Println("api/github ERROR getting version in getGithubRepoCommitTree:", err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	// get course owner
-	course, err2 := db.GetCourse(version.CourseID)
-	if err2 != nil {
-		log.Println("api/github ERROR getting course in getGithubRepoCommitTree:", err2)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	// get version's githubVersion
-	githubVersion, err1 := version.GetGithubVersion()
-	if err1 != nil {
-		log.Println("api/github ERROR getting githubVersion in getGithubRepoCommitTree:", err1)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	user, err3 := db.GetUser(course.UserID)
-	if err3 != nil {
-		log.Println("api/github ERROR getting user in getGithubRepoCommitTree:", err3)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	// get owner's github connection
-	connection, err4 := user.GetGithubConnection()
-	if err4 != nil {
-		log.Println("api/github ERROR getting user's github connection in getGithubRepoCommitTree:", err4)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	ctx := context.Background()
-	// get client
-	client := connection.NewClient(ctx)
-
-	githubUser, _, err5 := client.Users.Get(ctx, "")
-	if err5 != nil {
-		log.Println("api/github ERROR getting github user in getGithubRepoCommitTree:", err5)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	repo, _, err6 := client.Repositories.GetByID(ctx, githubVersion.RepoID)
-	if err6 != nil {
-		log.Println("api/github ERROR getting repo by ID in getGithubRepoCommitTree:", err6)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	// get folders from repo with info from githubVersion
-	// use sha to get specific commit
-	blob, _, err7 := client.Git.GetBlobRaw(ctx, *githubUser.Login, *repo.Name, blob_sha)
-	if err7 != nil {
-		log.Println("api/github ERROR getting repo contents in getGithubRepoCommitTree:", err7)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(
-		http.StatusOK,
-		blob,
+		struct {
+			Markdown string
+		}{
+			Markdown: html.String(),
+		},
 	)
 }

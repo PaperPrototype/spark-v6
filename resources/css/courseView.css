@@ -43,6 +43,13 @@
 	font-family: 'Red Hat Mono', monospace;
 	overflow-x: scroll;
 	border-radius: 0.5rem;
+	display: block;
+}
+
+[markdown] > pre > code {
+	width: max-content;
+	display: block !important;
+	padding-right: 1rem !important;
 }
 
 [markdown] > pre > * {

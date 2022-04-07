@@ -281,9 +281,13 @@ func getCourseVersion(c *gin.Context) {
 		return
 	}
 
-	section, err2 := version.GetFirstSectionPreload()
-	if err2 != nil {
-		log.Println("routes/get ERROR getting versions first section in getCourseVersion:", err2)
+	section := &db.Section{}
+	var err2 error
+	if !release.HasGithubRelease() {
+		section, err2 = version.GetFirstSectionPreload()
+		if err2 != nil {
+			log.Println("routes/get ERROR getting versions first section in getCourseVersion:", err2)
+		}
 	}
 
 	var progress int64
@@ -421,11 +425,14 @@ func getCourseVersionSection(c *gin.Context) {
 	}
 
 	sectionID := c.Params.ByName("sectionID")
-
-	section, err2 := db.GetSectionPreload(sectionID)
-	if err2 != nil {
-		log.Println("routes/get ERROR getting section for getCourseVersionSection:", err2)
-		msg.SendMessage(c, "Error getting first section.")
+	section := &db.Section{}
+	var err2 error
+	if !release.HasGithubRelease() {
+		section, err2 = db.GetSectionPreload(sectionID)
+		if err2 != nil {
+			log.Println("routes/get ERROR getting versions first section in getCourseVersion:", err2)
+			msg.SendMessage(c, "Error getting first section.")
+		}
 	}
 
 	var progress int64

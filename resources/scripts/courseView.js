@@ -12,10 +12,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	courseMenu = document.getElementById("courseMenu");
 	ogTopOffset = courseNavTop.offsetTop;
 
-	if (document.getElementById("usingGithub").innerText === "true") {
-		usingGithub = true;
-	}
-
 	window.onscroll = function(){
 		menuFollowScroll();
 	}
@@ -233,7 +229,8 @@ function menuFollowScroll() {
 
 // load a github section or upload based section
 function loadSection(id) {
-	if (usingGithub) {
+	console.log("attempting to load...");
+	if (Alpine.store("courseView").usingGithub) {
 		loadGithubSection(id);
 	} else {
 		loadUploadSection(id);
