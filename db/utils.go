@@ -186,3 +186,21 @@ func (release *Release) HasGithubRelease() bool {
 
 	return true
 }
+
+func (version *Version) HasGithubVersion() bool {
+	var count int64 = 0
+	err := gormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).Count(&count).Error
+
+	// if err then not valid
+	if err != nil {
+		log.Println("db/utils ERROR getting github release in HasGithubRelease:", err)
+		return false
+	}
+
+	// if nothing exists
+	if count == 0 {
+		return false
+	}
+
+	return true
+}

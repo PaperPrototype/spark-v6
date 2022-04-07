@@ -64,3 +64,12 @@ func (user *User) GithubGetReposLogError() []*github.Repository {
 
 	return repos
 }
+
+func GetGithubReleaseWithIDStr(releaseID string) (*GithubRelease, error) {
+	githubRelease := GithubRelease{}
+	err := gormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).First(&githubRelease).Error
+	if err != nil {
+		return &githubRelease, err
+	}
+	return &githubRelease, nil
+}

@@ -2,6 +2,18 @@
 
 <div>
 	<div style="margin-bottom:3rem;">
+		{{ if .User.HasStripeConnection }}
+			<button href="/new" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">
+				New Course
+			</button>
+		{{ else }}
+			<button disabled style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">
+				New Course
+			</button>
+			<p class="c-grey">You must connect to stripe before you can upload courses or accept payouts.</p>
+		{{ end }}
+	</div>
+	<div style="margin-bottom:3rem;">
 		{{ if not .User.Verified }}
 			<p class="c-grey">You must verify your email before you can upload courses or accept payouts.</p>
 		{{ else }}
@@ -10,18 +22,13 @@
 			<button href="/settings/stripe/connect" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;">
 				Connect to Stripe Payouts
 			</button>
-			<p class="c-grey">You will be redirected to stripe for to sign up for payouts.</p>
+			<p class="c-grey">You must sign up with stripe before you can post a new course and/or accept payments.</p>
 			{{ else }}
 				<p>
 					<button href="/settings/stripe/connect" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;">
 						Update Stripe Info
 					</button>
 				</p>
-				<form action="/new" method="post">
-					<button type="submit" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;" class="bd">
-						New Course
-					</button>
-				</form>
 			{{ end }}
 
 			<h1>Github Courses</h1>

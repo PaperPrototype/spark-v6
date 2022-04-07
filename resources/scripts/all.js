@@ -4,7 +4,7 @@ function convertHrefs() {
 
 	for (let i = 0; i < hrefs.length; i++) {
 		console.log("adding click + linkability to element");
-
+		
 		hrefs[i].addEventListener("click", function(event) {
 			if (this.hasAttribute("external")) {
 				// open link in new window

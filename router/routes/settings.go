@@ -30,7 +30,7 @@ func getSettings(c *gin.Context) {
 	)
 }
 
-func getSettingsCourses(c *gin.Context) {
+func getSettingsTeaching(c *gin.Context) {
 	user := auth.GetLoggedInUserLogError(c)
 
 	courses, err := user.GetAuthorCourses()
@@ -40,10 +40,10 @@ func getSettingsCourses(c *gin.Context) {
 
 	c.HTML(
 		http.StatusOK,
-		"settingsCourses.html",
+		"settingsTeaching.html",
 		gin.H{
 			"Courses":  courses,
-			"Menu":     "Courses",
+			"Menu":     "Teaching",
 			"User":     user,
 			"Messages": msg.GetMessages(c),
 			"LoggedIn": auth.IsLoggedInValid(c),
@@ -238,7 +238,7 @@ func getStripeConnectFinished(c *gin.Context) {
 	// user is successfully connected
 	msg.SendMessage(c, "Successfully connected account!")
 	// user is successfully connected
-	c.Redirect(http.StatusFound, "/settings/courses")
+	c.Redirect(http.StatusFound, "/settings/teaching")
 }
 
 func postSettingsEditUser(c *gin.Context) {

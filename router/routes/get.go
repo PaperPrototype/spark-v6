@@ -51,6 +51,7 @@ func getCourse(c *gin.Context) {
 		return
 	}
 
+	// user has clicked on course from searching, skip the landing page if it is free and take them straight to the course
 	if release.Price == 0 {
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
 		return
@@ -272,6 +273,14 @@ func getCourseVersion(c *gin.Context) {
 		return
 	}
 
+	release, err3 := db.GetAllRelease(version.ReleaseID)
+	if err3 != nil {
+		log.Println("routes ERROR getting release from db:", err3)
+		msg.SendMessage(c, "That course release is not available.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
+		return
+	}
+
 	section, err2 := version.GetFirstSectionPreload()
 	if err2 != nil {
 		log.Println("routes/get ERROR getting versions first section in getCourseVersion:", err2)
@@ -280,7 +289,7 @@ func getCourseVersion(c *gin.Context) {
 	var progress int64
 
 	if auth.IsLoggedInValid(c) {
-		user, _ := auth.GetLoggedInUser(c)
+		user := auth.GetLoggedInUserLogError(c)
 
 		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
 		total := version.SectionsCountLogError()
@@ -304,6 +313,7 @@ func getCourseVersion(c *gin.Context) {
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"Release":  release,
 			"Course":   course,
 			"Version":  version,
 			"Section":  section,
@@ -344,11 +354,6 @@ func getCourseRelease(c *gin.Context) {
 				"Meta":     metaDefault,
 			},
 		)
-		return
-	}
-
-	if release.Price == 0 {
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
 		return
 	}
 
@@ -407,6 +412,14 @@ func getCourseVersionSection(c *gin.Context) {
 		return
 	}
 
+	release, err3 := db.GetAllRelease(version.ReleaseID)
+	if err3 != nil {
+		log.Println("routes ERROR getting release from db:", err3)
+		msg.SendMessage(c, "That course release is not available.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
+		return
+	}
+
 	sectionID := c.Params.ByName("sectionID")
 
 	section, err2 := db.GetSectionPreload(sectionID)
@@ -418,7 +431,7 @@ func getCourseVersionSection(c *gin.Context) {
 	var progress int64
 
 	if auth.IsLoggedInValid(c) {
-		user, _ := auth.GetLoggedInUser(c)
+		user := auth.GetLoggedInUserLogError(c)
 
 		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
 		total := version.SectionsCountLogError()
@@ -442,6 +455,7 @@ func getCourseVersionSection(c *gin.Context) {
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"Release":  release,
 			"Course":   course,
 			"Version":  version,
 			"Section":  section,
@@ -511,7 +525,7 @@ func getReleaseDelete(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	releaseID := c.Query("releaseID")
 
-	release, err := db.GetAllReleaseWithID(releaseID)
+	release, err := db.GetAllRelease(releaseID)
 	if err != nil {
 		log.Println("routes/getReleaseDelete ERROR getting release:", err)
 	}

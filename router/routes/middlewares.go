@@ -75,7 +75,7 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 	}
 
 	redirectRelease := false
-	release, err1 := db.GetAllReleaseWithID(version.ReleaseID)
+	release, err1 := db.GetAllRelease(version.ReleaseID)
 	if err1 != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting release:", err1)
 		msg.SendMessage(c, "No course releases available.")

@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+func GetCourse(courseID interface{}) (*Course, error) {
+	course := Course{}
+	err := gormDB.Model(&Course{}).Where("id = ?", courseID).First(&course).Error
+	return &course, err
+}
+
 func GetAuthorsCourses(authorUserID uint64) ([]Course, error) {
 	courses := []Course{}
 	err := gormDB.Model(&Course{}).Where("user_id = ?", authorUserID).Find(&courses).Error
@@ -105,13 +111,7 @@ func GetPublicReleaseWithID(releaseID interface{}) (*Release, error) {
 	return &release, err
 }
 
-func GetAllReleaseWithID(releaseID interface{}) (*Release, error) {
-	release := Release{}
-	err := gormDB.Where("id = ?", releaseID).First(&release).Error
-	return &release, err
-}
-
-func GetVersion(versionID interface{}) (*Version, error) {
+func GetVersion(versionID string) (*Version, error) {
 	version := Version{}
 	err := gormDB.Model(&Version{}).Where("id = ?", versionID).First(&version).Error
 	return &version, err

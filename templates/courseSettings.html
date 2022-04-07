@@ -155,7 +155,7 @@
 												<input name="releaseID" value="{{ .ID }}" hidden>
 												<div style="margin-bottom:0.5rem;">
 													<select @change="$dispatch('loadbranches');" @click.once="loadRepos(); $dispatch('loadbranches');" name="repoID" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelect required>
-														<option value="{{ .GetGithubReleaseLogError.RepoName }}">{{ .GetGithubReleaseLogError.RepoName }}</option>
+														<option value="{{ .GetGithubReleaseLogError.RepoID }}">{{ .GetGithubReleaseLogError.RepoName }}</option>
 													</select>
 												</div>
 												<div style="margin-bottom:0.5rem;">
@@ -173,7 +173,7 @@
 											</form>
 										{{ end }}
 									{{ else }}
-										<p class="c-grey">Github based courses. Go to <a href="/settings/courses">settings > Teacher > Github Courses</a> to enable this feature.</p>
+										<p class="c-grey">Github based courses. Go to <a href="/settings/teaching">settings > Teaching > Github Courses</a> to enable this feature.</p>
 									{{ end }}
 								</div>
 							</div>
@@ -187,12 +187,15 @@
 							</h4>
 							<p class="c-grey">Github versions are connected to a specific github git commit.</p>
 							<script defer src="/resources/scripts/courseSettingsGithubVersion.js"></script>
-							<form x-show="open" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/version/new/github">
+							<form x-show="open" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/version/new/github" method="post">
 								<input name="releaseID" value="{{ .ID }}" hidden>
-								<div>
-									<select name="commitHash" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectCommit>
+								<div style="margin-bottom:0.5rem;">
+									<select @click.once="loadRepoBranchCommits($el, {{ .GetGithubReleaseLogError.RepoID }}, '{{ .GetGithubReleaseLogError.Branch }}')" name="sha" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectCommit required>
 										<option value="">None</option>
 									</select>
+								</div>
+								<div>
+									<button type="submit" class="bd bg-code bd-none pad-05">Create New Version</button>
 								</div>
 							</form>
 						</div>
@@ -205,10 +208,10 @@
 						<form x-show="open" action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/version/new" method="post" enctype="multipart/form-data">
 							<input hidden name="releaseID" value="{{ .ID }}">
 							<div>
-								<input class="bd bd-none pad-05" name="zipFile" accept=".zip" type="file">
+								<input class="bd bd-none pad-05" name="zipFile" accept=".zip" type="file" required>
 							</div>
 							<div>
-								<button class="bg-code bd thin-light pad-05" type="submit">Upload Version</button>
+								<button class="bg-code bd thin-light pad-05" type="submit">Upload New Version</button>
 							</div>
 						</form>
 					</div>
@@ -249,6 +252,11 @@
 											{{ .Error }}
 										</p>
 									</div>
+									{{ if .UsingGithub }}
+										<div>
+											<p>Using Github <i class="fa-solid fa-check"></i></p>
+										</div>
+									{{ end }}
 								</div>
 							{{ end }}
 						</div>

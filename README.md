@@ -23,7 +23,7 @@ go to stripes docs and you can use the publicly available test key. Or if you ar
 
 
 ## sendgridconfig
-go to app.sendgrid.com docs and you can create a free account. Or if you are logged in, use the test key provided and paste it into a `sendgridconfig` file
+go to app.sendgrid.com docs and you can create a free account. Or if you are logged in, use the test key provided and paste it into a `sendgridconfig` file in the root directory.
 
 # Running
 Use `go run .` once you have the config files created and set.

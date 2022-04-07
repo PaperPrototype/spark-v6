@@ -64,7 +64,7 @@ func AddRoutes(router *gin.Engine) {
 
 	// for logged in users only
 	router.GET("/settings", middlewares.MustBeLoggedIn, getSettings)
-	router.GET("/settings/courses", middlewares.MustBeLoggedIn, getSettingsCourses)
+	router.GET("/settings/teaching", middlewares.MustBeLoggedIn, getSettingsTeaching)
 	router.GET("/settings/coupons", middlewares.MustBeLoggedIn, getSettingsCoupons)
 
 	router.GET("/settings/github/connect", middlewares.MustBeLoggedIn, getGithubConnect)
@@ -78,7 +78,8 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/settings/edit/user", middlewares.MustBeLoggedIn, postSettingsEditUser)
 	router.POST("/settings/edit/email", middlewares.MustBeLoggedIn, postSettingsEditEmail)
 
-	router.GET("/courses", getCourses) // search courses with possible url query
+	// search courses with possible url query
+	router.GET("/courses", getCourses)
 	/*
 		/courses?query=Intro+to+coding&order=relevance
 	*/

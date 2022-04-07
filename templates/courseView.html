@@ -6,103 +6,26 @@
 <div id="sectionID" hidden>{{ .Section.ID }}</div>
 <div id="courseID" hidden>{{ .Course.ID }}</div>
 
+{{ if .Version.HasGithubVersion }}
+	<div id="usingGithub" hidden>true</div>
+{{ else }}
+	<div id="usingGithub" hidden>false</div>
+{{ end }}
+
 <script defer src="/resources/scripts/courseView.js"></script>
+<script defer src="/resources/scripts/courseViewGithub.js"></script>
+<script defer src="/resources/scripts/courseViewUpload.js"></script>
+
+<!-- inline template build script for non github based course versions -->
+{{ template "courseView_inlineScripts.html" . }}
+
 <link href="/resources/css/courseView.css" rel="stylesheet">
 <link href="/resources/css/courses.css" rel="stylesheet">
 
-<script>
-	document.addEventListener("alpine:init", function(event) {
-		let courseNext = document.getElementById("courseNext");
-		courseNext.addEventListener("click", function() {
-			let sections = Alpine.store("sections").sections;
-			let current = Alpine.store("sections").current;
-
-			// find index of current
-			let index = 0;
-			for (let i = 0; i < sections.length; i++) {
-				if (sections[i] === current) {
-					index = i;
-					break
-				}
-			}
-
-			// prevent from loadin section out of bounds
-			let nextSectionIndex = index + 1;
-			if ((nextSectionIndex + 1) > sections.length) {
-				console.log("out of bounds!")
-				console.log("index:", index);
-				console.log("nextIndex:", nextSectionIndex);
-				console.log("currentID:", current);
-				return
-			}
-
-			let nextSectionID = Alpine.store("sections").sections[nextSectionIndex];
-
-			console.log("index:", index);
-			console.log("nextIndex:", nextSectionIndex);
-			console.log("nextID:", nextSectionID);
-			console.log("currentID:", current);
-
-			let versionID = document.getElementById("versionID").innerText;
-			let courseName = document.getElementById("courseName");
-
-			loadSection(nextSectionID);
-		});
-
-		let coursePrev = document.getElementById("coursePrevious");
-		coursePrev.addEventListener("click", function() {
-			let sections = Alpine.store("sections").sections;
-			let current = Alpine.store("sections").current;
-
-			// find index of current
-			let index = 0;
-			for (let i = 0; i < sections.length; i++) {
-				if (sections[i] === current) {
-					index = i;
-					break
-				}
-			}
-
-			// prevent from loading section out of bounds
-			let previousSectionIndex = index - 1;
-			if (previousSectionIndex < 0) {
-				console.log("out of bounds!")
-				console.log("index:", index);
-				console.log("previousIndex:", previousSectionIndex);
-				console.log("currentID:", current);
-				return
-			}
-
-			let previousSectionID = Alpine.store("sections").sections[previousSectionIndex];
-
-			console.log("index:", index);
-			console.log("previousIndex:", previousSectionIndex);
-			console.log("previousID:", previousSectionID);
-			console.log("currentID:", current);
-
-			let versionID = document.getElementById("versionID").innerText;
-			let courseName = document.getElementById("courseName");
-
-			loadSection(previousSectionID);
-		});
-
-		Alpine.store("sections", {
-			sections: [
-				// use templating to store info about sections
-				{{ range .Version.GetSectionsLogError }}
-					{{ .ID }},
-				{{ end }}
-			],
-			current: {{ .Section.ID }},
-		});
-
-		console.log("section ids", Alpine.store("sections").sections);
-	});
-</script>
-
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
 	<h1 style="margin-bottom:0;">
-		<i class="fa-solid fa-arrow-left-long pad-05 bd hoverable-bg-overlay" href="/{{ .Course.User.Username }}/{{ .Course.Name }}"></i>
+		<!-- if course is paid -->
+		<i class="fa-solid fa-arrow-left-long pad-05 bd hoverable-bg-overlay" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/{{ .Release.Num }}"></i>
 		{{ .Course.Title }}
 		<span style="color:var(--c-text); margin-top:2.3rem; font-size:1rem;">v{{ .Release.Num }}.{{ .Version.Num }}.{{ .Version.Patch }}</span>
 	</h1>

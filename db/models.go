@@ -161,7 +161,7 @@ type Release struct {
 type GithubRelease struct {
 	ReleaseID uint64 `gorm:"not null"`
 	RepoID    int64  `gorm:"not null"`
-	RepoName  string `gorm:"default:woops; not null"`
+	RepoName  string `gorm:"default:woops;"`
 	Branch    string `gorm:"default:main; not null"`
 }
 
@@ -174,13 +174,16 @@ type Hierarchy struct {
 type Version struct {
 	ID        uint64 `gorm:"primaryKey"`
 	Num       uint16
-	Patch     uint16 `gorm:"not null; default:0"`
-	CourseID  uint64 `gorm:"not null"`
-	ReleaseID uint64 `gorm:"not null"`
+	Patch     uint16    `gorm:"not null; default:0"`
+	CourseID  uint64    `gorm:"not null"`
+	ReleaseID uint64    `gorm:"not null"`
+	CreatedAt time.Time `gorm:"default:now()"`
+
+	// relation for github based versions
+	GithubVersion GithubVersion `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	// if using github version instead of manual upload with sections
-	UsingGithub   bool          `gorm:"default:f; not null;"`
-	GithubVersion GithubVersion `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UsingGithub bool `gorm:"default:f;"`
 
 	// if using manual uploading option with sections
 	Error    string    `gorm:"default:null"`
@@ -188,14 +191,17 @@ type Version struct {
 }
 
 type GithubVersion struct {
-	VersionID uint64 `gorm:"not null"`
+	VersionID uint64 `gorm:"not null; primaryKey"`
 	RepoID    int64  `gorm:"not null"`
-	Commit    string `gorm:"not null"`
+	SHA       string `gorm:"not null"`
+	Branch    string `gorm:"not null"`
+	UpdatedAt time.Time
 }
 
 type Section struct {
-	ID   uint64 `gorm:"primaryKey"`
-	Name string
+	ID        uint64 `gorm:"primaryKey"`
+	Name      string
+	UpdatedAt time.Time
 
 	// version this section is connected to
 	VersionID uint64 `gorm:"not null"`

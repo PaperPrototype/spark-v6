@@ -1,6 +1,7 @@
 let courseNavTop;
 let courseMain;
 let courseMenu;
+let usingGithub = false;
 
 // offset from the top of the screen
 let ogTopOffset;
@@ -11,28 +12,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	courseMenu = document.getElementById("courseMenu");
 	ogTopOffset = courseNavTop.offsetTop;
 
+	if (document.getElementById("usingGithub").innerText === "true") {
+		usingGithub = true;
+	}
+
 	window.onscroll = function(){
 		menuFollowScroll();
 	}
-
-	// sectionID when page first loads
-	let sectionID = document.getElementById("sectionID").innerText;
-	loadSection(sectionID);
-});
-
-document.addEventListener("alpine:init", function(event) {
-	Alpine.store('courseView', {
-		menuAvailable: true,
-		menuOpen: false,
-		allowNewPost: true,
-		viewingPost: false,
-		editingPost: false,
-		editingContent: false,
-
-		// views
-		views: ['contents', 'chat', 'posts', 'menu'],
-		view: 'contents',
-	});
 });
 
 // show chat view
@@ -213,110 +199,6 @@ function loadPost(postID) {
 	});
 }
 
-// async load section contents
-function loadSection(sectionID) {
-	console.log("loading section...");
-
-	fetch("/api/section/"+sectionID, {
-		method: "GET",
-	})
-	.then(function(resp) {
-		console.log("got response");
-
-		if (!resp.ok) {
-			throw new Error("Response for loadSection was not ok");
-		}
-
-		console.log("response converted to json");
-		return resp.json();
-	})
-	.then(function(sectionJson) {
-		let content = document.getElementById("courseContent");
-		content.innerHTML = "";
-
-		let sectionTitle = document.getElementById("sectionTitle");
-		if (sectionTitle === null) {
-			throw new Error("sectionTitle was null!");
-		}
-
-		sectionTitle.innerText = sectionJson.Name;
-
-
-		// TODO contents may be in english or spanish as well
-		/*
-			for (let i = 0; i < sectionJson.Contents.length; i++) {
-				sectionJson.Contents[i].Language
-				sectionJson.Contents[i].Markdown
-			}
-		*/
-		if (sectionJson.Contents[0] === undefined) {
-			content.innerHTML = `<p>This section is empty!</p>`;
-			return
-		}
-
-		let courseContentsLanguage = document.getElementById("courseContentsLanguage")
-		if (courseContentsLanguage === null) {
-			throw new Error("courseContentsLanguage was null!");
-		}
-
-		courseContentsLanguage.innerText = sectionJson.Contents[0].Language;
-
-		let markdown = document.createElement("div");
-		markdown.innerHTML = sectionJson.Contents[0].Markdown;
-
-		// FIX IMAGE LINKS
-		let images = markdown.querySelectorAll("img")
-		console.log("links to fix are:", images);
-
-		let versionID = document.getElementById("versionID").innerText;
-
-		for (let i = 0; i < images.length; i++) {
-			let src = images[i].getAttribute("src")
-
-			if (src.includes("/Assets/") || src.includes("/assets/")) {
-				// get filename and strip away /Assets/
-				let name = src.slice(8, src.length);
-				let newSrc = "/media/"+versionID+"/name/"+name;
-				images[i].setAttribute("src", newSrc);
-
-				console.log("changed src to:", newSrc);
-			}
-		}
-
-		markdown.setAttribute("markdown", "");
-
-		window.scroll(0, 0);
-
-		content.appendChild(markdown);
-
-		Alpine.store("courseView").editingContent = false;
-	})
-	.catch(function(err) {
-		console.error(err);
-	});
-
-	// set the current sectionID
-	Alpine.store("sections").current = sectionID;
-
-	// close menu
-	Alpine.store("courseView").menuOpen = false;
-
-	// show contents view
-	viewContents();
-
-	// get current course URL
-	let courseURL = document.getElementById("courseURL").innerText;
-
-	// change location of window
-	window.history.replaceState("", "", courseURL + "/" + sectionID)
-
-	// TODO
-	/*
-		- set next section button
-		- set previous section button
-	*/
-}
-
 function menuFollowScroll() {
 	// if top offset is greater than window's Y-scroll offset
 	// if scrolled past topbar
@@ -349,76 +231,11 @@ function menuFollowScroll() {
 	}
 }
 
-function loadEditSectionPlaintext() {
-	let currentSectionID = Alpine.store("sections").current;
-
-	let courseID = document.getElementById("courseID").innerText;
-
-	fetch("/api/section/"+ currentSectionID+ "/plaintext?course_id="+courseID,{
-		method: "GET",
-	})
-	.then(function(resp) {
-		console.log("got response");
-
-		if (!resp.ok) {
-			SendMessage("You must be the course author to edit this.")
-			throw new Error("Response for loadSection was not ok");
-		}
-
-		console.log("response converted to json");
-		return resp.json();
-	})
-	.then(function(sectionJson) {
-		let courseContentEdit = document.getElementById("courseContentEdit");
-		let courseContentEditSaveButton = document.getElementById("courseContentEditSaveButton");
-
-		if (sectionJson.Contents[0] === undefined) {
-			courseContentEdit.value = `This section is empty!`;
-			return
-		}
-
-		courseContentEditSaveButton.setAttribute("contentID",  sectionJson.Contents[0].ID);
-		courseContentEdit.value = sectionJson.Contents[0].Markdown;
-
-		Alpine.store("courseView").editingContent = true; 
-	})
-	.catch(function(err) {
-		SendMessage("Failed to load section plaintext.")
-		console.error(err);
-	});
-}
-
-function saveEditSectionContent() {
-	let courseContentEdit = document.getElementById("courseContentEdit");
-	let courseContentEditSaveButton = document.getElementById("courseContentEditSaveButton");
-	let contentID = courseContentEditSaveButton.getAttribute("contentID")
-	let sectionID = Alpine.store("sections").current;
-
-	let versionID = document.getElementById("versionID").innerText;
-
-	let formData = new FormData();
-	formData.append("content", courseContentEdit.value);
-	formData.append("versionID", versionID);
-
-	fetch("/api/section/"+sectionID+"/content/"+contentID+"/edit", {
-		method: "post",
-		body: formData,
-	})
-	.then(function(resp) {
-		console.log("got response");
-
-		if (!resp.ok) {
-			throw new Error("Response for loadSection was not ok");
-		}
-	})
-	.then(function() {
-		SendMessage("Successfully updated section!");
-
-		loadSection(sectionID);
-	})
-	.catch(function(err) {
-		SendMessage("Error updating section");
-
-		console.error(err);
-	});
+// load a github section or upload based section
+function loadSection(id) {
+	if (usingGithub) {
+		loadGithubSection(id);
+	} else {
+		loadUploadSection(id);
+	}
 }

@@ -64,3 +64,7 @@ func CreateGithubConnection(githubConnection *githubapi.GithubConnection) error 
 func CreateGithubRelease(githubRelease *GithubRelease) error {
 	return gormDB.Create(githubRelease).Error
 }
+
+func CreateGithubVersion(githubVersion *GithubVersion) error {
+	return gormDB.Create(githubVersion).Error
+}

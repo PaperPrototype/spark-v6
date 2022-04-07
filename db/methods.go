@@ -225,8 +225,24 @@ func (release *Release) GetGithubReleaseLogError() *GithubRelease {
 	githubRelease := GithubRelease{}
 	err := gormDB.Model(&GithubRelease{}).Where("release_id = ?", release.ID).First(&githubRelease).Error
 	if err != nil {
-		log.Println("db/utils ERROR getting github release in HasGithubRelease:", err)
+		log.Println("db/utils ERROR getting github release in GetGithubReleaseLogError:", err)
 	}
 
 	return &githubRelease
+}
+
+func (version *Version) GetGithubVersionLogError() *GithubVersion {
+	githubVersion := GithubVersion{}
+	err := gormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).First(&githubVersion).Error
+	if err != nil {
+		log.Println("db/utils ERROR getting github version in GetGithubVersionLogError:", err)
+	}
+
+	return &githubVersion
+}
+
+func (version *Version) GetGithubVersion() (*GithubVersion, error) {
+	githubVersion := GithubVersion{}
+	err := gormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).First(&githubVersion).Error
+	return &githubVersion, err
 }

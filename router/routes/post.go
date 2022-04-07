@@ -367,7 +367,7 @@ func postNewVersion(c *gin.Context) {
 	}
 	defer os.RemoveAll("./upload" + uniqueName)
 
-	release, err := db.GetAllReleaseWithID(releaseID)
+	release, err := db.GetAllRelease(releaseID)
 	if err != nil {
 		msg.SendMessage(c, "Error getting release.")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
@@ -533,7 +533,7 @@ func postGithubRelease(c *gin.Context) {
 		return
 	}
 
-	release, err4 := db.GetAllReleaseWithID(releaseIDNum)
+	release, err4 := db.GetAllRelease(releaseIDNum)
 	if err4 != nil {
 		log.Println("routes/post ERROR getting release in pistGithubRelease:", err4)
 		msg.SendMessage(c, "Error getting release.")
@@ -596,5 +596,69 @@ func postGithubRelease(c *gin.Context) {
 }
 
 func postNewGithubVersion(c *gin.Context) {
+	username := c.Params.ByName("username")
+	courseName := c.Params.ByName("course")
 
+	releaseID := c.PostForm("releaseID")
+	sha := c.PostForm("sha")
+
+	if sha == "" {
+		msg.SendMessage(c, "You must select a commit.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	if releaseID == "" {
+		msg.SendMessage(c, "Error no releaseID.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	release, err2 := db.GetAllRelease(releaseID)
+	if err2 != nil {
+		log.Println("routes/post ERROR getting release in GetAllRelease:", err2)
+		msg.SendMessage(c, "Error getting release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	version := db.Version{
+		Num:         release.GetNewestVersionNumLogError() + 1,
+		ReleaseID:   release.ID,
+		CourseID:    release.CourseID,
+		Error:       "",
+		UsingGithub: true,
+	}
+	err1 := db.CreateVersion(&version)
+	if err1 != nil {
+		log.Println("routes ERROR creating version:", err1)
+		msg.SendMessage(c, "Error creating version.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	githubRelease, err4 := db.GetGithubReleaseWithIDStr(releaseID)
+	if err4 != nil {
+		log.Println("routes/post ERROR getting GithubRelease in postNewGithubVersion:", err4)
+		msg.SendMessage(c, "Error getting github release. You may need to update or enable github releases for this release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	githubVersion := db.GithubVersion{
+		VersionID: version.ID,
+		RepoID:    githubRelease.RepoID,
+		Branch:    githubRelease.Branch,
+		SHA:       sha,
+	}
+	err3 := db.CreateGithubVersion(&githubVersion)
+	if err3 != nil {
+		log.Println("routes/post ERROR creating githubVersion in postNewGithubVersion:", err3)
+		msg.SendMessage(c, "Error creating github version.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	msg.SendMessage(c, "Successfully created github version!")
+	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 }
