@@ -64,9 +64,16 @@ function loadGithubSection(tree_sha) {
 	resp.then(function(json) {
 		console.log("text is:", json);
 
+		let sectionTitle = document.getElementById("sectionTitle");
+		if (sectionTitle === null) {
+			console.error("sectionTitle element was null!");
+		}
+
+		sectionTitle.innerText = blobs[0].path;
+
 		let courseContentsLanguage = document.getElementById("courseContentsLanguage")
 		if (courseContentsLanguage === null) {
-			throw new Error("courseContentsLanguage was null!");
+			console.error("courseContentsLanguage element was null!");
 		}
 
 		courseContentsLanguage.innerText = json.Name;

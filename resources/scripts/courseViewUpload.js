@@ -29,7 +29,6 @@ function loadUploadSection(sectionID) {
 
 		sectionTitle.innerText = sectionJson.Name;
 
-
 		// TODO contents may be in english or spanish as well
 		/*
 			for (let i = 0; i < sectionJson.Contents.length; i++) {
