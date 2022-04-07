@@ -27,28 +27,9 @@
 </div>
 {{ if .Release }}
 	<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
-		<div>
-			<div style="padding-top:0rem;">
-				<h1>Sections</h1>
-				{{ if eq .Release.GetNewestVersionLogError.ID 0 }}
-					<h5>Release {{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</h5>
-					<div>
-						{{ .Release.GetVersionsCountLogError }} Uploads
-					</div>
-				{{ else }}
-					<h5>Release {{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</h5>
-					<div>
-						<!-- display sections -->
-						{{ range .Release.GetNewestVersionLogError.GetSectionsLogError }}
-							<div style="font-size:1.2rem;">
-								{{ .Name }}
-							</div>
-						{{ end }}
-					</div>
-				{{ end }}
-			</div>
-			<div x-data="{ open: false }">
-				<h5 @click="open = ! open">All Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
+
+			<div x-data="{ open: true }">
+				<h5 @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
 				<div x-show="open">
 					{{ range .Course.GetPublicCourseReleasesLogError }}
 						<div x-data="{ open: false }" class="thin-grey bd" style="padding:1rem; padding-top:0rem; margin-bottom: 1rem;;">
@@ -81,7 +62,7 @@
 					{{ end }}
 				</div>
 			</div>
-		</div>
+
 		<div class="pad-top-2rem">
 			{{ .Release.Markdown }}
 		</div>
