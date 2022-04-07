@@ -43,8 +43,16 @@ function loadGithubSection(tree_sha) {
 	// clear course contents
 	content.innerHTML = "";
 
+	let sectionTitle = document.getElementById("sectionTitle");
+	if (sectionTitle === null) {
+		console.error("sectionTitle element was null!");
+	}
+
 	if (blobs.length === 0) {
 		// fill in "this section is empty"
+
+		sectionTitle.innerText = desiredTree.path;
+		
 		content.innerHTML = `<p>This section is empty!</p>`;
 
 		console.log("no contents found for that section");
@@ -64,12 +72,7 @@ function loadGithubSection(tree_sha) {
 	resp.then(function(json) {
 		console.log("text is:", json);
 
-		let sectionTitle = document.getElementById("sectionTitle");
-		if (sectionTitle === null) {
-			console.error("sectionTitle element was null!");
-		}
-
-		sectionTitle.innerText = blobs[0].path;
+		sectionTitle.innerText = desiredTree.path;
 
 		let courseContentsLanguage = document.getElementById("courseContentsLanguage")
 		if (courseContentsLanguage === null) {
@@ -99,7 +102,7 @@ function loadGithubSection(tree_sha) {
 		}
 
 		markdown.setAttribute("markdown", "");
-
+		
 		content.append(markdown);
 
 		window.scroll(0, 0);

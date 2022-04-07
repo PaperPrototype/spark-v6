@@ -104,6 +104,11 @@ function loadEditSectionPlaintext() {
 
 	let courseID = document.getElementById("courseID").innerText;
 
+	if (Alpine.store("courseView").usingGithub) {
+		SendMessage("Editing github based courses is not available yet.")
+		return
+	}
+
 	fetch("/api/section/"+ currentSectionID+ "/plaintext?course_id="+courseID,{
 		method: "GET",
 	})

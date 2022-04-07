@@ -59,6 +59,13 @@
 		<div class="hoverable-bg-overlay bd pad-05" href="https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO" external>
 			<i class="fa-brands fa-spotify"></i> focus music
 		</div>
+		{{ if ne .Version.Num .Release.GetNewestVersionLogError.Num }}
+			<i
+			class="bg-code hoverable-bg-code bd pad-05"
+			href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">
+				New version available (v{{.Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }})
+			</i>
+		{{ end }}
 		{{ if eq .User.ID .Course.UserID }}
 			<i class="fa-solid fa-gear hoverable-bg-overlay bd pad-05" style="margin-left:auto;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
 		{{ end }}
