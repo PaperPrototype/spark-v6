@@ -230,7 +230,11 @@
 								<div style="margin-top: 2rem;" class="thin-top-grey">
 									<div style="display: flex;">
 										<div>
-											<h5>Upload .{{ .Num }}.{{ .Patch }}</h5>
+											{{ if .HasGithubVersion }}
+												<h5>Version .{{ .Num }}.{{ .Patch }}</h5>
+											{{ else }}
+												<h5>Upload .{{ .Num }}.{{ .Patch }}</h5>
+											{{ end }}
 										</div>
 										{{ if .Error }}
 											<div style="margin-top: 1rem; margin-left: 1rem;">
@@ -243,9 +247,15 @@
 												<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
 											</div>
 										{{ else }}
-											<div style="margin-top: 1rem; margin-left: 1rem;">
-												<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
-											</div>
+											{{ if .HasGithubVersion }}
+												<div style="margin-top: 1rem; margin-left: 1rem;">
+													<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View version</a>
+												</div>
+											{{ else }}
+												<div style="margin-top: 1rem; margin-left: 1rem;">
+													<a href="/{{ $.Course.User.Username }}/{{  $.Course.Name }}/view/{{ .ID }}">View upload</a>
+												</div>
+											{{ end }}
 										{{ end }}
 									</div>
 									{{ if .Error }}
