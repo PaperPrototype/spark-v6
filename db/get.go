@@ -151,6 +151,24 @@ func GetReleasePosts(releaseID uint64) ([]Post, error) {
 	return posts, err
 }
 
+func GetProposalPosts(releaseID uint64) ([]Post, error) {
+	postIDs := gormDB.Model(&ProposalPostToRelease{}).Select("post_id").Where("release_id = ?", releaseID)
+
+	posts := []Post{}
+	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Find(&posts).Error
+
+	return posts, err
+}
+
+func GetProjectPosts(releaseID uint64) ([]Post, error) {
+	postIDs := gormDB.Model(&ProjectPostToRelease{}).Select("post_id").Where("release_id = ?", releaseID)
+
+	posts := []Post{}
+	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Find(&posts).Error
+
+	return posts, err
+}
+
 func GetPostPreloadUser(postID string) (*Post, error) {
 	post := Post{}
 	err := gormDB.Model(&Post{}).Where("id = ?", postID).Preload("User").First(&post).Error

@@ -54,7 +54,10 @@ function toggleMenu() {
 function loadPosts(versionID) {
 	console.log("loading posts...");
 
-	fetch("/api/version/"+ versionID +"/posts", {
+	let formData = new FormData();
+	formData.append("")
+
+	fetch("/api/version/"+ versionID +"/posts/portfolio", {
 		method: "GET",
 	})
 	.then(function(resp) {

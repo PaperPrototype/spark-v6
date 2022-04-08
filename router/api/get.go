@@ -47,7 +47,7 @@ func getSectionPlaintext(c *gin.Context) {
 	c.JSON(http.StatusOK, section)
 }
 
-func getVersionPosts(c *gin.Context) {
+func getVersionPortfolioPosts(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
 
 	version, err := db.GetVersion(versionID)
@@ -58,6 +58,52 @@ func getVersionPosts(c *gin.Context) {
 	}
 
 	releasePosts, err1 := db.GetReleasePosts(version.ReleaseID)
+	if err1 != nil {
+		log.Println("api ERROR getting posts for api/getVersionPosts:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		releasePosts,
+	)
+}
+
+func getVersionProposalPosts(c *gin.Context) {
+	versionID := c.Params.ByName("versionID")
+
+	version, err := db.GetVersion(versionID)
+	if err != nil {
+		log.Println("api ERROR getting version for api/getVersionPosts:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	releasePosts, err1 := db.GetProposalPosts(version.ReleaseID)
+	if err1 != nil {
+		log.Println("api ERROR getting posts for api/getVersionPosts:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		releasePosts,
+	)
+}
+
+func getVersionProjectPosts(c *gin.Context) {
+	versionID := c.Params.ByName("versionID")
+
+	version, err := db.GetVersion(versionID)
+	if err != nil {
+		log.Println("api ERROR getting version for api/getVersionPosts:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	releasePosts, err1 := db.GetProjectPosts(version.ReleaseID)
 	if err1 != nil {
 		log.Println("api ERROR getting posts for api/getVersionPosts:", err1)
 		c.AbortWithStatus(http.StatusInternalServerError)

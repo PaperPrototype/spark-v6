@@ -294,6 +294,16 @@ type PostToRelease struct {
 	ReleaseID uint64 `gorm:"not null"`
 }
 
+type ProposalPostToRelease struct {
+	PostID    uint64 `gorm:"not null"`
+	ReleaseID uint64 `gorm:"not null"`
+}
+
+type ProjectPostToRelease struct {
+	PostID    uint64 `gorm:"not null"`
+	ReleaseID uint64 `gorm:"not null"`
+}
+
 // maybe?
 // allow for "thread-like" conversations to continue from messages?
 type Thread struct {
