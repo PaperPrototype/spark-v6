@@ -3,7 +3,8 @@ async function SendMessage(messageText) {
 
 	// message
 	let messageNode = document.createElement("h4");
-	messageNode.style = "padding: 1rem; display:flex; flex-wrap:nowrap;";
+	messageNode.style = "padding: 1rem; display:flex; flex-wrap:nowrap; box-shadow:0rem 0rem 0.5rem var(--c-shadow);";
+	messageNode.setAttribute("class", "bd bg-code");
 	messageNode.setAttribute("hideOnClick", "");
 	messageNode.innerHTML = 
 	`<span>` + messageText + `</span>` + ` <i style="margin-left:auto;" class="fa-solid fa-xmark"></i>`;

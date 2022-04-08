@@ -82,8 +82,8 @@
 	</div>
 </div>
 
-<div class="bg-overlay" id="messagesMount">
+<div class="bg-overlay" id="messagesMount" style="background-color:transparent; position:fixed; bottom:1rem; right:1rem; padding-left:1rem; padding-right:1rem; width:75%;">
 	{{ range .Messages }} 
-		<h4 hideOnClick style="padding: 1rem; display: flex;">{{ . }} <i style="margin-left:auto;" class="fa-solid fa-xmark"></i></h4>
+		<h4 hideOnClick class="bd bg-code" style="box-shadow:0rem 0rem 0.5rem var(--c-shadow); padding: 1rem; display: flex;">{{ . }} <i style="margin-left:auto;" class="fa-solid fa-xmark"></i></h4>
 	{{ end }}
 </div>
