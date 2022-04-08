@@ -295,16 +295,14 @@ func getCourseVersion(c *gin.Context) {
 	}
 
 	var progress int64
+	user := auth.GetLoggedInUserLogError(c)
+	postsCount := release.UserPostsCountLogError(user.ID)
+	log.Println("posts count is:", postsCount)
 
 	if auth.IsLoggedInValid(c) {
-		user := auth.GetLoggedInUserLogError(c)
-
-		postsCount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
-		sectionsCount := version.PostsNeededNum
-
-		if sectionsCount != 0 {
+		if version.PostsNeededNum != 0 {
 			// convert to float for division
-			floatProgress := float64(postsCount) / float64(sectionsCount)
+			floatProgress := float64(postsCount) / float64(version.PostsNeededNum)
 
 			// convert deciaml to percentage
 			floatProgress *= 100
@@ -320,15 +318,16 @@ func getCourseVersion(c *gin.Context) {
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
-			"Release":  release,
-			"Course":   course,
-			"Version":  version,
-			"Section":  section,
-			"Messages": msg.GetMessages(c),
-			"User":     auth.GetLoggedInUserLogError(c),
-			"LoggedIn": auth.IsLoggedInValid(c),
-			"Meta":     metaDefault,
-			"Progress": progress,
+			"PostsCount": postsCount,
+			"Release":    release,
+			"Course":     course,
+			"Version":    version,
+			"Section":    section,
+			"Messages":   msg.GetMessages(c),
+			"User":       auth.GetLoggedInUserLogError(c),
+			"LoggedIn":   auth.IsLoggedInValid(c),
+			"Meta":       metaDefault,
+			"Progress":   progress,
 		},
 	)
 }
@@ -439,16 +438,12 @@ func getCourseVersionSection(c *gin.Context) {
 	}
 
 	var progress int64
-
+	user := auth.GetLoggedInUserLogError(c)
+	postsCount := release.UserPostsCountLogError(user.ID)
 	if auth.IsLoggedInValid(c) {
-		user := auth.GetLoggedInUserLogError(c)
-
-		postsCount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
-		sectionsCount := version.PostsNeededNum
-
-		if sectionsCount != 0 {
+		if version.PostsNeededNum != 0 {
 			// convert to float for division
-			floatProgress := float64(postsCount) / float64(sectionsCount)
+			floatProgress := float64(postsCount) / float64(version.PostsNeededNum)
 
 			// convert deciaml to percentage
 			floatProgress *= 100
@@ -464,15 +459,16 @@ func getCourseVersionSection(c *gin.Context) {
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
-			"Release":  release,
-			"Course":   course,
-			"Version":  version,
-			"Section":  section,
-			"Messages": msg.GetMessages(c),
-			"User":     auth.GetLoggedInUserLogError(c),
-			"LoggedIn": auth.IsLoggedInValid(c),
-			"Meta":     metaDefault,
-			"Progress": progress,
+			"PostsCount": postsCount,
+			"Release":    release,
+			"Course":     course,
+			"Version":    version,
+			"Section":    section,
+			"Messages":   msg.GetMessages(c),
+			"User":       auth.GetLoggedInUserLogError(c),
+			"LoggedIn":   auth.IsLoggedInValid(c),
+			"Meta":       metaDefault,
+			"Progress":   progress,
 		},
 	)
 }

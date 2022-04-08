@@ -6,6 +6,21 @@
 
 	// fill in sections info in courseView.html menu and Alpine.store.sections (see above)
 	async function initSectionsDataLoadFirstSection() {
+		Alpine.store("progress", {
+			total: {{ .PostsCount }},
+			needed: {{ .Version.PostsNeededNum }},
+			progress: {{ .Progress }},
+
+			increaseProgress() {
+				this.total += 1;
+
+				if (this.needed <= 0) {
+					this.progress = 100;
+				}
+
+				this.progress = ((this.total / this.needed) * 100).toFixed(2);
+			}
+		});
 
 		// show loading message
 		let content = document.getElementById("courseContent");
