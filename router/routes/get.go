@@ -299,20 +299,19 @@ func getCourseVersion(c *gin.Context) {
 	if auth.IsLoggedInValid(c) {
 		user := auth.GetLoggedInUserLogError(c)
 
-		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
-		total := version.SectionsCountLogError()
+		postsCount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
+		sectionsCount := version.PostsNeededNum
 
-		log.Println("amount:", amount)
-		log.Println("total:", total)
+		if sectionsCount != 0 {
+			// convert to float for division
+			floatProgress := float64(postsCount) / float64(sectionsCount)
 
-		// convert to float for division
-		floatProgress := float64(amount) / float64(total)
+			// convert deciaml to percentage
+			floatProgress *= 100
 
-		// convert deciaml to percentage
-		floatProgress *= 100
-
-		// cast
-		progress = int64(floatProgress)
+			// cast and save
+			progress = int64(floatProgress)
+		}
 
 		log.Println("progress:", progress)
 	}
@@ -444,20 +443,19 @@ func getCourseVersionSection(c *gin.Context) {
 	if auth.IsLoggedInValid(c) {
 		user := auth.GetLoggedInUserLogError(c)
 
-		amount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
-		total := version.SectionsCountLogError()
+		postsCount := course.GetNewestPublicCourseReleaseLogError().UserPostsCountLogError(user.ID)
+		sectionsCount := version.PostsNeededNum
 
-		log.Println("amount:", amount)
-		log.Println("total:", total)
+		if sectionsCount != 0 {
+			// convert to float for division
+			floatProgress := float64(postsCount) / float64(sectionsCount)
 
-		// convert to float for division
-		floatProgress := float64(amount) / float64(total)
+			// convert deciaml to percentage
+			floatProgress *= 100
 
-		// convert deciaml to percentage
-		floatProgress *= 100
-
-		// cast
-		progress = int64(floatProgress)
+			// cast and save
+			progress = int64(floatProgress)
+		}
 
 		log.Println("progress:", progress)
 	}

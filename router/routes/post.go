@@ -314,6 +314,7 @@ func postNewVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 	releaseID := c.PostForm("releaseID")
+	postsNeeded := c.PostForm("postsNeededNum")
 
 	fileHandle, err2 := c.FormFile("zipFile")
 	if err2 != nil {
@@ -379,12 +380,26 @@ func postNewVersion(c *gin.Context) {
 		preview = false
 	}
 
+	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
+	if err5 != nil {
+		log.Println("routes ERROR parsing postsNeedeNum for version in postNewGithubVersion:", err5)
+		msg.SendMessage(c, "Error parsing number of posts need to complete course version.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	// minimum number of posts is 1
+	if postsNeededNum < 1 {
+		postsNeededNum = 1
+	}
+
 	version := db.Version{
-		Num:       release.GetNewestVersionNumLogError() + 1,
-		ReleaseID: release.ID,
-		CourseID:  release.CourseID,
-		Preview:   preview,
-		Error:     "",
+		Num:            release.GetNewestVersionNumLogError() + 1,
+		ReleaseID:      release.ID,
+		CourseID:       release.CourseID,
+		Preview:        preview,
+		PostsNeededNum: uint16(postsNeededNum),
+		Error:          "",
 	}
 
 	err1 := db.CreateVersion(&version)
@@ -605,6 +620,7 @@ func postNewGithubVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
+	postsNeeded := c.PostForm("postsNeededNum")
 	releaseID := c.PostForm("releaseID")
 	sha := c.PostForm("sha")
 
@@ -633,13 +649,27 @@ func postNewGithubVersion(c *gin.Context) {
 		preview = false
 	}
 
+	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
+	if err5 != nil {
+		log.Println("routes ERROR parsing postsNeedeNum for version in postNewGithubVersion:", err5)
+		msg.SendMessage(c, "Error parsing number of posts need to complete course version.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	// minimum number of posts is 1
+	if postsNeededNum < 1 {
+		postsNeededNum = 1
+	}
+
 	version := db.Version{
-		Num:         release.GetNewestVersionNumLogError() + 1,
-		ReleaseID:   release.ID,
-		CourseID:    release.CourseID,
-		Preview:     preview,
-		Error:       "",
-		UsingGithub: true,
+		Num:            release.GetNewestVersionNumLogError() + 1,
+		ReleaseID:      release.ID,
+		CourseID:       release.CourseID,
+		Preview:        preview,
+		Error:          "",
+		PostsNeededNum: uint16(postsNeededNum),
+		UsingGithub:    true,
 	}
 	err1 := db.CreateVersion(&version)
 	if err1 != nil {

@@ -61,16 +61,14 @@
 		</div>
 		{{ if ne .Version.Num .Release.GetNewestVersionLogError.Num }}
 			<i
+			style="margin-left:0.5rem;"
 			class="bg-code hoverable-bg-code bd pad-05"
 			href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">
 				New version available (v{{.Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }})
 			</i>
 		{{ end }}
 		{{ if .Version.Preview }}
-			<div>
-				<p class="bg-code pad-05 bd" style="width:max-content;">preview</p>
-				<p class="c-grey">This is a preview version.</p>
-			</div>
+			<i class="bg-code pad-05 bd" style="width:max-content; margin-left:0.5rem;">preview</i>
 		{{ end }}
 		{{ if eq .User.ID .Course.UserID }}
 			<i class="fa-solid fa-gear hoverable-bg-overlay bd pad-05" style="margin-left:auto;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
