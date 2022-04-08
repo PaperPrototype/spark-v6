@@ -39,7 +39,7 @@ func SendVerification(userID uint64) error {
 		"If you did not sign up for an account on Sparker.com you can safely ignore this email.",
 	)
 
-	from := mail.NewEmail("Sparker", "spark3dsoftware@gmail.com")
+	from := mail.NewEmail("Sparker", "info@sparker3d.com")
 
 	to := mail.NewEmail("You", user.Email)
 

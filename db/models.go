@@ -88,7 +88,7 @@ type User struct {
 	Email    string `gorm:"unique"`
 	Bio      string
 
-	CreatedAt time.Time `gorm:"not null;"` // date when the account was created
+	CreatedAt time.Time `gorm:"not null"` // date when the account was created
 
 	Verified bool `gorm:"not null; default:f"`
 
