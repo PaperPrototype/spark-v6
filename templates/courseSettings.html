@@ -194,6 +194,9 @@
 										<option value="">None</option>
 									</select>
 								</div>
+								<div class="bd bd-none pad-05">
+									<input type="checkbox" name="preview"> This is a preview version
+								</div>
 								<div>
 									<button type="submit" class="bd bg-code bd-none pad-05">Create New Version</button>
 								</div>
@@ -209,6 +212,9 @@
 							<input hidden name="releaseID" value="{{ .ID }}">
 							<div>
 								<input class="bd bd-none pad-05" name="zipFile" accept=".zip" type="file" required>
+							</div>
+							<div class="bd bd-none pad-05">
+								<input type="checkbox" name="preview"> This is a preview version
 							</div>
 							<div>
 								<button class="bg-code bd thin-light pad-05" type="submit">Upload New Version</button>
@@ -255,6 +261,12 @@
 									{{ if .UsingGithub }}
 										<div>
 											<p>Using Github <i class="fa-solid fa-check"></i></p>
+										</div>
+									{{ end }}
+									{{ if .Preview }}
+										<div>
+											<p class="bg-code pad-05 bd" style="width:max-content;">preview</p>
+											<p class="c-grey">This is a preview version</p>
 										</div>
 									{{ end }}
 								</div>

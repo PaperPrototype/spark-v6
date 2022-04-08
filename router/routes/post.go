@@ -374,10 +374,16 @@ func postNewVersion(c *gin.Context) {
 		return
 	}
 
+	preview := true
+	if c.PostForm("preview") == "" {
+		preview = false
+	}
+
 	version := db.Version{
 		Num:       release.GetNewestVersionNumLogError() + 1,
 		ReleaseID: release.ID,
 		CourseID:  release.CourseID,
+		Preview:   preview,
 		Error:     "",
 	}
 
@@ -622,10 +628,16 @@ func postNewGithubVersion(c *gin.Context) {
 		return
 	}
 
+	preview := true
+	if c.PostForm("preview") == "" {
+		preview = false
+	}
+
 	version := db.Version{
 		Num:         release.GetNewestVersionNumLogError() + 1,
 		ReleaseID:   release.ID,
 		CourseID:    release.CourseID,
+		Preview:     preview,
 		Error:       "",
 		UsingGithub: true,
 	}

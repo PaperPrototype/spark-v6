@@ -176,10 +176,11 @@ type Hierarchy struct {
 type Version struct {
 	ID        uint64 `gorm:"primaryKey"`
 	Num       uint16
-	Patch     uint16    `gorm:"not null; default:0"`
-	CourseID  uint64    `gorm:"not null"`
-	ReleaseID uint64    `gorm:"not null"`
-	CreatedAt time.Time `gorm:"default:now()"`
+	Patch     uint16 `gorm:"not null; default:0"`
+	CourseID  uint64 `gorm:"not null"`
+	ReleaseID uint64 `gorm:"not null"`
+	CreatedAt time.Time
+	Preview   bool `gorm:"default:f"`
 
 	// relation for github based versions
 	GithubVersion GithubVersion `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

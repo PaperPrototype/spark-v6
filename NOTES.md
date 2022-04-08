@@ -11,8 +11,6 @@ NOTES
 		- make whole new github versions?
 			- re-write a lot of stuff
 
-
-
 TODO
 - generate 5% off coupon when users land on 404 not found page
 - course hierarchy system.
