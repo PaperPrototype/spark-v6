@@ -27,42 +27,40 @@
 </div>
 {{ if .Release }}
 	<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
-
-			<div x-data="{ open: true }">
-				<h5 @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
-				<div x-show="open">
-					{{ range .Course.GetPublicCourseReleasesLogError }}
-						<div x-data="{ open: false }" class="thin-grey bd" style="padding:1rem; padding-top:0rem; margin-bottom: 1rem;;">
-							<div style="display:flex;">
-								<h4 @click="open = ! open" >
-									Release {{ .Num }}  <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
-								</h4>
-								<div style="margin-top:1rem; margin-left:auto;">
-									<button href="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/{{ .Num }}" style="background-color: var(--c-code); color:white;padding-left:2rem; padding-right:2rem;" class="form-btn bd">
-										View Release
-									</button>
-								</div>
-							</div>
-							<div>
-								{{ .GetVersionsCountLogError }} Uploads
-							</div>
-							<div x-show="open">
-								{{ range .GetVersionsLogError }}
-									<div class="thin-top">
-										<h5> Upload .{{ .Num }}.{{ .Patch }} </h5>
-										{{ range .GetSectionsLogError }}
-											<div>
-												{{ .Name }}
-											</div>
-										{{ end }}
-									</div>
-								{{ end }}
+		<div x-data="{ open: true }">
+			<h5 @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
+			<div x-show="open">
+				{{ range .Course.GetPublicCourseReleasesLogError }}
+					<div x-data="{ open: false }" class="thin-grey bd" style="padding:1rem; padding-top:0rem; margin-bottom: 1rem;;">
+						<div style="display:flex;">
+							<h4 @click="open = ! open" >
+								Release {{ .Num }}  <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
+							</h4>
+							<div style="margin-top:1rem; margin-left:auto;">
+								<button href="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/{{ .Num }}" style="background-color: var(--c-code); color:white;padding-left:2rem; padding-right:2rem;" class="form-btn bd">
+									View Release
+								</button>
 							</div>
 						</div>
-					{{ end }}
-				</div>
+						<div>
+							{{ .GetVersionsCountLogError }} Uploads
+						</div>
+						<div x-show="open">
+							{{ range .GetVersionsLogError }}
+								<div class="thin-top">
+									<h5> Upload .{{ .Num }}.{{ .Patch }} </h5>
+									{{ range .GetSectionsLogError }}
+										<div>
+											{{ .Name }}
+										</div>
+									{{ end }}
+								</div>
+							{{ end }}
+						</div>
+					</div>
+				{{ end }}
 			</div>
-
+		</div>
 		<div class="pad-top-2rem">
 			{{ .Release.Markdown }}
 		</div>

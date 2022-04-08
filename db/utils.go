@@ -204,3 +204,17 @@ func (version *Version) HasGithubVersion() bool {
 
 	return true
 }
+
+func (version *Version) GetAuthorUser() (*User, error) {
+	userIDs := gormDB.Model(&Course{}).Select("user_id").Where("id = ?", version.CourseID)
+	user := User{}
+	err := gormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
+	return &user, err
+}
+
+func (release *Release) GetAuthorUser() (*User, error) {
+	userIDs := gormDB.Model(&Course{}).Select("user_id").Where("id = ?", release.CourseID)
+	user := User{}
+	err := gormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
+	return &user, err
+}
