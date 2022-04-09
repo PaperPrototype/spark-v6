@@ -157,6 +157,7 @@
 }
 
 .bg-overlay {
+	color:var(--c-text);
 	background-color: var(--c-bg-overlay);
 }
 
