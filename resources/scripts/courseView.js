@@ -54,8 +54,8 @@ function toggleMenu() {
 function loadPosts(versionID) {
 	console.log("loading posts...");
 
-	let formData = new FormData();
-	formData.append("")
+	let coursePostsMount = document.getElementById("coursePostsMount");
+	coursePostsMount.innerHTML = "";
 
 	fetch("/api/version/"+ versionID +"/posts/portfolio", {
 		method: "GET",
@@ -72,19 +72,34 @@ function loadPosts(versionID) {
 		return resp.json();
 	})
 	.then(function(json) {
-		let posts = document.getElementById("coursePostsMount");
+		let postsTitle = document.createElement("h3");
+		postsTitle.innerText = "Portfolio Posts";
+		postsTitle.style = "margin-bottom:0.5rem;";
+
+		let posts = document.createElement("div");
+		posts.setAttribute("class", "post-cards");
+		posts.setAttribute("style", "margin-bottom:1rem;");
 		posts.innerHTML = "";
 
 		console.log("json is:", json);
 
 		for (let i = 0; i < json.length; i++) {
 			let post = document.createElement("div");
-			post.classList.add("course-card");
+			post.classList.add("post-card");
 			post.setAttribute("postID", json[i].ID)
 			posts.appendChild(post);
 
-			let h4 = document.createElement("h3");
-			h4.innerText = json[i].Markdown.slice(0, 30) + "...";
+			let elements = document.createElement("div");
+			elements.innerHTML = json[i].Markdown;
+			let nodes = elements.querySelectorAll("*");
+
+			let title = "";
+			for (let nodeIndex = 0; nodeIndex < 1; nodeIndex++) {
+				title = title + " " + nodes[nodeIndex].innerText;
+			}
+
+			let h4 = document.createElement("h4");
+			h4.innerText = title;
 			post.appendChild(h4);
 
 			post.addEventListener("click", function(event) {
@@ -92,6 +107,33 @@ function loadPosts(versionID) {
 				loadPost(this.getAttribute("postID"));
 			});
 		}
+
+		let seeAll = document.createElement("div");
+		seeAll.classList.add("text-center");
+		seeAll.classList.add("post-card");
+		seeAll.classList.add("bg-code");
+		seeAll.classList.add("hoverable");
+		posts.appendChild(seeAll);
+
+		let h3 = document.createElement("h3");
+		h3.innerText = `See all`;
+		seeAll.appendChild(h3);
+
+		let arrow = document.createElement("div");
+		arrow.innerHTML = `<i class="fa-solid fa-arrow-right-long"></i>`;
+		seeAll.appendChild(arrow);
+
+		seeAll.addEventListener("click", function(event) {
+			console.log("TODO create see all view:",);
+		});
+
+		let postsWrapper = document.createElement("div");
+		postsWrapper.setAttribute("style", "margin-bottom:1rem;");
+		postsWrapper.append(postsTitle);
+		postsWrapper.append(posts);
+		postsWrapper.classList.add("pad-sides-5");
+
+		coursePostsMount.append(postsWrapper);
 	})
 	.catch(function(err) {
 		console.error(err);

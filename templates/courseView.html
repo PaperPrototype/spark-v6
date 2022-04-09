@@ -38,7 +38,6 @@
 {{ template "courseView_inlineScripts.html" . }}
 
 <link href="/resources/css/courseView.css" rel="stylesheet">
-<link href="/resources/css/courses.css" rel="stylesheet">
 
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
 	<h1 style="margin-bottom:0;">
@@ -92,7 +91,7 @@
 		</div>
 
 		<!-- back button when viewing specific post to go back to viewing all posts -->
-		<div x-cloak x-show="$store.courseView.viewingPost" @click="viewPosts()"
+		<div x-cloak x-show="$store.courseView.viewingPost" @click="viewPosts(); loadPosts({{ .Version.ID }});"
 		class="bd hoverable-bg-code"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0rem;">
 			<i class="fa-solid fa-arrow-left-long"></i>
@@ -137,7 +136,6 @@
 
 	<!-- posts by students -->
 	<div x-cloak x-show="$store.courseView.view === 'posts'" class="bg-overlay pad-top-2rem pad-bot-2rem">
-		<h1 class="pad-sides-5">Posts</h1>
 		<div x-show="$store.courseView.viewingPost" class="pad-sides-5" style="width: 100%;">
 			<div class="bg-overlay bd">
 				<div style="display:flex;">
@@ -162,7 +160,7 @@
 			</div>
 		</div>
 		<!-- when not viewing a specific post, show all posts -->
-		<div x-show="!$store.courseView.viewingPost" id="coursePostsMount" class="course-cards">
+		<div x-show="!$store.courseView.viewingPost" id="coursePostsMount">
 			<!-- insert posts with js -->
 		</div>
 	</div>

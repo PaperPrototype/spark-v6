@@ -79,13 +79,13 @@
 		<div>
 			<a>See current proposals</a>
 			<p>A short post showcasing your skills! This will go on your portfolio!</p>
-			<textarea class="bd bg-overlay thin-light"  id="course_submitNewPostMarkdown" style="color:white; padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
+			<textarea class="bd bg-overlay thin-light"  id="course_submitNewPostMarkdown" style="color:var(--c-text); padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
 			placeholder=
 			"Write about what you made   
 
 You can embed pictures or Youtube videos ![example_name](https://example_link)" required></textarea>
 		</div>
-		<button @click="course_submitNewPost();" class="bd bd-none pad-05" style="color:white; background-color:var(--c-code); width: 100%;">Post</button>
+		<button @click="course_submitNewPost();" class="bd bd-none pad-05 bg-code hoverable-bg-code" style="width: 100%;">Post</button>
 	{{ else }}
 		<a href="/login">Login to write a post</a>
 	{{ end }}

@@ -146,7 +146,15 @@ func GetReleasePosts(releaseID uint64) ([]Post, error) {
 	postIDs := gormDB.Model(&PostToRelease{}).Select("post_id").Where("release_id = ?", releaseID)
 
 	posts := []Post{}
-	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Find(&posts).Error
+	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Order("created_at DESC").Find(&posts).Error
+
+	for i := range posts {
+		buf, err := markdown.Convert([]byte(posts[i].Markdown))
+		if err != nil {
+			return posts, err
+		}
+		posts[i].Markdown = buf.String()
+	}
 
 	return posts, err
 }
@@ -155,7 +163,15 @@ func GetProposalPosts(releaseID uint64) ([]Post, error) {
 	postIDs := gormDB.Model(&ProposalPostToRelease{}).Select("post_id").Where("release_id = ?", releaseID)
 
 	posts := []Post{}
-	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Find(&posts).Error
+	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Order("created_at DESC").Find(&posts).Error
+
+	for i := range posts {
+		buf, err := markdown.Convert([]byte(posts[i].Markdown))
+		if err != nil {
+			return posts, err
+		}
+		posts[i].Markdown = buf.String()
+	}
 
 	return posts, err
 }
@@ -164,7 +180,15 @@ func GetProjectPosts(releaseID uint64) ([]Post, error) {
 	postIDs := gormDB.Model(&ProjectPostToRelease{}).Select("post_id").Where("release_id = ?", releaseID)
 
 	posts := []Post{}
-	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Find(&posts).Error
+	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Order("created_at DESC").Find(&posts).Error
+
+	for i := range posts {
+		buf, err := markdown.Convert([]byte(posts[i].Markdown))
+		if err != nil {
+			return posts, err
+		}
+		posts[i].Markdown = buf.String()
+	}
 
 	return posts, err
 }
