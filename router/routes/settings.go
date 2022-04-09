@@ -258,16 +258,22 @@ func postSettingsEditUser(c *gin.Context) {
 
 	// if username changed
 	if username != user.Username {
-		if !db.UsernameAvailableLogError(username) {
-			err2 := db.UpdateUser(user.ID, user.Username, name, bio, user.Email)
-			if err2 != nil {
-				log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err2)
-				msg.SendMessage(c, "Error updating user.")
+		if !helpers.IsAllowedUsername(username) {
+			if !db.UsernameAvailableIgnoreError(username) {
+				err2 := db.UpdateUser(user.ID, user.Username, name, bio, user.Email)
+				if err2 != nil {
+					log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err2)
+					msg.SendMessage(c, "Error updating user.")
+					c.Redirect(http.StatusFound, "/settings")
+					return
+				}
+
+				msg.SendMessage(c, "That username is already taken.")
 				c.Redirect(http.StatusFound, "/settings")
 				return
 			}
 
-			msg.SendMessage(c, "That username is already taken.")
+			msg.SendMessage(c, "Invalid username username is already taken.")
 			c.Redirect(http.StatusFound, "/settings")
 			return
 		}
@@ -301,7 +307,7 @@ func postSettingsEditEmail(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/settings")
 		return
 	} else {
-		if !db.EmailAvailableLogError(email) {
+		if !db.EmailAvailableIgnoreError(email) {
 			msg.SendMessage(c, "That email is taken.")
 			c.Redirect(http.StatusFound, "/settings")
 			return

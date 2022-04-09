@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"strings"
+
 	_ "github.com/jackc/pgx/v4/stdlib"
 
 	"errors"
@@ -103,4 +105,15 @@ func GetGithubClientID() string {
 
 func GetGithubClientSecret() string {
 	return "7b31b9979a0f3280033612a5191eb47d826b91ef"
+}
+
+const AllowedUsernameCharacters string = "abcdefghijklmnopqrstuvwxyz1234567890-_"
+
+func IsAllowedUsername(username string) bool {
+	for _, char := range username {
+		if !strings.Contains(AllowedUsernameCharacters, string(char)) {
+			return false
+		}
+	}
+	return true
 }

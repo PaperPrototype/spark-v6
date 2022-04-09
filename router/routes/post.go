@@ -166,7 +166,14 @@ func postSignup(c *gin.Context) {
 	confirm := c.PostForm("confirm")
 	email := c.PostForm("email")
 
-	available := db.UsernameAvailableLogError(username)
+	available, err4 := db.UsernameAvailable(username)
+	if err4 != nil {
+		log.Println("routes/post ERROR cheking if username is available:", err4)
+		msg.SendMessage(c, "Error checking if username is taken.")
+		c.Redirect(http.StatusFound, "/signup")
+		return
+	}
+
 	if !available {
 		msg.SendMessage(c, "Username already taken.")
 		c.Redirect(http.StatusFound, "/signup")
@@ -178,7 +185,20 @@ func postSignup(c *gin.Context) {
 		return
 	}
 
-	emailAvailable := db.EmailAvailableLogError(email)
+	if !helpers.IsAllowedUsername(username) {
+		msg.SendMessage(c, "Invalid username. Allowed characters are "+helpers.AllowedUsernameCharacters)
+		c.Redirect(http.StatusFound, "/signup")
+		return
+	}
+
+	emailAvailable, err5 := db.EmailAvailable(email)
+	if err5 != nil {
+		log.Println("routes/post ERROR cheking if username is available:", err4)
+		msg.SendMessage(c, "Error checking if email is taken.")
+		c.Redirect(http.StatusFound, "/signup")
+		return
+	}
+
 	if !emailAvailable {
 		msg.SendMessage(c, "That email is already taken.")
 		c.Redirect(http.StatusFound, "/signup")

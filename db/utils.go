@@ -53,7 +53,24 @@ func UserCourseNameAvailableNotSelf(username string, name string, courseID inter
 	return true, nil
 }
 
-func UsernameAvailableLogError(username string) bool {
+func UsernameAvailable(username string) (bool, error) {
+	var count int64 = 0
+	err := gormDB.Model(&User{}).Where("username = ?", username).Count(&count).Error
+	// if err then taken
+	if err != nil {
+		log.Println("db/utils ERROR checking if username is available in UsernameAvailableLogError:", err)
+		return false, err
+	}
+
+	// if there is another user with that name taken
+	if count != 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func UsernameAvailableIgnoreError(username string) bool {
 	var count int64 = 0
 	err := gormDB.Model(&User{}).Where("username = ?", username).Count(&count).Error
 	// if err then taken
@@ -70,7 +87,24 @@ func UsernameAvailableLogError(username string) bool {
 	return true
 }
 
-func EmailAvailableLogError(email string) bool {
+func EmailAvailable(email string) (bool, error) {
+	var count int64 = 0
+	err := gormDB.Model(&User{}).Where("email = ?", email).Count(&count).Error
+	// if err then taken
+	if err != nil {
+		log.Println("db/utils ERROR checking if email is available in EmailAvailable:", err)
+		return false, err
+	}
+
+	// if there is another user with that email
+	if count != 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func EmailAvailableIgnoreError(email string) bool {
 	var count int64 = 0
 	err := gormDB.Model(&User{}).Where("email = ?", email).Count(&count).Error
 	// if err then taken
