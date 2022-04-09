@@ -119,19 +119,30 @@
 
 	<!-- dropdown menu for course -->
 	<div x-cloak x-show="$store.courseView.menuOpen" id="courseMenu" style="padding-top: 2rem; padding-bottom: 3rem; overflow-y: scroll; margin-top:0;" class="bg-overlay pad-sides-5">
-		{{ range .Version.GetBaseSectionsLogError }}
-			<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
-				{{ .Name }}
-			</div>
-			<div style="margin-left:2rem;">
-				{{ range .GetChildrenSectionsLogError }}
-					<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
-						{{ .Name }}
-					</div>
-					{{ template "courseView_menu.html" . }}
-				{{ end }}
-			</div>
-		{{ end }}
+		<div id="courseMenuResources">
+			<h2 style="margin-top:0rem;">Resources</h2>
+			{{ range .Version.GetResourceMediasLogError }}
+				<a style="display:block; width:max-content;" class="bd pad-05 hoverable-bg-code" href="/media/{{ .Version.ID }}/name/{{ .Name }}" download>
+					{{ .Name }} <i class="fa-solid fa-file-arrow-down"></i>
+				</a>
+			{{ end }}
+		</div>
+		<div id="courseMenuItems">
+			<h2>Sections</h2>
+			{{ range .Version.GetBaseSectionsLogError }}
+				<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
+					{{ .Name }}
+				</div>
+				<div style="margin-left:2rem;">
+					{{ range .GetChildrenSectionsLogError }}
+						<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
+							{{ .Name }}
+						</div>
+						{{ template "courseView_menu.html" . }}
+					{{ end }}
+				</div>
+			{{ end }}
+		</div>
 	</div>
 
 	<!-- posts by students -->

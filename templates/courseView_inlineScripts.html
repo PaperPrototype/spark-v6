@@ -70,13 +70,15 @@
 		.then(function(json) {
 			console.log("github tree json is:", json)
 
-			let menu = document.getElementById("courseMenu")
+			let menuItems = document.getElementById("courseMenuItems")
+			let courseResources = document.getElementById("courseMenuResources");
+			let wasCourseResources = false;
 
 			let saveFirstSection = true;
 
 			for (let i = 0; i < json.tree.length; i++) {
 
-				// menu item
+				// menu item html
 				/*
 				<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
 					{{ .Name }}
@@ -94,15 +96,44 @@
 					// add tree sha value as ID for a section
 					Alpine.store("sections").sections.push(json.tree[i].sha);
 
-					// menu item
+					// menuItems
 					// using path as the id of a the section
 					let div = document.createElement('div');
 					div.setAttribute(":class", "$store.sections.current === '" + json.tree[i].sha + "' ? 'selected' : ''");
 					div.setAttribute("class", "bd pad-05");
 					div.setAttribute("x-on:click", "loadSection('" + json.tree[i].sha + "');");
 					div.innerText = json.tree[i].path;
-					menu.append(div);
+					menuItems.append(div);
 				}
+
+				if (json.tree[i].type === "blob" && json.tree[i].path.includes("Resources") && json.tree[i].path.includes(".zip")) {
+					/*
+					<a class="bd pad-05" href="/media/{{ .Version.ID }}/name/{{ .Name }}" download>
+						{{ .Name }} <i class="fa-solid fa-file-arrow-down"></i>
+					</a>
+					*/
+
+					console.log("resource git blob is:", json.tree[i]);
+
+					// remove "Resources/" from name
+					let mediaName = json.tree[i].path.slice(10, json.tree[i].path.length);
+
+					let resourceItem = document.createElement("a");
+					resourceItem.setAttribute("style", "display:block; width:max-content;");
+					resourceItem.setAttribute("class", "bd pad-05 hoverable-bg-code");
+					resourceItem.setAttribute("href", "/media/"+versionID+"/name/"+mediaName);
+					resourceItem.setAttribute("download", "");
+					resourceItem.innerHTML = mediaName + ` <i class="fa-solid fa-file-arrow-down"></i>`;
+
+					courseResources.append(resourceItem);
+
+
+					wasCourseResources = true;
+				}
+			}
+
+			if (!wasCourseResources) {
+				courseResources.innerHTML = "";
 			}
 
 			Alpine.store("githubTree").json = json;

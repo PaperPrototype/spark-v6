@@ -246,3 +246,13 @@ func (version *Version) GetGithubVersion() (*GithubVersion, error) {
 	err := gormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).First(&githubVersion).Error
 	return &githubVersion, err
 }
+
+func (version *Version) GetResourceMediasLogError() []Media {
+	medias := []Media{}
+	err := gormDB.Model(&Media{}).Where("version_id = ?", version.ID).Find(&medias).Error
+	if err != nil {
+		log.Println("db/method ERROR getting in GetResourceMediasLogError:", err)
+	}
+
+	return medias
+}
