@@ -21,8 +21,8 @@ import (
 )
 
 var metaDefault = Meta{
-	Title: "Sparker, Epic Software Courses",
-	Desc:  "Time to ditch software degree's and switch to portfolio's",
+	Title: "Sparker - Software Courses",
+	Desc:  "It's time to ditch software degree's and switch to portfolio's",
 }
 
 func getCourse(c *gin.Context) {
@@ -50,7 +50,7 @@ func getCourse(c *gin.Context) {
 				"User":     auth.GetLoggedInUserLogError(c),
 				"LoggedIn": auth.IsLoggedInValid(c),
 				"Meta": Meta{
-					Title: course.Title,
+					Title: "Sparker - " + course.Title,
 					Desc:  course.Subtitle,
 				},
 			},
@@ -94,7 +94,7 @@ func getCourse(c *gin.Context) {
 			"User":      auth.GetLoggedInUserLogError(c),
 			"LoggedIn":  auth.IsLoggedInValid(c),
 			"Meta": Meta{
-				Title: course.Title,
+				Title: "Sparker - " + course.Title,
 				Desc:  course.Subtitle,
 			},
 		},
@@ -402,7 +402,7 @@ func getCourseRelease(c *gin.Context) {
 			"User":      auth.GetLoggedInUserLogError(c),
 			"LoggedIn":  auth.IsLoggedInValid(c),
 			"Meta": Meta{
-				Title: course.Title,
+				Title: "Sparker - " + course.Title,
 				Desc:  course.Subtitle,
 			},
 		},

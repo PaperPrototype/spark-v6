@@ -8,8 +8,4 @@ Remove the "this site is in tst mode" message in course.html
 
 User's don't have to sign up for stripe to publish a course, instead must have stripe to make their courses paid. Free courses don't require a stripe connection.
 
-Courses hierarchy system
-
-Profiles
-
-Search page
+Create official sparky / sparker / course username account for courses
