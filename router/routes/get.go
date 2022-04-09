@@ -49,7 +49,10 @@ func getCourse(c *gin.Context) {
 				"Messages": msg.GetMessages(c),
 				"User":     auth.GetLoggedInUserLogError(c),
 				"LoggedIn": auth.IsLoggedInValid(c),
-				"Meta":     metaDefault,
+				"Meta": Meta{
+					Title: course.Title,
+					Desc:  course.Subtitle,
+				},
 			},
 		)
 		return
@@ -90,7 +93,10 @@ func getCourse(c *gin.Context) {
 			"Messages":  msg.GetMessages(c),
 			"User":      auth.GetLoggedInUserLogError(c),
 			"LoggedIn":  auth.IsLoggedInValid(c),
-			"Meta":      metaDefault,
+			"Meta": Meta{
+				Title: course.Title,
+				Desc:  course.Subtitle,
+			},
 		},
 	)
 }
@@ -326,8 +332,11 @@ func getCourseVersion(c *gin.Context) {
 			"Messages":   msg.GetMessages(c),
 			"User":       auth.GetLoggedInUserLogError(c),
 			"LoggedIn":   auth.IsLoggedInValid(c),
-			"Meta":       metaDefault,
-			"Progress":   progress,
+			"Meta": Meta{
+				Title: "View - " + course.Title,
+				Desc:  course.Subtitle,
+			},
+			"Progress": progress,
 		},
 	)
 }
@@ -392,7 +401,10 @@ func getCourseRelease(c *gin.Context) {
 			"Messages":  msg.GetMessages(c),
 			"User":      auth.GetLoggedInUserLogError(c),
 			"LoggedIn":  auth.IsLoggedInValid(c),
-			"Meta":      metaDefault,
+			"Meta": Meta{
+				Title: course.Title,
+				Desc:  course.Subtitle,
+			},
 		},
 	)
 }
@@ -467,8 +479,11 @@ func getCourseVersionSection(c *gin.Context) {
 			"Messages":   msg.GetMessages(c),
 			"User":       auth.GetLoggedInUserLogError(c),
 			"LoggedIn":   auth.IsLoggedInValid(c),
-			"Meta":       metaDefault,
-			"Progress":   progress,
+			"Meta": Meta{
+				Title: "View - " + course.Title,
+				Desc:  course.Subtitle,
+			},
+			"Progress": progress,
 		},
 	)
 }
