@@ -106,13 +106,13 @@
 											<form x-data="next" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
 												<input name="releaseID" value="{{ .ID }}" hidden>
 												<div style="margin-bottom:0.5rem;">
-													<select @change="testNext($el); $dispatch('next')" @click.once="loadRepos()" name="repoID" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelect required>
+													<select @change="testNext($el); $dispatch('next')" @click.once="loadRepos()" name="repoID" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelect required>
 														<option value="">None</option>
 													</select>
 												</div>
 												<div style="margin-bottom:0.5rem;">
 													<label>Select a Branch</label>
-													<select @next.window="loadDone($el)" name="branch" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectBranch required>
+													<select @next.window="loadDone($el)" name="branch" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelectBranch required>
 														<option value="">None</option>
 													</select>
 												</div>
@@ -158,7 +158,7 @@
 											<form x-data="updateGithubRelease" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
 												<input name="releaseID" value="{{ .ID }}" hidden>
 												<div style="margin-bottom:0.5rem;">
-													<select @change="$dispatch('loadbranches');" @click.once="loadRepos(); $dispatch('loadbranches');" name="repoID" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelect required>
+													<select @change="$dispatch('loadbranches');" @click.once="loadRepos(); $dispatch('loadbranches');" name="repoID" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelect required>
 														<option value="{{ .GetGithubReleaseLogError.RepoID }}">{{ .GetGithubReleaseLogError.RepoName }}</option>
 													</select>
 												</div>
@@ -167,7 +167,7 @@
 													<select 
 													@click.once="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
 													@loadbranches.window="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
-													name="branch" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectBranch required>
+													name="branch" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelectBranch required>
 														<option value="{{ .GetGithubReleaseLogError.Branch }}">{{ .GetGithubReleaseLogError.Branch }}</option>
 													</select>
 												</div>
@@ -194,7 +194,7 @@
 							<form x-show="open" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/version/new/github" method="post">
 								<input name="releaseID" value="{{ .ID }}" hidden>
 								<div style="margin-bottom:0.5rem;">
-									<select @click.once="loadRepoBranchCommits($el, {{ .GetGithubReleaseLogError.RepoID }}, '{{ .GetGithubReleaseLogError.Branch }}')" name="sha" class="bg-overlay bd pad-05 thin-light" style="color:white;" courseSettingsGithubConnectionSelectCommit required>
+									<select @click.once="loadRepoBranchCommits($el, {{ .GetGithubReleaseLogError.RepoID }}, '{{ .GetGithubReleaseLogError.Branch }}')" name="sha" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelectCommit required>
 										<option value="">None</option>
 									</select>
 								</div>
