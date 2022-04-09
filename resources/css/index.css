@@ -1,7 +1,7 @@
 :root {
 	--c-black: rgb(0, 0, 0);
 	--c-bg-overlay: rgb(255, 255, 255);
-	--c-white: rgb(231, 230, 233);
+	--c-white: rgb(255, 255, 255);
 	--c-light: rgb(212, 212, 212);
 	--c-grey: rgb(188, 188, 188);
 	--c-bg: rgb(229, 229, 229);
@@ -50,12 +50,12 @@
 }
 
 .hoverable-bg-code:hover {
-	color:white;
+	color:var(--c-white);
 	background-color: var(--c-code-hover);
 }
 
 .hoverable-bg-overlay:hover {
-	color:white;
+	color:var(--c-text);
 	background-color: var(--c-bg-overlay);
 }
 
