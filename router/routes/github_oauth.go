@@ -41,7 +41,7 @@ func getGithubConnect(c *gin.Context) {
 	user := auth.GetLoggedInUserLogError(c)
 	if user.HasGithubConnection() {
 		msg.SendMessage(c, "Your account is already connected to github")
-		c.Redirect(http.StatusFound, "/settings/courses")
+		c.Redirect(http.StatusFound, "/settings/teaching")
 		return
 	}
 

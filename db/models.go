@@ -192,6 +192,7 @@ type Version struct {
 	// if using manual uploading option with sections
 	Error    string    `gorm:"default:null"`
 	Sections []Section `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Media    []Media   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type GithubVersion struct {
@@ -253,23 +254,6 @@ type Post struct {
 	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-type UserMedia struct {
-	ID        uint64 `gorm:"primaryKey"`
-	UserID    uint64
-	Name      string
-	Length    uint32
-	Type      string // the "type" of file (.zip .png .gif)
-	CreatedAt time.Time
-
-	UserMediaChunks []UserMediaChunk `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-}
-
-type UserMediaChunk struct {
-	UserMediaID uint64 `gorm:"not null"`
-	Data        []byte
-	Position    uint16
-}
-
 type Channel struct {
 	ID       uint64 `gorm:"primaryKey"`
 	CourseID uint64 `gorm:"not null"`
@@ -299,9 +283,37 @@ type ProposalPostToRelease struct {
 	ReleaseID uint64 `gorm:"not null"`
 }
 
+/*
+	Final projects?
+	- private chat for people working on final project
+	- posts from users of final project
+*/
 type ProjectPostToRelease struct {
 	PostID    uint64 `gorm:"not null"`
 	ReleaseID uint64 `gorm:"not null"`
+}
+
+type FinalProject struct {
+	ID        uint64
+	ReleaseID uint64
+	UserID    uint64
+	Released  bool
+}
+
+type FinalProjectReviews struct {
+	UserID        uint64 // poster of review
+	Markdown      string
+	SubjectUserID uint64 // person being reviewed
+}
+
+type FinalProjectAuthors struct {
+	FinalProjectID uint64
+	UserID         uint64
+}
+
+type FinalProjectPosts struct {
+	FinalProjectID uint64
+	PostID         uint64
 }
 
 // maybe?
