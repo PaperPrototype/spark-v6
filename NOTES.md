@@ -18,32 +18,12 @@ TODO
 - in case if user forgets to claim purchase use stripe webhook to verify and claim purchase for the user
 	- much more robust
 	- user may close page and/or close the browser and lose their payment, but using webhooks solves this
-- github oauth
-	- github linkify
-		- when user edits course contents, allow special button for "commit changes to github"
-		- github based course serving??
-- blog posts, course post playlists
-- course settings
-- profile
 - chat
-- final project proposal posts
-	- posts chat
-	- proposer can accept participants.
-	- once more than 1 participant joins, they can begin project. 
-	- "Final Project" flow? db data layout?
-		- ideas
-			- allow for projects to be made outside of course, specifics
-			- projects go on "Projects" page of user
-			- project can just be a blog post? Added to a specific db relation "PostToProject"?
-			- private chat for PostToProject?
-			- Post (id, user_id)
-				- PostAuthors (post_id, user_id)
-				- PostToRelease (post_id, release_id)
-				- PostToProject (post_id, proposal)
-					- proposal: if the post is currently only a proposal
-				- Chat (post_id, private, id)
-					- Comments
-						- Comment (chat_id, user_id, )
+- final project
+	- (user_id, state = "proposal" || "completed" || "in-progress")
+		- proposalPost (post_id, project_id)
+		- projectUsers (project_id, user_id)
+
 - user profile
 	- courses
 		- Authored
