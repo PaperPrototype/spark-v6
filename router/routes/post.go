@@ -266,6 +266,7 @@ func postNewRelease(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	desc := c.PostForm("desc")
 	price := c.PostForm("price")
+	postsNeeded := c.PostForm("postsNeededNum")
 
 	course, err := db.GetUserCoursePreloadUser(username, courseName)
 	if err != nil {
@@ -291,11 +292,25 @@ func postNewRelease(c *gin.Context) {
 		return
 	}
 
+	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
+	if err5 != nil {
+		log.Println("routes ERROR parsing postsNeedeNum for version in postNewGithubVersion:", err5)
+		msg.SendMessage(c, "Error parsing number of posts need to complete course version.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	// minimum number of posts is 1
+	if postsNeededNum < 1 {
+		postsNeededNum = 1
+	}
+
 	release := db.Release{
-		Num:      course.GetAllNewestCourseReleaseNumLogError() + 1,
-		Markdown: template.HTML(desc),
-		CourseID: course.ID,
-		Price:    correctPriceNum,
+		Num:            course.GetAllNewestCourseReleaseNumLogError() + 1,
+		Markdown:       template.HTML(desc),
+		CourseID:       course.ID,
+		PostsNeededNum: uint16(postsNeededNum),
+		Price:          correctPriceNum,
 	}
 
 	err1 := db.CreateRelease(&release)
@@ -314,7 +329,6 @@ func postNewVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 	releaseID := c.PostForm("releaseID")
-	postsNeeded := c.PostForm("postsNeededNum")
 
 	fileHandle, err2 := c.FormFile("zipFile")
 	if err2 != nil {
@@ -380,26 +394,12 @@ func postNewVersion(c *gin.Context) {
 		preview = false
 	}
 
-	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
-	if err5 != nil {
-		log.Println("routes ERROR parsing postsNeedeNum for version in postNewGithubVersion:", err5)
-		msg.SendMessage(c, "Error parsing number of posts need to complete course version.")
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
-		return
-	}
-
-	// minimum number of posts is 1
-	if postsNeededNum < 1 {
-		postsNeededNum = 1
-	}
-
 	version := db.Version{
-		Num:            release.GetNewestVersionNumLogError() + 1,
-		ReleaseID:      release.ID,
-		CourseID:       release.CourseID,
-		Preview:        preview,
-		PostsNeededNum: uint16(postsNeededNum),
-		Error:          "",
+		Num:       release.GetNewestVersionNumLogError() + 1,
+		ReleaseID: release.ID,
+		CourseID:  release.CourseID,
+		Preview:   preview,
+		Error:     "",
 	}
 
 	err1 := db.CreateVersion(&version)
@@ -434,6 +434,20 @@ func postEditRelease(c *gin.Context) {
 	desc := c.PostForm("desc")
 	price := c.PostForm("price")
 	publicStr := c.PostForm("public")
+	postsNeeded := c.PostForm("postsNeededNum")
+
+	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
+	if err5 != nil {
+		log.Println("routes ERROR parsing postsNeedeNum for version in postNewGithubVersion:", err5)
+		msg.SendMessage(c, "Error parsing number of posts need to complete course version.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	// minimum number of posts is 1
+	if postsNeededNum < 1 {
+		postsNeededNum = 1
+	}
 
 	release, err1 := db.GetAllRelease(releaseID)
 	if err1 != nil {
@@ -463,7 +477,7 @@ func postEditRelease(c *gin.Context) {
 		public = true
 	}
 
-	err := db.UpdateRelease(releaseID, desc, correctPriceNum, public)
+	err := db.UpdateRelease(releaseID, desc, correctPriceNum, public, uint16(postsNeededNum))
 	if err != nil {
 		log.Println("routes ERROR updating release:", err)
 		msg.SendMessage(c, "Error updating release.")
@@ -531,7 +545,7 @@ func postReleaseDeleteConfirm(c *gin.Context) {
 }
 
 // create github release or update exisiting github release
-func postGithubRelease(c *gin.Context) {
+func postCreateOrEditGithubRelease(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
@@ -620,7 +634,6 @@ func postNewGithubVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	postsNeeded := c.PostForm("postsNeededNum")
 	releaseID := c.PostForm("releaseID")
 	sha := c.PostForm("sha")
 
@@ -649,27 +662,13 @@ func postNewGithubVersion(c *gin.Context) {
 		preview = false
 	}
 
-	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
-	if err5 != nil {
-		log.Println("routes ERROR parsing postsNeedeNum for version in postNewGithubVersion:", err5)
-		msg.SendMessage(c, "Error parsing number of posts need to complete course version.")
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
-		return
-	}
-
-	// minimum number of posts is 1
-	if postsNeededNum < 1 {
-		postsNeededNum = 1
-	}
-
 	version := db.Version{
-		Num:            release.GetNewestVersionNumLogError() + 1,
-		ReleaseID:      release.ID,
-		CourseID:       release.CourseID,
-		Preview:        preview,
-		Error:          "",
-		PostsNeededNum: uint16(postsNeededNum),
-		UsingGithub:    true,
+		Num:         release.GetNewestVersionNumLogError() + 1,
+		ReleaseID:   release.ID,
+		CourseID:    release.CourseID,
+		Preview:     preview,
+		Error:       "",
+		UsingGithub: true,
 	}
 	err1 := db.CreateVersion(&version)
 	if err1 != nil {

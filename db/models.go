@@ -146,13 +146,14 @@ type Coupon struct {
 }
 
 type Release struct {
-	ID       uint64 `gorm:"primaryKey"`
-	Price    uint64 `gorm:"default:0"`
-	Num      uint16 `gorm:"default:0"`
-	Markdown template.HTML
-	CourseID uint64 `gorm:"not null"`
-	Public   bool   `gorm:"default:f"`
-	Level    uint32 `gorm:"default:0; not null"`
+	ID             uint64 `gorm:"primaryKey"`
+	Price          uint64 `gorm:"default:0"`
+	Num            uint16 `gorm:"default:0"`
+	Markdown       template.HTML
+	CourseID       uint64 `gorm:"not null"`
+	Public         bool   `gorm:"default:f"`
+	Level          uint32 `gorm:"default:0; not null"`
+	PostsNeededNum uint16 `gorm:"default:2;"`
 
 	GithubRelease GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // githbu repo info
 
@@ -174,14 +175,13 @@ type Hierarchy struct {
 }
 
 type Version struct {
-	ID             uint64 `gorm:"primaryKey"`
-	Num            uint16
-	Patch          uint16 `gorm:"not null; default:0"`
-	CourseID       uint64 `gorm:"not null"`
-	ReleaseID      uint64 `gorm:"not null"`
-	CreatedAt      time.Time
-	Preview        bool `gorm:"default:f"`
-	PostsNeededNum uint16
+	ID        uint64 `gorm:"primaryKey"`
+	Num       uint16
+	Patch     uint16 `gorm:"not null; default:0"`
+	CourseID  uint64 `gorm:"not null"`
+	ReleaseID uint64 `gorm:"not null"`
+	CreatedAt time.Time
+	Preview   bool `gorm:"default:f"`
 
 	// relation for github based versions
 	GithubVersion GithubVersion `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

@@ -59,13 +59,26 @@
 	}
 </script>
 
-<div x-data x-show="$store.courseView.allowNewPost">
-	<h1>Post</h1>
+<div x-data="{ open: false }" x-show="$store.courseView.allowNewPost">
+	<h4 x-show="open === false" @click="open = true" class="bd bg-code pad-05 text-center hoverable-bg-code" style="width:100%;">
+		New Post 
+		<i class="fa-solid" :class="open ? 'fa-caret-up' : 'fa-caret-down' "></i>
+	</h4>
+	<h4 x-show="open === true" @click="open = false" class="bd bg-code pad-05 text-center hoverable-bg-code" style="width:100%;">
+		Hide 
+		<i class="fa-solid" :class="open ? 'fa-caret-up' : 'fa-caret-down' "></i>
+	</h4>
+	<p><span x-text="$store.progress.progress"></span>% done</p>
+	{{ if .LoggedIn }}
+		<p>Once you write {{ .Release.PostsNeededNum }} showcase posts you will have completed the course and will be able to join or create a final project proposal!</p>
+	{{ else }}
+		<p class="c-grey">You need to login if you want to write a post. Once you write {{ .Release.PostsNeededNum }} posts, you can join a final project or create a final project proposal!</p>
+	{{ end }}
+	<div x-show="open">
 	{{ if .LoggedIn }}
 		<div>
-			<p><span x-text="$store.progress.progress"></span>% done</p>
-			<p class="c-grey">You need a total of {{ .Version.PostsNeededNum }} posts to complete this course.</p>
-			<p>Write a short post showcasing what you made! This will go on your portfolio.</p>
+			<a>See current proposals</a>
+			<p>A short post showcasing your skills! This will go on your portfolio!</p>
 			<textarea class="bd bg-overlay thin-light"  id="course_submitNewPostMarkdown" style="color:white; padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
 			placeholder=
 			"Write about what you made   
@@ -74,15 +87,9 @@ You can embed pictures or Youtube videos ![example_name](https://example_link)" 
 		</div>
 		<button @click="course_submitNewPost();" class="bd bd-none pad-05" style="color:white; background-color:var(--c-code); width: 100%;">Post</button>
 	{{ else }}
-		<p class="c-grey">You need to login if you want to write a post</p>
-		<p>Write a short post showcasing what you made! This will go on your portfolio.</p>
-		<textarea disabled class="bd bg-overlay thin-light" style="color:white; padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
-			placeholder=
-			"Write about what you made!    
-
-You can embed pictures or Youtube videos ![example_name](https://example_link)" required></textarea>
-		<button disabled class="bd bd-none pad-05" style="color:white; background-color:var(--c-code); width: 100%;">Post</button>
+		<a href="/login">Login to write a post</a>
 	{{ end }}
+	</div>
 </div>
 <div id="course_submitNewPostFormMessage" x-show="!$store.courseView.allowNewPost">
 </div>

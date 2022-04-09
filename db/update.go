@@ -8,8 +8,8 @@ func UpdateCourse(courseID, title, name, subtitle string) error {
 	return gormDB.Model(&Course{}).Where("id = ?", courseID).Update("name", name).Update("title", title).Update("subtitle", subtitle).Error
 }
 
-func UpdateRelease(releaseID string, markdown string, price uint64, public bool) error {
-	return gormDB.Model(&Release{}).Where("id = ?", releaseID).Update("markdown", markdown).Update("price", price).Update("public", public).Error
+func UpdateRelease(releaseID string, markdown string, price uint64, public bool, postsNeededNum uint16) error {
+	return gormDB.Model(&Release{}).Where("id = ?", releaseID).Update("markdown", markdown).Update("price", price).Update("public", public).Update("posts_needed_num", postsNeededNum).Error
 }
 
 func UpdatePost(postID, markdown string) error {

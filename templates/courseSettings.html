@@ -66,7 +66,11 @@
 								<input hidden name="releaseID" value="{{ .ID }}">
 								<label>Price USD</label>
 								<div style="margin-bottom: 1rem;">
-									<input max="10" step="1" name="price" class="form-input" type="number" value="{{ .GetPriceUSD }}">
+									<input min="0" max="10" step="1" name="price" class="form-input" type="number" value="{{ .GetPriceUSD }}">
+								</div>
+								<div>
+									<input name="postsNeededNum" class="form-input" type="number" step="1" max="100" min="1" value="2">
+									<p class="c-grey">Number of posts a student must write to complete the course. About 1 post per 3 sections, or 1 post per each project/challenge section.</p>
 								</div>
 								<label style="margin-top: 0.5rem;">Markdown Description</label>
 								<div style="margin-bottom: 1rem;">
@@ -194,10 +198,6 @@
 										<option value="">None</option>
 									</select>
 								</div>
-								<div>
-									<input class="form-input" type="number" step="1" max="100" min="1" name="postsNeededNum" value="2">
-									<p>Number of posts a student must write to complete the course. Usually this is 1 post per section.</p>
-								</div>
 								<div class="bd bd-none pad-05">
 									<input type="checkbox" name="preview"> This is a preview version
 								</div>
@@ -216,10 +216,6 @@
 							<input hidden name="releaseID" value="{{ .ID }}">
 							<div>
 								<input class="bd bd-none pad-05" name="zipFile" accept=".zip" type="file" required>
-							</div>
-							<div>
-								<input class="form-input" type="number" step="1" max="100" min="1" name="postsNeededNum" value="2">
-								<p>Number of posts a student must write to complete the course. Usually this is 1 post per section.</p>
 							</div>
 							<div class="bd bd-none pad-05">
 								<input type="checkbox" name="preview"> This is a preview version
@@ -303,7 +299,11 @@
 		<form action="/{{ $.Course.User.Username }}/{{ .Course.Name }}/settings/release/new" method="post">
 			<label>Price USD</label>
 			<div style="margin-bottom: 1rem;">
-				<input max="10" step="1" name="price" class="form-input" type="number" value="0">
+				<input min="0" max="10" step="1" name="price" class="form-input" type="number" value="0">
+			</div>
+			<div>
+				<input name="postsNeededNum" class="form-input" type="number" step="1" max="100" min="1" value="2">
+				<p class="c-grey">Number of posts a student must write to complete the course. About 1 post per 3 sections, or 1 post per each project/challenge section.</p>
 			</div>
 			<label>Markdown Description</label>
 			<div style="margin-bottom: 1rem;">

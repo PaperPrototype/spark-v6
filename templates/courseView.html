@@ -79,21 +79,21 @@
 	<div class="pad-sides-5 bg-overlay course-menu" style="display: flex; padding-bottom: 0.5rem; margin-top:0; padding-top:0.5rem; margin-bottom:0; max-width:100%;" id="courseNavTop">
 		<!-- dropdown menu -->
 		<div x-show="$store.courseView.menuAvailable" @click="toggleMenu()"
-		class="bd hoverable"
+		class="bd hoverable-bg-code"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0.4rem;">
 			<i class="fa-solid fa-list-ul"></i>
 		</div>
 
 		<!-- back button when viewing posts or chat or menu to go back to course contents-->
 		<div x-cloak x-show="!$store.courseView.menuAvailable && !$store.courseView.viewingPost" @click="viewContents()"
-		class="bd hoverable"
+		class="bd hoverable-bg-code"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0rem;">
 			<i class="fa-solid fa-arrow-left-long"></i>
 		</div>
 
 		<!-- back button when viewing specific post to go back to viewing all posts -->
 		<div x-cloak x-show="$store.courseView.viewingPost" @click="viewPosts()"
-		class="bd hoverable"
+		class="bd hoverable-bg-code"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0rem;">
 			<i class="fa-solid fa-arrow-left-long"></i>
 		</div>
@@ -105,14 +105,14 @@
 
 		<!-- view posts -->
 		<div @click="viewPosts(); loadPosts({{ .Version.ID }});"
-		class="bd hoverable"
+		class="bd hoverable-bg-code"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.3rem; margin-left:auto; margin-right:0.5rem;">
 			<i class="fa-regular fa-file"></i>
 		</div>
 
 		<!-- view chat -->
 		<div @click="viewChat()"
-		class="bd hoverable"
+		class="bd hoverable-bg-code"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.4rem; padding-right:0.4rem; padding-top:0.4rem;">
 			<i class="fa-regular fa-message"></i>
 		</div>
@@ -197,11 +197,11 @@
 		</div>
 		<table class="bg-overlay pad-sides-5 pad-bot-2rem" style="width: 100%;">
 			<tr>
-				<td class="bd bg-overlay thin-light" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="coursePrevious">
+				<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="coursePrevious">
 					<i class="fa-solid fa-arrow-left-long"></i> Previous Section 
 				</td>
 				<td style="width:20%;"></td>
-				<td class="bd bg-overlay thin-light" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="courseNext">
+				<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="courseNext">
 					Next Section <i class="fa-solid fa-arrow-right-long"></i>
 				</td>
 			</tr>

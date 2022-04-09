@@ -50,10 +50,12 @@
 }
 
 .hoverable-bg-code:hover {
+	color:white;
 	background-color: var(--c-code-hover);
 }
 
 .hoverable-bg-overlay:hover {
+	color:white;
 	background-color: var(--c-bg-overlay);
 }
 

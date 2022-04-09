@@ -300,9 +300,9 @@ func getCourseVersion(c *gin.Context) {
 	log.Println("posts count is:", postsCount)
 
 	if auth.IsLoggedInValid(c) {
-		if version.PostsNeededNum != 0 {
+		if release.PostsNeededNum != 0 {
 			// convert to float for division
-			floatProgress := float64(postsCount) / float64(version.PostsNeededNum)
+			floatProgress := float64(postsCount) / float64(release.PostsNeededNum)
 
 			// convert deciaml to percentage
 			floatProgress *= 100
@@ -441,9 +441,9 @@ func getCourseVersionSection(c *gin.Context) {
 	user := auth.GetLoggedInUserLogError(c)
 	postsCount := release.UserPostsCountLogError(user.ID)
 	if auth.IsLoggedInValid(c) {
-		if version.PostsNeededNum != 0 {
+		if release.PostsNeededNum != 0 {
 			// convert to float for division
-			floatProgress := float64(postsCount) / float64(version.PostsNeededNum)
+			floatProgress := float64(postsCount) / float64(release.PostsNeededNum)
 
 			// convert deciaml to percentage
 			floatProgress *= 100

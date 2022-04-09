@@ -8,7 +8,7 @@
 	async function initSectionsDataLoadFirstSection() {
 		Alpine.store("progress", {
 			total: {{ .PostsCount }},
-			needed: {{ .Version.PostsNeededNum }},
+			needed: {{ .Release.PostsNeededNum }},
 			progress: {{ .Progress }},
 
 			increaseProgress() {
