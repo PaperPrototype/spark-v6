@@ -100,103 +100,104 @@
 									<button class="bd bd-none bg-code pad-05" type="submit">Save</button>
 								</div>
 							</form>
-							<div x-data="dropdown" class="mar-top-2rem thin-top">
-								{{ if .HasGithubRelease }}
-									<h4 @click="toggle();">
-										Github Release
-										<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
-									</h4>
-									<p class="c-grey">Connected to {{ .GetGithubReleaseLogError.RepoName }}.</p>
+						</div>
+					</div>
+					<!-- Connect release to github repo -->
+					<div x-data="dropdown" class="mar-top-2rem thin-top">
+						{{ if .HasGithubRelease }}
+							<h4 @click="toggle();">
+								Github Repository
+								<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
+							</h4>
+							<p class="c-grey">Connected to {{ .GetGithubReleaseLogError.RepoName }}.</p>
+						{{ else }}
+							<h4 @click="toggle();">
+								Select Github Repository
+								<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
+							</h4>
+						{{ end }}
+						<div x-show="open">
+							{{ if $.User.HasGithubConnection }}
+								{{ if not .HasGithubRelease }}
+									<!-- create GithubRelease -->
+									<script defer src="/resources/scripts/courseSettingsGithubRelease.js"></script>
+									<p class="c-grey">Connect this release to a github repo.</p>
+									<form x-data="next" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
+										<input name="releaseID" value="{{ .ID }}" hidden>
+										<div style="margin-bottom:0.5rem;">
+											<select @change="testNext($el); $dispatch('next')" @click.once="loadRepos()" name="repoID" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelect required>
+												<option value="">None</option>
+											</select>
+										</div>
+										<div style="margin-bottom:0.5rem;">
+											<label>Select a Branch</label>
+											<select @next.window="loadDone($el)" name="branch" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelectBranch required>
+												<option value="">None</option>
+											</select>
+										</div>
+										<div>
+											<button type="submit" class="bd bd-none bg-code pad-05">Connect</button>
+										</div>
+									</form>
 								{{ else }}
-									<h4 @click="toggle();">
-										Enable Github Release
-										<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
-									</h4>
-								{{ end }}
-								<div x-show="open">
-									{{ if $.User.HasGithubConnection }}
-										{{ if not .HasGithubRelease }}
-											<!-- create GithubRelease -->
-											<script defer src="/resources/scripts/courseSettingsGithubRelease.js"></script>
-											<p class="c-grey">Connect this release to a github repo.</p>
-											<form x-data="next" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
-												<input name="releaseID" value="{{ .ID }}" hidden>
-												<div style="margin-bottom:0.5rem;">
-													<select @change="testNext($el); $dispatch('next')" @click.once="loadRepos()" name="repoID" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelect required>
-														<option value="">None</option>
-													</select>
-												</div>
-												<div style="margin-bottom:0.5rem;">
-													<label>Select a Branch</label>
-													<select @next.window="loadDone($el)" name="branch" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelectBranch required>
-														<option value="">None</option>
-													</select>
-												</div>
-												<div>
-													<button type="submit" class="bd bd-none bg-code pad-05">Connect</button>
-												</div>
-											</form>
-										{{ else }}
-											<!-- edit GithubRelease -->
-											<script defer src="/resources/scripts/courseSettingsUpdateGithubRelease.js"></script>
-											<script defer>
-												function loadBranchesIfFirstEdit(elem) {
-													// fetch and display branches for selected repo
-													fetch("/api/github/repo/" + {{ .GetGithubReleaseLogError.RepoID }} + "/branches", {
-														method: "GET",
-													})
-													.then(function(resp) {
-														if (!resp.ok) {
-															throw new Error("Error getting branches");
-														}
-
-														return resp.json()
-													})
-													.then(function(json) {
-														console.log("json is:", json);
-
-														elem.innerHTML = "";
-
-														for (let i = 0; i < json.length; i++) {
-															let option = document.createElement("option");
-															option.value = json[i].name;
-															option.innerHTML = json[i].name;
-															
-															elem.append(option);
-														}
-													})
-													.catch(function(err) {
-														console.error(err);
-													});
+									<!-- edit GithubRelease -->
+									<script defer src="/resources/scripts/courseSettingsUpdateGithubRelease.js"></script>
+									<script defer>
+										function loadBranchesIfFirstEdit(elem) {
+											// fetch and display branches for selected repo
+											fetch("/api/github/repo/" + {{ .GetGithubReleaseLogError.RepoID }} + "/branches", {
+												method: "GET",
+											})
+											.then(function(resp) {
+												if (!resp.ok) {
+													throw new Error("Error getting branches");
 												}
-											</script>
-											<p class="c-grey">Update this release's github repo.</p>
-											<form x-data="updateGithubRelease" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
-												<input name="releaseID" value="{{ .ID }}" hidden>
-												<div style="margin-bottom:0.5rem;">
-													<select @change="$dispatch('loadbranches');" @click.once="loadRepos(); $dispatch('loadbranches');" name="repoID" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelect required>
-														<option value="{{ .GetGithubReleaseLogError.RepoID }}">{{ .GetGithubReleaseLogError.RepoName }}</option>
-													</select>
-												</div>
-												<div style="margin-bottom:0.5rem;">
-													<label>Select a Branch</label>
-													<select 
-													@click.once="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
-													@loadbranches.window="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
-													name="branch" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelectBranch required>
-														<option value="{{ .GetGithubReleaseLogError.Branch }}">{{ .GetGithubReleaseLogError.Branch }}</option>
-													</select>
-												</div>
-												<div>
-													<button type="submit" class="bd bd-none bg-code pad-05">Update</button>
-												</div>
-											</form>
-										{{ end }}
-									{{ else }}
-										<p class="c-grey">Github based courses. Go to <a href="/settings/teaching">settings > Teaching > Github Courses</a> to enable this feature.</p>
-									{{ end }}
-								</div>
-							</div>
+
+												return resp.json()
+											})
+											.then(function(json) {
+												console.log("json is:", json);
+
+												elem.innerHTML = "";
+
+												for (let i = 0; i < json.length; i++) {
+													let option = document.createElement("option");
+													option.value = json[i].name;
+													option.innerHTML = json[i].name;
+													
+													elem.append(option);
+												}
+											})
+											.catch(function(err) {
+												console.error(err);
+											});
+										}
+									</script>
+									<p class="c-grey">Update this release's github repo.</p>
+									<form x-data="updateGithubRelease" action="/{{ $.User.Username }}/{{ $.Course.Name }}/settings/release/github" method="post">
+										<input name="releaseID" value="{{ .ID }}" hidden>
+										<div style="margin-bottom:0.5rem;">
+											<select @change="$dispatch('loadbranches');" @click.once="loadRepos(); $dispatch('loadbranches');" name="repoID" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelect required>
+												<option value="{{ .GetGithubReleaseLogError.RepoID }}">{{ .GetGithubReleaseLogError.RepoName }}</option>
+											</select>
+										</div>
+										<div style="margin-bottom:0.5rem;">
+											<label>Select a Branch</label>
+											<select 
+											@click.once="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
+											@loadbranches.window="if (firstEdit) { loadBranchesIfFirstEdit($el) } else { loadBranches($el); firstEdit = false; }" 
+											name="branch" class="bg-overlay bd pad-05 thin-light" courseSettingsGithubConnectionSelectBranch required>
+												<option value="{{ .GetGithubReleaseLogError.Branch }}">{{ .GetGithubReleaseLogError.Branch }}</option>
+											</select>
+										</div>
+										<div>
+											<button type="submit" class="bd bd-none bg-code pad-05">Update</button>
+										</div>
+									</form>
+								{{ end }}
+							{{ else }}
+								<p class="c-grey">Github based courses. Go to <a href="/settings/teaching">settings > Teaching > Github Courses</a> to enable this feature.</p>
+							{{ end }}
 						</div>
 					</div>
 					{{ if .HasGithubRelease }}
@@ -223,6 +224,8 @@
 							</form>
 						</div>
 					{{ end }}
+					<!-- Temorarily disabling uplaod based versions to prevent db from exploding-->
+					<!--
 					<div x-data="dropdown" class="mar-top-2rem thin-top">
 						<h4 @click="toggle()">
 							New Version
@@ -241,6 +244,7 @@
 							</div>
 						</form>
 					</div>
+					-->
 					<div x-data="dropdown">
 						<div style="margin-top: 2rem; margin-bottom: 0.5rem; padding-top:1rem;" @click="toggle()" class="thin-top">
 							Versions <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></i>

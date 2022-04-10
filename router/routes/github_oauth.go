@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"main/db"
@@ -49,20 +48,12 @@ func getGithubConnect(c *gin.Context) {
 	http.Redirect(c.Writer, c.Request, url, http.StatusTemporaryRedirect)
 }
 
-func tokenToJSON(token *oauth2.Token) (string, error) {
-	if d, err := json.Marshal(token); err != nil {
-		return "", err
-	} else {
-		return string(d), nil
-	}
-}
-
 func getGithubConnectFinished(c *gin.Context) {
 	state := c.Query("state")
 	if state != oauthStateString {
 		fmt.Printf("routes/github ERROR invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
 		msg.SendMessage(c, "Error connecting github account.")
-		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings/teaching")
 		return
 	}
 
@@ -71,13 +62,8 @@ func getGithubConnectFinished(c *gin.Context) {
 	if err != nil {
 		fmt.Printf("routes/github ERROR oauthConf.Exchange() failed with '%s'\n", err)
 		msg.SendMessage(c, "Error connecting github account.")
-		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings/teaching")
 		return
-	}
-
-	jsonToken, err := tokenToJSON(token)
-	if err != nil {
-		log.Println("error converting token to json:", err)
 	}
 
 	loggedInUser := auth.GetLoggedInUserLogError(c)
@@ -90,19 +76,17 @@ func getGithubConnectFinished(c *gin.Context) {
 	if err1 != nil {
 		log.Println("routes/github ERROR creating github connection in getGithubConnectFinished:", err1)
 		msg.SendMessage(c, "Error connecting github account.")
-		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings/teaching")
 		return
 	}
-
-	log.Println("routes/github GOT TOKEN:", jsonToken)
 
 	oauthClient := oauthConfig.Client(context.Background(), token)
 	client := github.NewClient(oauthClient)
 	user, _, err := client.Users.Get(context.Background(), "")
 	if err != nil {
-		fmt.Printf("routes/github ERROR client.Users.Get() faled with '%s'\n", err)
+		fmt.Printf("routes/github ERROR client.Users.Get() failed with '%s'\n", err)
 		msg.SendMessage(c, "Error connecting github account.")
-		c.Redirect(http.StatusTemporaryRedirect, "/settings")
+		c.Redirect(http.StatusTemporaryRedirect, "/settings/teaching")
 		return
 	}
 

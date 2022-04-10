@@ -99,12 +99,43 @@ func GetSendgridKey() string {
 }
 
 func GetGithubClientID() string {
-	// TODO use environment variable
-	return "43669c01e58ec6a1d37b"
+	if FileExists("./githubclientid") {
+		data, err := os.ReadFile("./githubclientid")
+		if err != nil {
+			log.Println("config: error reading githubclientid file")
+			panic(err)
+		}
+
+		return string(data)
+	}
+
+	env := os.Getenv("GITHUB_CLIENT_ID")
+
+	if env == "" {
+		panic(errors.New("empty env variable for GITHUB_CLIENT_ID"))
+	}
+
+	return env
 }
 
 func GetGithubClientSecret() string {
-	return "7b31b9979a0f3280033612a5191eb47d826b91ef"
+	if FileExists("./githubclientsecret") {
+		data, err := os.ReadFile("./githubclientsecret")
+		if err != nil {
+			log.Println("config: error reading githubclientid file")
+			panic(err)
+		}
+
+		return string(data)
+	}
+
+	env := os.Getenv("GITHUB_CLIENT_SECRET")
+
+	if env == "" {
+		panic(errors.New("empty env variable for GITHUB_CLIENT_SECRET"))
+	}
+
+	return env
 }
 
 const AllowedUsernameCharacters string = "abcdefghijklmnopqrstuvwxyz1234567890-_"
