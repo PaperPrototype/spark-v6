@@ -1,72 +1,75 @@
-{{ template "_header.html" . }}
+{{ template "course_header.html" . }}
 
-<div style="background-color:var(--c-code); color:white; font-size:0.8rem; padding:0.5rem; z-index:-1000000000000000;">
-	The site is in test mode. All purchases made will not charge you real money. Do no give your real card number or any real information when paying. Use card number 4242 4242 4242 4242, any future valid card date, and the rest can be random fake information. There may be "use test info" buttons. Make sure to press those when available.
-</div>
+<div id="versionID" hidden>{{ .Version.ID }}</div>
 
-<div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
-	<h1 style="margin-bottom:0;">{{ .Course.Title }}</h1>
-	{{ if .Release }}
-		<div style="margin-bottom:3rem;">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</div>
-	{{ end }}
-	<!-- allow line breaks in the pre tag -->
-	<pre style="
-	overflow-x: auto;
-	white-space: pre-wrap;
-	white-space: -moz-pre-wrap;
-	white-space: -pre-wrap;
-	white-space: -o-pre-wrap;
-	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
-	{{ template "course_buyOrOpenButton.html" . }}
-	{{ if eq .Course.UserID .User.ID }}
-		<div style="text-align:right;">
-			<i class="fa-solid fa-gear hoverable-bg-overlay bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
-		</div>
-	{{ end }}
+<script src="/resources/scripts/course.js" defer></script>
+<style>
+	.selected {
+		font-weight: 600 !important;
+		color: var(--c-text) !important;
+		border-bottom: 0.08rem solid var(--c-text);
+	}
+	.course-tab-item {
+		padding:0.5rem;
+		color: var(--c-grey);
+		margin-right:1rem;
+		cursor: pointer;
+	}
+</style>
+
+<div x-data style="display:flex;" class="pad-sides-5">
+	<div @click="$store.course.tab = 'course'" class="course-tab-item" :class="$store.course.tab === 'course' ? 'selected' : '' ">
+		Course
+	</div>
+	<div @click="$store.course.tab = 'reviews'" class="course-tab-item" :class="$store.course.tab === 'reviews' ? 'selected' : '' ">
+		Reviews
+	</div>
 </div>
-{{ if .Release }}
-	<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
-		<div x-data="{ open: true }">
-			<h5 @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
-			<div x-show="open">
-				{{ range .Course.GetPublicCourseReleasesLogError }}
-					<div x-data="{ open: false }" class="thin-grey bd" style="padding:1rem; padding-top:0rem; margin-bottom: 1rem;;">
-						<div style="display:flex;">
-							<h4 @click="open = ! open" >
-								Release {{ .Num }}  <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
-							</h4>
-							<div style="margin-top:1rem; margin-left:auto;">
-								<button href="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/{{ .Num }}" style="background-color: var(--c-code); color:white;padding-left:2rem; padding-right:2rem;" class="form-btn bd">
-									View Release
-								</button>
+<div x-data class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
+	<div x-show="$store.course.tab === 'course'">
+		{{ if .Release }}
+			<div class="pad-bot-2rem">
+				{{ .Release.Markdown }}
+			</div>
+			<div class="pad-bot-2rem">
+				<h1>Sections</h1>
+				<div id="courseSections">
+					{{ range .Version.GetSectionsLogError }}
+						<div class="pad-05">{{ .Name }}</div>
+					{{ end }}
+				</div>
+			</div>
+			<div x-data="{ open: true }">
+				<h5 @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
+				<div x-show="open">
+					{{ range .Course.GetPublicCourseReleasesLogError }}
+						<div class="thin-grey bd" style="padding:1rem; padding-top:0rem; margin-bottom: 1rem;;">
+							<div style="display:flex;">
+								<h4>
+									Release {{ .Num }}
+								</h4>
+								<div style="margin-top:1rem; margin-left:auto;">
+									<button href="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/{{ .Num }}" style="background-color: var(--c-code); color:white;padding-left:2rem; padding-right:2rem;" class="form-btn bd">
+										View Release
+									</button>
+								</div>
+							</div>
+							<div>
+								{{ .GetVersionsCountLogError }} Uploads
 							</div>
 						</div>
-						<div>
-							{{ .GetVersionsCountLogError }} Uploads
-						</div>
-						<div x-show="open">
-							{{ range .GetVersionsLogError }}
-								<div class="thin-top">
-									<h5> Upload .{{ .Num }}.{{ .Patch }} </h5>
-									{{ range .GetSectionsLogError }}
-										<div>
-											{{ .Name }}
-										</div>
-									{{ end }}
-								</div>
-							{{ end }}
-						</div>
-					</div>
-				{{ end }}
+					{{ end }}
+				</div>
 			</div>
-		</div>
-		<div class="pad-top-2rem">
-			{{ .Release.Markdown }}
-		</div>
-		<div class="pad-top-2rem">
-			TODO Reviews
-		</div>
+		{{ else }}
+			<div>
+				<h5>No releases yet</h5>
+			</div>
+		{{ end }}
 	</div>
-{{ end }}
+	<div x-show="$store.course.tab === 'reviews'">
+		<h5>Reviews</h5>
+	</div>
+</div>
 
-{{ template "_footer.html" . }}
+{{ template "course_footer.html" . }}

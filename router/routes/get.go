@@ -95,6 +95,7 @@ func getCourse(c *gin.Context) {
 		http.StatusOK,
 		"course.html",
 		gin.H{
+			"Version":   release.GetVersionsLogError(),
 			"Purchased": purchased,
 			"Course":    course,
 			"Release":   release,
@@ -403,6 +404,7 @@ func getCourseRelease(c *gin.Context) {
 		http.StatusOK,
 		"course.html",
 		gin.H{
+			"Version":   release.GetNewestVersionLogError(),
 			"Purchased": purchased,
 			"Course":    course,
 			"Release":   release,

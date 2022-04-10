@@ -1,0 +1,27 @@
+{{ template "_header.html" . }}
+
+<div style="background-color:var(--c-code); color:white; font-size:0.8rem; padding:0.5rem; z-index:-1000000000000000;">
+	The site is in test mode. All purchases made will not charge you real money. Do no give your real card number or any real information when paying. Use card number 4242 4242 4242 4242, any future valid card date, and the rest can be random fake information. There may be "use test info" buttons. Make sure to press those when available.
+</div>
+
+<div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
+	<h1 style="margin-bottom:0;">{{ .Course.Title }}</h1>
+	{{ if .Release }}
+		<div style="margin-bottom:3rem;">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</div>
+	{{ end }}
+	<!-- allow line breaks in the pre tag -->
+	<pre style="
+	overflow-x: auto;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
+	{{ template "course_buyOrOpenButton.html" . }}
+	{{ if eq .Course.UserID .User.ID }}
+		<div style="text-align:right;">
+			<i class="fa-solid fa-gear hoverable-bg-overlay bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
+		</div>
+	{{ end }}
+</div>
+

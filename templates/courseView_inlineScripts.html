@@ -1,3 +1,4 @@
+
 <script>
 
 	document.addEventListener("alpine:init", function(event) {
@@ -86,7 +87,12 @@
 				*/
 
 				// if it is a folder
-				if (json.tree[i].type === "tree") {
+				if (
+					json.tree[i].type === "tree" &&
+					!json.tree[i].path.includes("Resources") && 
+					!json.tree[i].path.includes("Assets") && 
+					!json.tree[i].path.includes("Ignore")
+				) {
 					if (saveFirstSection === true) {
 						Alpine.store("sections").current = json.tree[i].sha;
 						console.log("first section is:", json.tree[i])

@@ -1,3 +1,6 @@
+// package for uploading course to the database.
+// currently we are hiding this option since github based courses are so far working
+// and allowing bd based course uploads will cause our db to explode and will raise server costs.
 package upload
 
 import (
@@ -19,7 +22,7 @@ const MediaChunkSize int = 16384
 // 15 MB's
 const MaxMediaChunkSize int64 = 15728640
 
-var ErrMediaTooLarge error = errors.New("media size exceeded max asset size of 10 MB.")
+var ErrMediaTooLarge error = errors.New("media size exceeded max asset size of 10 MB")
 
 func UploadCourse(conn *pgxpool.Pool, path string, versionID uint64) error {
 	folders, err := getChildrenFolders(path)
