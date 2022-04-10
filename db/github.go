@@ -36,6 +36,10 @@ func (user *User) GetGithubConnectionLogError() *githubapi.GithubConnection {
 	return &githubConnection
 }
 
+func (user *User) UpdateGithubConnection(AccessToken string, TokenType string) error {
+	return gormDB.Model(&githubapi.GithubConnection{}).Where("user_id = ?", user.ID).Update("access_token", AccessToken).Update("token_type", TokenType).Error
+}
+
 func (user *User) GetGithubConnection() (*githubapi.GithubConnection, error) {
 	githubConnection := githubapi.GithubConnection{}
 	err := gormDB.Model(&githubapi.GithubConnection{}).Where("user_id = ?", user.ID).First(&githubConnection).Error

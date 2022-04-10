@@ -37,12 +37,16 @@ var (
 )
 
 func getGithubConnect(c *gin.Context) {
-	user := auth.GetLoggedInUserLogError(c)
-	if user.HasGithubConnection() {
-		msg.SendMessage(c, "Your account is already connected to github")
-		c.Redirect(http.StatusFound, "/settings/teaching")
-		return
-	}
+	/*
+		 - user may need to reconnect, if we were to delete all users oauth tokens
+		 - so allow "reconnecting" in /settings/github/connect/return
+
+		if user.HasGithubConnection() {
+			msg.SendMessage(c, "Your account is already connected to github")
+			c.Redirect(http.StatusFound, "/settings/teaching")
+			return
+		}
+	*/
 
 	url := oauthConfig.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
 	http.Redirect(c.Writer, c.Request, url, http.StatusTemporaryRedirect)
@@ -66,7 +70,22 @@ func getGithubConnectFinished(c *gin.Context) {
 		return
 	}
 
+	// we can ignore the error since middlewares.MustBeLoggedIn ensures no user can access this without being logged in
 	loggedInUser := auth.GetLoggedInUserLogError(c)
+	if loggedInUser.HasGithubConnection() {
+		err3 := loggedInUser.UpdateGithubConnection(token.AccessToken, token.TokenType)
+		if err3 != nil {
+			log.Println("routes/github_oauth ERROR updating github connection:", err3)
+			msg.SendMessage(c, "Error updating github connection")
+			c.Redirect(http.StatusFound, "/settings/teaching")
+			return
+		}
+
+		msg.SendMessage(c, "Successfully re-connected github account")
+		c.Redirect(http.StatusFound, "/settings/teaching")
+		return
+	}
+
 	githubConnection := githubapi.GithubConnection{
 		UserID:      loggedInUser.ID,
 		AccessToken: token.AccessToken,
@@ -82,9 +101,9 @@ func getGithubConnectFinished(c *gin.Context) {
 
 	oauthClient := oauthConfig.Client(context.Background(), token)
 	client := github.NewClient(oauthClient)
-	user, _, err := client.Users.Get(context.Background(), "")
-	if err != nil {
-		fmt.Printf("routes/github ERROR client.Users.Get() failed with '%s'\n", err)
+	user, _, err2 := client.Users.Get(context.Background(), "")
+	if err2 != nil {
+		fmt.Printf("routes/github ERROR client.Users.Get() failed with '%s'\n", err2)
 		msg.SendMessage(c, "Error connecting github account.")
 		c.Redirect(http.StatusTemporaryRedirect, "/settings/teaching")
 		return

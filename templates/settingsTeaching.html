@@ -38,7 +38,8 @@
 				</button>
 				<p class="c-grey">You will be redirected to github to allow us access to your github repos.</p>
 			{{ else }}
-				<p class="c-grey">Github courses enabled <i class="fa-solid fa-check"></i></p>
+				<p class="c-grey">Github connected <i class="fa-solid fa-check"></i></p>
+				<p>Having trouble? <a href="/settings/github/connect">reconnect</a></p>
 			{{ end }}
 			<!-- TODO refresh github oauth token? NOPE! github oauth tokens currently never expire! -->
 		{{ end }}
@@ -58,7 +59,7 @@
 						{{ range .GetPurchasesLogError }}
 							<div style="margin-bottom:0.5rem;">
 								<p>Paid: ${{ .GetAmountPaidUSD }} USD</p>
-								<p>Your cut: ${{ .GetAuthorsCutUSD }} USD <span class="c-grey"> (Estimated. Not including taxes or transfer fees)</span></p>
+								<p>Your cut: ${{ .GetAuthorsCutUSD }} USD <span class="c-grey"> (Estimated. Does not include taxes or transfer fee's)</span></p>
 							</div>
 						{{ end }}
 					{{ end }}
