@@ -1,3 +1,5 @@
 dbconfig
 stripeconfig
 sendgridconfig
+githubclientsecret
+githubclientid
