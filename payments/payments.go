@@ -7,7 +7,7 @@ import (
 )
 
 // we take a 25 percent cut
-const PercentageShare float32 = 0.25
+const PercentageShare float32 = 0.20
 
 // 1000 => $10 USD
 const MaxCoursePrice uint64 = 1000
