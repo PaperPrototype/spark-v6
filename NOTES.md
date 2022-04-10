@@ -27,3 +27,8 @@ TODO
 	- dark
 	- light
 	- auto
+
+Use admin interface to manage an "official" courses relational table
+	- OfficialCourses
+		- (course_id)
+	- If your course is official we only take 15% otherwise we take 25% percent

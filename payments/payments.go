@@ -6,8 +6,8 @@ import (
 	"github.com/stripe/stripe-go/v72"
 )
 
-// we take a 15 percent cut
-const PercentageShare float32 = 0.15
+// we take a 25 percent cut
+const PercentageShare float32 = 0.25
 
 // 1000 => $10 USD
 const MaxCoursePrice uint64 = 1000

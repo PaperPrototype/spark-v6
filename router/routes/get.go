@@ -781,3 +781,16 @@ func getHome(c *gin.Context) {
 		},
 	)
 }
+
+func getJoin(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"join.html",
+		gin.H{
+			"Messages": msg.GetMessages(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
+}
