@@ -1,16 +1,3 @@
-NOTES
-- github api based courses
-	- reasons
-		- no uploading .zip files
-		- editing provided through github
-	- flow? layout?
-		- using version?
-			- less re-writing of things
-			- layout
-				
-		- make whole new github versions?
-			- re-write a lot of stuff
-
 TODO
 - generate 5% off coupon when users land on 404 not found page
 - course hierarchy system.
@@ -19,10 +6,12 @@ TODO
 	- much more robust
 	- user may close page and/or close the browser and lose their payment, but using webhooks solves this
 - chat
-- final project
+- project
 	- (user_id, state = "proposal" || "completed" || "in-progress")
 		- proposalPost (post_id, project_id)
 		- projectUsers (project_id, user_id)
+- finalProject (links a project to a course release)
+	- (release_id, project_id)
 
 - user profile
 	- courses
@@ -32,7 +21,7 @@ TODO
 		- proposals
 		- projects
 	- posts
-		- playlists
+		- series
 
 - dark mode button toggle
 	- dark

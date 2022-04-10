@@ -45,12 +45,6 @@ func postNew(c *gin.Context) {
 		return
 	}
 
-	if !user.HasStripeConnection() {
-		msg.SendMessage(c, "You must connect your account to stripe before you can upload a course.")
-		c.Redirect(http.StatusFound, "/settings")
-		return
-	}
-
 	// raw name variable
 	// lowercase all unique course names
 	uncleanName := c.PostForm("name")
@@ -254,6 +248,7 @@ func postCourseSettingsDisplay(c *gin.Context) {
 	title := c.PostForm("title")
 	name := c.PostForm("name")
 	desc := c.PostForm("desc")
+	public := c.PostForm("public")
 
 	available, err := db.UserCourseNameAvailableNotSelf(username, name, courseID)
 	if !available {
@@ -269,7 +264,29 @@ func postCourseSettingsDisplay(c *gin.Context) {
 		return
 	}
 
-	err1 := db.UpdateCourse(courseID, title, name, desc)
+	releasesCount := db.CountPublicCourseReleasesLogError(courseID)
+
+	publicBool := false
+	// if public and there are releases
+	if public != "" && releasesCount != 0 {
+		publicBool = true
+	}
+
+	if releasesCount == 0 {
+		msg.SendMessage(c, "You must have at least 1 public release before you can make a course public.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+
+		err1 := db.UpdateCourse(courseID, title, name, desc, false)
+		if err1 != nil {
+			msg.SendMessage(c, "Error updating course.")
+			log.Println("ERROR updating course:", err1)
+			c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+			return
+		}
+		return
+	}
+
+	err1 := db.UpdateCourse(courseID, title, name, desc, publicBool)
 	if err1 != nil {
 		msg.SendMessage(c, "Error updating course.")
 		log.Println("ERROR updating course:", err1)
@@ -307,9 +324,21 @@ func postNewRelease(c *gin.Context) {
 	correctPriceNum := priceNumIncorrect * 100
 
 	if correctPriceNum > payments.MaxCoursePrice {
-		msg.SendMessage(c, "THe max price of a course is $10 USD")
+		msg.SendMessage(c, "The max price of a course is $10 USD")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 		return
+	}
+
+	author, err3 := db.GetUser(course.UserID)
+	if err3 != nil {
+		msg.SendMessage(c, "Error getting the course author.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	if !author.HasStripeConnection() {
+		correctPriceNum = 0
+		msg.SendMessage(c, "You must connect your account to stripe to charge money for a course!")
 	}
 
 	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
@@ -490,6 +519,18 @@ func postEditRelease(c *gin.Context) {
 		msg.SendMessage(c, "THe max price of a course is $10 USD")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 		return
+	}
+
+	author, err3 := release.GetAuthorUser()
+	if err3 != nil {
+		msg.SendMessage(c, "Error getting the course author.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	if !author.HasStripeConnection() {
+		correctPriceNum = 0
+		msg.SendMessage(c, "You must connect your account to stripe to charge money for a course!")
 	}
 
 	var public bool = false

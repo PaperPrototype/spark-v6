@@ -40,7 +40,7 @@
 			</form>
 		</li>
 		<li class="nav-search-hidden-stick-right">
-			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/{{ .User.Username }}"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
+			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/home"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
 		</li>
 		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show">
 			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
@@ -54,13 +54,13 @@
 			<li>
 				<a class="hoverable" href="/courses"><i class="fa-solid fa-arrow-pointer" style="padding-left:0.3rem; padding-right:0.5rem;"></i> courses</a>
 			</li>
-			{{ if .User.HasStripeConnection }}
+			{{ if .User.Verified }}
 				<li>
 					<a class="hoverable" href="/new"><i class="fa-solid fa-code" style="padding-right:0.26rem;"></i> new</a>
 				</li>
 			{{ end }}
 			<li>
-				<a class="hoverable" href="/{{ .User.Username }}"><i class="fa-solid fa-at pad-right-05rem"></i> {{ .User.Username }}</a>
+				<a class="hoverable" href="/home"><i class="fa-solid fa-at pad-right-05rem"></i> {{ .User.Username }}</a>
 			</li>
 			<li>
 				<a class="hoverable" href="/settings"><i class="fa-solid fa-gear pad-right-05rem"></i> settings</a>

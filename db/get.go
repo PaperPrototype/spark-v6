@@ -11,12 +11,6 @@ func GetCourse(courseID interface{}) (*Course, error) {
 	return &course, err
 }
 
-func GetAuthorsCourses(authorUserID uint64) ([]Course, error) {
-	courses := []Course{}
-	err := gormDB.Model(&Course{}).Where("user_id = ?", authorUserID).Find(&courses).Error
-	return courses, err
-}
-
 func GetUserFromSession(token string) (*User, error) {
 	session, err := GetSession(token)
 	if err != nil {
@@ -91,12 +85,6 @@ func GetWithIDUserCoursePreloadUser(userID interface{}, courseID interface{}) (*
 
 	// return
 	return &course, err1
-}
-
-func GetAllCoursesPreloadUser() ([]Course, error) {
-	courses := []Course{}
-	err := gormDB.Model(&Course{}).Preload("User").Find(&courses).Error
-	return courses, err
 }
 
 func GetCourseWithIDPreloadUser(courseID interface{}) (*Course, error) {
@@ -261,9 +249,22 @@ func GetPurchases(courseID uint64) ([]Purchase, error) {
 	return purchases, err
 }
 
-func GetUserCourses(userID uint64) ([]Course, error) {
+func GetAuthorPublicCourses(userID uint64) ([]Course, error) {
+	courses := []Course{}
+	err := gormDB.Model(&Course{}).Where("user_id = ?", userID).Where("public = ?", true).Find(&courses).Error
+	return courses, err
+}
+
+// careful! this is public AND private courses
+func GetAuthorPublicAndPrivateCourses(userID uint64) ([]Course, error) {
 	courses := []Course{}
 	err := gormDB.Model(&Course{}).Where("user_id = ?", userID).Find(&courses).Error
+	return courses, err
+}
+
+func GetAllPublicCoursesPreloadUser() ([]Course, error) {
+	courses := []Course{}
+	err := gormDB.Model(&Course{}).Preload("User").Where("public = ?", true).Find(&courses).Error
 	return courses, err
 }
 

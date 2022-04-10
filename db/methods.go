@@ -6,7 +6,13 @@ import (
 	"main/markdown"
 )
 
-func (user *User) GetAuthorCourses() ([]Course, error) {
+func (user *User) GetPublicAuthoredCourses() ([]Course, error) {
+	courses := []Course{}
+	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("public = ?", true).Find(&courses).Error
+	return courses, err
+}
+
+func (user *User) GetPublicAndPrivateAuthoredCourses() ([]Course, error) {
 	courses := []Course{}
 	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Find(&courses).Error
 	return courses, err
@@ -152,8 +158,20 @@ func (course *Course) GetNewestPublicCourseReleaseLogError() *Release {
 	return &release
 }
 
-// get course that the user has posted a post to
-func (user *User) GetPurchasedCourses() ([]Course, error) {
+// get courses that the user has purchased
+func (user *User) GetPublicPurchasedCourses() ([]Course, error) {
+	releaseIDs := gormDB.Model(&Purchase{}).Select("release_id").Where("user_id = ?", user.ID)
+
+	courseIDs := gormDB.Model(&Release{}).Select("course_id").Where("id IN (?)", releaseIDs)
+
+	courses := []Course{}
+
+	err := gormDB.Model(&Course{}).Where("id IN (?)", courseIDs).Where("public = ?", true).Find(&courses).Error
+	return courses, err
+}
+
+// get courses that the user has purchased
+func (user *User) GetPublicAndPrivatePurchasedCourses() ([]Course, error) {
 	releaseIDs := gormDB.Model(&Purchase{}).Select("release_id").Where("user_id = ?", user.ID)
 
 	courseIDs := gormDB.Model(&Release{}).Select("course_id").Where("id IN (?)", releaseIDs)

@@ -6,6 +6,6 @@ Functions to edit:
 Stripe API key needs to be switched to the live key.
 Remove the "this site is in tst mode" message in course.html
 
-User's don't have to sign up for stripe to publish a course, instead must have stripe to make their courses paid. Free courses don't require a stripe connection.
+Free courses don't require a stripe connection. User's don't have to sign up for stripe to publish a course, instead they must have a stripe if they want to charge money for courses.
 
-Create official sparky / sparker / course username account for courses
+Create official "sparker" account username for official courses.

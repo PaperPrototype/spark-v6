@@ -33,7 +33,7 @@ func getSettings(c *gin.Context) {
 func getSettingsTeaching(c *gin.Context) {
 	user := auth.GetLoggedInUserLogError(c)
 
-	courses, err := user.GetAuthorCourses()
+	courses, err := user.GetPublicAndPrivateAuthoredCourses()
 	if err != nil {
 		log.Println("routes/settings ERROR getting AuthorCourses in getSettingsCourses:", err)
 	}
@@ -337,7 +337,7 @@ func postSettingsEditEmail(c *gin.Context) {
 func getSettingsCoupons(c *gin.Context) {
 	user := auth.GetLoggedInUserLogError(c)
 
-	courses, err := user.GetAuthorCourses()
+	courses, err := user.GetPublicAndPrivateAuthoredCourses()
 	if err != nil {
 		log.Println("routes/settings ERROR getting AuthorCourses in getSettingsCourses:", err)
 	}

@@ -3,11 +3,8 @@
 <link href="/resources/css/courses.css" rel="stylesheet">
 
 <div class="pad-sides-5 pad-top-5rem text-center">
-	<h1>{{ .ProfileUser.Name }}</h1>
-	<p>@{{ .ProfileUser.Username }}</p>
-	<p>
-		{{ .ProfileUser.Bio }}
-	</p>
+	<h1>Home</h1>
+	<a href="/{{ .User.Username }}">View public profile</a>
 </div>
 <div class="pad-sides-5">
 	<h2>Taken Courses</h2>
@@ -15,7 +12,7 @@
 		<div class="course-cards">
 			{{ range .ProfileCourses }}
 				<div class="course-card">
-					<h2 href="/{{ $.ProfileUser.Username }}/{{ .Name }}">{{ .Title }}</h2>
+					<h2 href="/{{ $.User.Username }}/{{ .Name }}">{{ .Title }}</h2>
 					<a href="/:course/view/:versionID/posts/user/:username">User posts</a>
 				</div>
 			{{ end }}
@@ -28,7 +25,7 @@
 		<div class="course-cards">
 			{{ range .AuthoredCourses }}
 				<div class="course-card">
-					<h2 href="/{{ $.ProfileUser.Username }}/{{ .Name }}">{{ .Title }}</h2>
+					<h2 href="/{{ $.User.Username }}/{{ .Name }}">{{ .Title }}</h2>
 					<a href="/:course/view/:versionID/posts/user/:username">User posts</a>
 				</div>
 			{{ end }}

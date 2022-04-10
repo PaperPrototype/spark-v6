@@ -10,7 +10,7 @@ import (
 )
 
 func getCourses(c *gin.Context) {
-	courses, err := db.GetAllCoursesPreloadUser()
+	courses, err := db.GetAllPublicCoursesPreloadUser()
 
 	if err != nil {
 		log.Println("api ERROR getting course for api/getCourses:", err)
@@ -93,7 +93,7 @@ func getVersionProposalPosts(c *gin.Context) {
 	)
 }
 
-func getVersionProjectPosts(c *gin.Context) {
+func getVersionProjects(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
 
 	version, err := db.GetVersion(versionID)

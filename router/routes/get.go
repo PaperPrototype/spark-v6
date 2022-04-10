@@ -36,6 +36,15 @@ func getCourse(c *gin.Context) {
 		return
 	}
 
+	user, getUserErr := auth.GetLoggedInUser(c)
+
+	// if private and outside user
+	if !course.Public && course.UserID != user.ID {
+		// deny existence of a course
+		notFound(c)
+		return
+	}
+
 	release, err1 := db.GetNewestPublicCourseRelease(course.ID)
 	if err1 != nil {
 		log.Println("ERROR getting release:", err1)
@@ -75,8 +84,7 @@ func getCourse(c *gin.Context) {
 	purchased := false
 
 	if release.Price != 0 {
-		user, err2 := auth.GetLoggedInUser(c)
-		if err2 == nil {
+		if getUserErr == nil {
 			if user.HasPurchasedRelease(release.ID) {
 				purchased = true
 			}
@@ -173,12 +181,6 @@ func getNew(c *gin.Context) {
 		return
 	}
 
-	if !user.HasStripeConnection() {
-		msg.SendMessage(c, "You must connect your account to stripe before you can upload courses.")
-		c.Redirect(http.StatusFound, "/settings")
-		return
-	}
-
 	c.HTML(
 		http.StatusOK,
 		"new.html",
@@ -266,8 +268,6 @@ func getCourseVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	// TODO check that user owns course release before allowing access
-
 	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
 	if err1 != nil {
 		log.Println("routes ERROR getting course from db:", err1)
@@ -353,6 +353,15 @@ func getCourseRelease(c *gin.Context) {
 		return
 	}
 
+	user, getUserErr := auth.GetLoggedInUser(c)
+
+	// if private and outside user
+	if !course.Public && course.UserID != user.ID {
+		// deny existence of a course
+		notFound(c)
+		return
+	}
+
 	release, err1 := db.GetCourseReleaseNumString(course.ID, releaseNum)
 	if err1 != nil {
 		log.Println("ERROR getting release:", err1)
@@ -383,8 +392,7 @@ func getCourseRelease(c *gin.Context) {
 	purchased := false
 
 	if release.Price != 0 {
-		user, err2 := auth.GetLoggedInUser(c)
-		if err2 == nil {
+		if getUserErr == nil {
 			if user.HasPurchasedRelease(release.ID) {
 				purchased = true
 			}
@@ -413,8 +421,6 @@ func getCourseVersionSection(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	username := c.Params.ByName("username")
 	versionID := c.Params.ByName("versionID")
-
-	// TODO check that user owns course release before allowing access
 
 	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
 	if err1 != nil {
@@ -505,21 +511,27 @@ func getUser(c *gin.Context) {
 		return
 	}
 
-	courses, err1 := profileUser.GetPurchasedCourses()
+	courses, err1 := profileUser.GetPublicPurchasedCourses()
 	if err1 != nil {
 		log.Println("routes ERROR getting courses for user:", err1)
+	}
+
+	authoredCourses, err2 := profileUser.GetPublicAuthoredCourses()
+	if err2 != nil {
+		log.Println("routes ERROR getting authored courses for user:", err2)
 	}
 
 	c.HTML(
 		http.StatusOK,
 		"user.html",
 		gin.H{
-			"Messages":       msg.GetMessages(c),
-			"User":           auth.GetLoggedInUserLogError(c),
-			"ProfileUser":    profileUser,
-			"ProfileCourses": courses,
-			"LoggedIn":       auth.IsLoggedInValid(c),
-			"Meta":           metaDefault,
+			"Messages":        msg.GetMessages(c),
+			"User":            auth.GetLoggedInUserLogError(c),
+			"ProfileUser":     profileUser,
+			"ProfileCourses":  courses,
+			"AuthoredCourses": authoredCourses,
+			"LoggedIn":        auth.IsLoggedInValid(c),
+			"Meta":            metaDefault,
 		},
 	)
 }
@@ -733,6 +745,39 @@ func getAbout(c *gin.Context) {
 			"User":     auth.GetLoggedInUserLogError(c),
 			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta":     metaDefault,
+		},
+	)
+}
+
+func getHome(c *gin.Context) {
+	user, err := auth.GetLoggedInUser(c)
+	if err != nil {
+		log.Println("routes ERROR gettingUserWithUsername:", err)
+		msg.SendMessage(c, "You must be logged in to view that page.")
+		c.Redirect(http.StatusFound, "/courses")
+		return
+	}
+
+	courses, err1 := user.GetPublicAndPrivatePurchasedCourses()
+	if err1 != nil {
+		log.Println("routes ERROR getting courses for user:", err1)
+	}
+
+	authoredCourses, err2 := user.GetPublicAndPrivateAuthoredCourses()
+	if err2 != nil {
+		log.Println("routes ERROR getting authored courses for user:", err2)
+	}
+
+	c.HTML(
+		http.StatusOK,
+		"home.html",
+		gin.H{
+			"Messages":        msg.GetMessages(c),
+			"User":            user,
+			"ProfileCourses":  courses,
+			"AuthoredCourses": authoredCourses,
+			"LoggedIn":        auth.IsLoggedInValid(c),
+			"Meta":            metaDefault,
 		},
 	)
 }

@@ -35,6 +35,22 @@
 			style="width:100%; background-color: var(--c-bg-overlay); color: var(--c-text); border: 0.1rem solid var(--c-light); font-size: 1rem; padding: 0.2rem; height:10rem;"
 			value="{{ .Course.Subtitle }}">{{ .Course.Subtitle }}</textarea>
 		</div>
+		<label>Public</label>
+		<div style="margin-bottom: 2rem;">
+			{{ if .Course.Public }}
+			<input
+			type="checkbox"
+			name="public"
+			style="padding: 0.2rem;"
+			value="public" checked>
+			{{ else }}
+			<input
+			type="checkbox"
+			name="public"
+			style="padding: 0.2rem;"
+			value="public">
+			{{ end }}
+		</div>
 		<div>
 			<button class="form-btn" type="submit">Save</button>
 		</div>

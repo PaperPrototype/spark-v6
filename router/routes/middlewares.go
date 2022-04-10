@@ -108,6 +108,13 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 		}
 	}
 
+	// if private and outside user
+	if !course.Public && course.UserID != user.ID {
+		// deny existence of a course
+		notFound(c)
+		return
+	}
+
 	// coninue
 	c.Next()
 }

@@ -32,7 +32,7 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/:username/:course/view/:versionID/:sectionID", MustHaveAccessToCourseRelease, getCourseVersionSection) // view a section of the course
 	router.GET("/:username/:course/view/:versionID/sha/:sha", MustHaveAccessToCourseRelease)                            // view a github versions content
 	router.GET("/:username/:course/view/:versionID/posts")                                                              // view posts
-	router.GET("/:username/:course/view/:versionID/posts/:postID")                                                      // view specific post
+	router.GET("/:username/:course/view/:versionID/post/:postID")                                                       // view specific post
 	router.GET("/:username/:course/view/:versionID/posts/user/:username")                                               // view posts by a specific user
 	router.GET("/:username/:course/view/:versionID/chat")                                                               // view the live chatroom
 
@@ -41,12 +41,15 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/media/:versionID/id/:mediaID")
 
 	// user's public profile page
-	router.GET("/:username", getUser)         // get user profile
+	router.GET("/:username", getUser)         // get users public profile
 	router.GET("/:username/media")            // where the user can upload and access images or gifs
 	router.GET("/:username/media/:mediaName") // where the user can upload and access images or gifs
 	/*
 		user setting on a cog wheel button, but don't offer settings menu as a url route
 	*/
+
+	// get users home page
+	router.GET("/home", getHome)
 
 	// auth
 	router.GET("/signup", getSignup) // make a new account

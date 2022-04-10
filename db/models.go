@@ -63,7 +63,7 @@ type Purchase struct {
 	AmountPaid uint64    `gorm:"default:0"`
 	AuthorsCut uint64    `gorm:"default:0"`
 
-	Desc string
+	Desc string // description or error or reason for purchase (eg. given to user for free since author payout failed)
 
 	// the purchases courseID
 	// course ID
@@ -73,6 +73,7 @@ type Purchase struct {
 	ReleaseID uint64
 
 	// not a required parameter but used to keep track of version user is currently taking
+	// then in the "home" page of the website for logged in users we can show them their courses, and take them to the version they are currently taking
 	// also set to newest version when user first buys a course
 	VersionID uint64
 
@@ -122,6 +123,7 @@ type Course struct {
 	Title    string `gorm:"not null"` // a short title of the course
 	Name     string `gorm:"not null"` // the courses unique url name (eg. spark.com/username/minecraftcourse)
 	Subtitle string
+	Public   bool `gorm:"default:f"`
 
 	UserID uint64 `gorm:"not null"`
 

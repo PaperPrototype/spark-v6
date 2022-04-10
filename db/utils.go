@@ -239,6 +239,16 @@ func (version *Version) HasGithubVersion() bool {
 	return true
 }
 
+func CountPublicCourseReleasesLogError(courseID string) int64 {
+	var count int64 = 0
+	err := gormDB.Model(&Release{}).Where("course_id = ?", courseID).Where("public = ?", true).Count(&count).Error
+	if err != nil {
+		log.Println("db/utils ERROR getting github release in HasGithubRelease:", err)
+	}
+
+	return count
+}
+
 func (version *Version) GetAuthorUser() (*User, error) {
 	userIDs := gormDB.Model(&Course{}).Select("user_id").Where("id = ?", version.CourseID)
 	user := User{}
