@@ -24,6 +24,11 @@ go to stripes docs and you can use the publicly available test key. Or if you ar
 ## sendgridconfig
 go to app.sendgrid.com docs and you can create a free account. Or if you are logged in, use the test key provided and paste it into a `sendgridconfig` file in the root directory of the app.
 
+## githubclientsecret githubclientid
+create two files called `githubclientsecret` and `githubclientid` in the root directory. Now create an oauth app on github and register the homepage url as `http://localhost:8080` and the redirect url as `http://localhost:8080/settings/github/connect/return`
+
+now paste the clientid and clientscret into the files. Now github oauth should work locally.
+
 # Running
 Use `go run .` once you have the config files created and set.
 You may need to install dependancies using `go mod tidy`.
