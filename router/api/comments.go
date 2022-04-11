@@ -11,8 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const MaxTimeoutSeconds float64 = 30
-const SleepTimeSeconds time.Duration = 3
+// heroku times out at 30 seconds https://devcenter.heroku.com/articles/request-timeout
+const MaxTimeoutSeconds float64 = 20
+const SleepTime time.Duration = 3
 
 func postPostComment(c *gin.Context) {
 	postID := c.Params.ByName("postID")
@@ -72,11 +73,16 @@ func getPostComments(c *gin.Context) {
 
 		for count == 0 {
 			// if nothing found then sleep 3 seconds before querying again
-			time.Sleep(SleepTimeSeconds * time.Second)
+			time.Sleep(SleepTime * time.Second)
 
 			// have timout so if user disconnects we don't keep going forever.
 			// Otherwise we will query even after user disconnects!!!
 			duration := time.Since(start)
+
+			// only try for up to 20 seconds
+			if duration.Seconds() > MaxTimeoutSeconds {
+				break
+			}
 
 			// get the initial comments
 			// limit to last 20 comments
@@ -85,11 +91,6 @@ func getPostComments(c *gin.Context) {
 				log.Println("api/get ERROR getting initial comments in getPostComments:", err)
 				c.Status(http.StatusInternalServerError)
 				return
-			}
-
-			// only try for up to 30 seconds
-			if duration.Seconds() > MaxTimeoutSeconds {
-				break
 			}
 
 			// if there are new comments
@@ -118,7 +119,16 @@ func getPostComments(c *gin.Context) {
 	// while count == 0
 	for count == 0 {
 		// if nothing found then sleep 3 seconds before querying again
-		time.Sleep(SleepTimeSeconds * time.Second)
+		time.Sleep(SleepTime * time.Second)
+
+		// have timout so if user disconnects we don't keep going forever.
+		// Otherwise we will query even after user disconnects!!!
+		duration := time.Since(start)
+
+		// only try for up to 20 seconds
+		if duration.Seconds() > MaxTimeoutSeconds {
+			break
+		}
 
 		// check for new comments
 		comments, count, err1 = db.GetNewComments(postID, newest)
@@ -127,15 +137,6 @@ func getPostComments(c *gin.Context) {
 			log.Println("api/get ERROR getting new comments in getPostComments:", err1)
 			c.Status(http.StatusInternalServerError)
 			return
-		}
-
-		// have timout so if user disconnects we don't keep going forever.
-		// Otherwise we will query even after user disconnects!!!
-		duration := time.Since(start)
-
-		// only try for up to 30 seconds
-		if duration.Seconds() > MaxTimeoutSeconds {
-			break
 		}
 
 		// if there are new comments
