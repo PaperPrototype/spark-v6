@@ -68,3 +68,7 @@ func CreateGithubRelease(githubRelease *GithubRelease) error {
 func CreateGithubVersion(githubVersion *GithubVersion) error {
 	return gormDB.Create(githubVersion).Error
 }
+
+func CreateComment(comment *Comment) error {
+	return gormDB.Create(comment).Error
+}

@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				json.tree[i].type === "tree" &&
 				!json.tree[i].path.includes("Resources") && 
 				!json.tree[i].path.includes("Assets") && 
+				!json.tree[i].path.includes("Archive") && 
 				!json.tree[i].path.includes("Ignore")
 			) {
 				let section = document.createElement("div");
@@ -39,4 +40,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	.catch(function(err) {
 		console.error(err);
 	});
-})
+});

@@ -5,6 +5,7 @@ import (
 	"main/db"
 	"main/router/auth"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -200,4 +201,39 @@ func postEditSectionContent(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+}
+
+func postPostComment(c *gin.Context) {
+	postID := c.Params.ByName("postID")
+	markdown := c.PostForm("markdown")
+
+	postIDNum, err := strconv.ParseUint(postID, 10, 64)
+	if err != nil {
+		log.Println("api/post ERROR parsing uint in postPostComment:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	user, err1 := auth.GetLoggedInUser(c)
+	if err1 != nil {
+		log.Println("api/post ERROR getting user in postPostComment:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	comment := db.Comment{
+		UserID:   user.ID,
+		PostID:   postIDNum,
+		Markdown: markdown,
+	}
+	err2 := db.CreateComment(&comment)
+	if err2 != nil {
+		log.Println("api/post ERROR creating comment in postPostComment:", err2)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("comment is:", comment)
+
+	c.Status(http.StatusOK)
 }

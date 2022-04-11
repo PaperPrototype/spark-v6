@@ -6,6 +6,9 @@ let usingGithub = false;
 // offset from the top of the screen
 let ogTopOffset;
 
+// form for sending comments on a post
+let postCommentsForm;
+
 document.addEventListener("DOMContentLoaded", function(event) {
 	courseNavTop = document.getElementById("courseNavTop");
 	courseMain = document.getElementById("courseMain");
@@ -15,6 +18,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	window.onscroll = function(){
 		menuFollowScroll();
 	}
+
+	postCommentsForm = document.getElementById("postCommentsForm");
+	postCommentsForm.addEventListener("submit", sendComment, false)
 });
 
 // show chat view
@@ -32,6 +38,7 @@ function viewPosts() {
 	Alpine.store("courseView").menuOpen = false;
 	Alpine.store("courseView").viewingPost = false;
 	Alpine.store("courseView").editingContent = false;
+	Alpine.store("courseView").viewingComments = false;
 }
 
 // show contents/lecture/section view
@@ -40,6 +47,7 @@ function viewContents() {
 	Alpine.store("courseView").menuAvailable = true;
 	Alpine.store("courseView").allowNewPost = true;
 	Alpine.store("courseView").editingContent = false;
+	Alpine.store("courseView").viewingComments = false;
 }
 
 // toggle nav menu
@@ -142,9 +150,9 @@ function loadPosts(versionID) {
 
 function viewEditPost() {
 	let editPostTextInput = document.getElementById("editPostTextInput");
-	let editPostID = document.getElementById("editPostID");
+	let postID = Alpine.store("courseView").postID;
 
-	fetch("/api/posts/" + editPostID.innerText + "/plaintext", {
+	fetch("/api/posts/" + postID + "/plaintext", {
 		method: "GET",
 	})
 	.then(function(resp) {
@@ -170,13 +178,13 @@ function viewEditPost() {
 }
 
 function updatePost() {
-	let editPostID = document.getElementById("editPostID");
+	let postID = Alpine.store("courseView").postID;
 	let editPostTextInput = document.getElementById("editPostTextInput");
 
 	let formData = new FormData();
 	formData.append("markdown", editPostTextInput.value);
 
-	fetch("/api/posts/" + editPostID.innerText + "/update", {
+	fetch("/api/posts/" + postID + "/update", {
 		method: "POST",
 		body: formData,
 	})
@@ -191,7 +199,7 @@ function updatePost() {
 		Alpine.store("courseView").editingPost = false;
 
 		// load post contents again
-		loadPost(editPostID.innerText);
+		loadPost(postID);
 
 		return resp.text();
 	})
@@ -222,15 +230,16 @@ function loadPost(postID) {
 		let postMount = document.getElementById("postMount");
 		let postMountUser = document.getElementById("postMountUser");
 
-		// if user decides to edit the post
-		let editPostID = document.getElementById("editPostID");
-		editPostID.innerText = json.ID;
+		// if save for if user decides to edit the post
+		Alpine.store("courseView").postID = json.ID;
 
 		Alpine.store("courseView").editingPost = false;
 		Alpine.store("courseView").viewingPost = true;
 
 		postMount.innerHTML = json.Markdown;
 		postMountUser.innerText = "@" + json.User.Username;
+
+		Alpine.store("courseView").postID = postID;
 
 		// convert any elems with a link to open in new page
 		convertHrefs();
@@ -272,7 +281,7 @@ function menuFollowScroll() {
 	}
 }
 
-// load a github section or upload based section
+// load a github section or an upload based section
 function loadSection(id) {
 	console.log("attempting to load...");
 	if (Alpine.store("courseView").usingGithub) {
@@ -280,4 +289,67 @@ function loadSection(id) {
 	} else {
 		loadUploadSection(id);
 	}
+}
+
+function sendComment(event) {
+	if (event) {
+		event.preventDefault();
+	}
+
+	let postCommentsSend = document.getElementById("postCommentsSend");
+	let postID = Alpine.store("courseView").postID;
+
+	if (postCommentsSend.value === "") {
+		SendMessage("Can't send an empty message");
+		return
+	}
+
+	let formData = new FormData();
+	formData.append("markdown", postCommentsSend.value);
+
+	fetch("/api/posts/" + postID + "/comment", {
+		method: "POST",
+		body: formData,
+	})
+	.then(function(resp) {
+		if (!resp.ok) {
+			throw new Error("Response was not ok");
+		}
+
+		postCommentsSend.value = "";
+	})
+	.catch(function(err) {
+		SendMessage("Error sending message")
+		console.error(err);
+	});
+}
+
+function loadComments() {
+	// long polling
+	// https://javascript.info/long-polling
+	async function subscribe() {
+		let response = await fetch("/subscribe");
+	
+		if (response.status == 502) {
+		// Status 502 is a connection timeout error,
+		// may happen when the connection was pending for too long,
+		// and the remote server or a proxy closed it
+		// let's reconnect
+		await subscribe();
+		} else if (response.status != 200) {
+		// An error - let's show it
+		showMessage(response.statusText);
+		// Reconnect in one second
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		await subscribe();
+		} else {
+		// Get and show the message
+		let message = await response.text();
+		showMessage(message);
+		// Call subscribe() again to get the next message
+		await subscribe();
+		}
+	}
+	
+	subscribe();
 }

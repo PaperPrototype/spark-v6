@@ -71,49 +71,11 @@ func getVersionPortfolioPosts(c *gin.Context) {
 }
 
 func getVersionProposalPosts(c *gin.Context) {
-	versionID := c.Params.ByName("versionID")
-
-	version, err := db.GetVersion(versionID)
-	if err != nil {
-		log.Println("api ERROR getting version for api/getVersionPosts:", err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	releasePosts, err1 := db.GetProposalPosts(version.ReleaseID)
-	if err1 != nil {
-		log.Println("api ERROR getting posts for api/getVersionPosts:", err1)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(
-		http.StatusOK,
-		releasePosts,
-	)
+	// TODO
 }
 
 func getVersionProjects(c *gin.Context) {
-	versionID := c.Params.ByName("versionID")
-
-	version, err := db.GetVersion(versionID)
-	if err != nil {
-		log.Println("api ERROR getting version for api/getVersionPosts:", err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	releasePosts, err1 := db.GetProjectPosts(version.ReleaseID)
-	if err1 != nil {
-		log.Println("api ERROR getting posts for api/getVersionPosts:", err1)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(
-		http.StatusOK,
-		releasePosts,
-	)
+	// TODO
 }
 
 func getPost(c *gin.Context) {
@@ -151,4 +113,8 @@ func getPostPlaintext(c *gin.Context) {
 		http.StatusOK,
 		post,
 	)
+}
+
+func getPostComments(c *gin.Context) {
+	// TODO long polling
 }

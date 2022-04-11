@@ -17,9 +17,14 @@
 		Alpine.store('courseView', {
 			menuAvailable: true,
 			menuOpen: false,
+
+			postID: 0,
 			allowNewPost: true,
 			viewingPost: false,
+			viewingComments: false,
 			editingPost: false,
+			comments: [],
+
 			editingContent: false,
 			usingGithub: false,
 
@@ -161,13 +166,27 @@
 					</div>
 				</div>
 				<div x-show="$store.courseView.editingPost">
-					<div hidden id="editPostID"></div>
 					<textarea class="bd" id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
 					<div>
-						<button class="bd bd-none bg-code pad-05" @click="updatePost()">Update</button>
+						<button class="bd bd-none bg-code pad-05" @click="updatePost()" style="width:100%;">Update</button>
 					</div>
 				</div>
-				<div x-show="!$store.courseView.editingPost" markdown id="postMount" style="padding: 0.5rem; width: 100%;"></div>
+				<div x-show="!$store.courseView.editingPost" style="padding: 0.5rem; width: 100%;" class="bd thin-light">
+					<div markdown id="postMount" x-show="!$store.courseView.viewingComments">
+					</div>
+					<div id="postComments" x-show="$store.courseView.viewingComments" style="height:25rem;">
+					</div>
+					<div style="display:flex;" class="bg-overlay">
+						<div x-show="$store.courseView.viewingComments" style="width:100%; margin-right:0.5rem;">
+							<form id="postCommentsForm">
+								<input id="postCommentsSend" class="bd thin-light pad-05" placeholder="comment..." style="width:100%;">
+							</form>
+						</div>
+						<div @click="$store.courseView.viewingComments = ! $store.courseView.viewingComments" style="margin-left:auto;">
+							<i :class="$store.courseView.viewingComments ? 'fa-arrow-turn-up' : 'fa-message' " class="fa-solid hoverable pad-05 bd"></i>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<!-- when not viewing a specific post, show all posts -->

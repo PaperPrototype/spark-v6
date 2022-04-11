@@ -36,6 +36,7 @@ func migrate() {
 
 		// posts
 		&Post{},
+		&Comment{},
 		&PostToRelease{},
 	)
 }
@@ -253,9 +254,24 @@ type Post struct {
 	UserID    uint64    `gorm:"not null"`
 	Markdown  string
 
-	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User     User      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Comments []Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
+// post comments
+// purposefully has no ID since the ID will max out very quickly
+// we don't want to waste IO on massive
+type Comment struct {
+	PostID    uint64
+	Markdown  string
+	UserID    uint64
+	CreatedAt time.Time
+
+	// preloads
+	User User
+}
+
+// a channel of messages for a course
 type Channel struct {
 	ID       uint64 `gorm:"primaryKey"`
 	CourseID uint64 `gorm:"not null"`
@@ -278,44 +294,6 @@ type Message struct {
 type PostToRelease struct {
 	PostID    uint64 `gorm:"not null"`
 	ReleaseID uint64 `gorm:"not null"`
-}
-
-type ProposalPostToRelease struct {
-	PostID    uint64 `gorm:"not null"`
-	ReleaseID uint64 `gorm:"not null"`
-}
-
-/*
-	Final projects?
-	- private chat for people working on final project
-	- posts from users of final project
-*/
-type ProjectPostToRelease struct {
-	PostID    uint64 `gorm:"not null"`
-	ReleaseID uint64 `gorm:"not null"`
-}
-
-type FinalProject struct {
-	ID        uint64
-	ReleaseID uint64
-	UserID    uint64
-	Released  bool
-}
-
-type FinalProjectReviews struct {
-	UserID        uint64 // poster of review
-	Markdown      string
-	SubjectUserID uint64 // person being reviewed
-}
-
-type FinalProjectAuthors struct {
-	FinalProjectID uint64
-	UserID         uint64
-}
-
-type FinalProjectPosts struct {
-	FinalProjectID uint64
-	PostID         uint64
 }
 
 // maybe?

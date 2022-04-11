@@ -91,6 +91,7 @@
 					json.tree[i].type === "tree" &&
 					!json.tree[i].path.includes("Resources") && 
 					!json.tree[i].path.includes("Assets") && 
+					!json.tree[i].path.includes("Archive") && 
 					!json.tree[i].path.includes("Ignore")
 				) {
 					if (saveFirstSection === true) {
