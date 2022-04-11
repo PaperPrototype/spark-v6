@@ -1,11 +1,17 @@
-TODO
+Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure you finish those first before we go live!
+
+## More important
+- support multiple languages other than an `english.md` file
+- chat
+- projects (final projects and proposals system)
+
+## Chore Todo's (stuff that can be done later)
 - generate 5% off coupon when users land on 404 not found page
 - course hierarchy system.
 	- if Course.Level <= 1 it has to be free.
-- in case if user forgets to claim purchase use stripe webhook to verify and claim purchase for the user
+- in case if user forgets to claim purchase use the stripe webhook to verify and claim purchase for the user
 	- much more robust
 	- user may close page and/or close the browser and lose their payment, but using webhooks solves this
-- chat
 - project
 	- (user_id, state = "proposal" || "completed" || "in-progress")
 		- proposalPost (post_id, project_id)
