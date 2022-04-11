@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		return resp.json();
 	})
 	.then(function(json) {
-		console.log(json);
 		let courseSections = document.getElementById("courseSections");
 
 		for (let i = 0; i < json.tree.length; i++) {

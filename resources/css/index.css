@@ -5,7 +5,8 @@
 	--c-light: rgb(212, 212, 212);
 	--c-grey: rgb(126, 126, 126);
 	--c-bg: rgb(229, 229, 229);
-	--c-text: rgb(0, 0, 0);
+	--c-text: rgb(34, 34, 34);
+	--c-bold: rgb(0, 0, 0);
 	--c-code: rgb(255, 33, 133);
 	--c-code-hover: rgb(227, 0, 102);
 	--c-shadow: rgb(198, 198, 198);
@@ -24,7 +25,8 @@
 		--c-light: rgb(66, 66, 66);
 		--c-grey: rgb(109, 111, 119);
 		--c-bg: rgb(20, 20, 20);
-		--c-text: rgb(255, 255, 255);
+		--c-text: rgb(228, 228, 228);
+		--c-bold: rgb(255, 255, 255);
 		--c-shadow: rgb(126, 126, 126);
 
 		--c-code: hsl(206, 100%, 56%);
@@ -57,6 +59,10 @@
 .hoverable-bg-overlay:hover {
 	color:var(--c-text);
 	background-color: var(--c-bg-overlay);
+}
+
+.c-bold {
+	color: var(--c-bold);
 }
 
 .c-grey {

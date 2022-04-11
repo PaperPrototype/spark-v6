@@ -25,8 +25,6 @@ function loadGithubSection(tree_sha) {
 		return
 	}
 
-	console.log("desired tree is:", desiredTree);
-
 	let blobs = [];
 	// use desiredTree path to check for other sub paths that lead to blobs that end in .md
 	for (let i = 0; i < fullTree.tree.length; i++) {
@@ -37,8 +35,6 @@ function loadGithubSection(tree_sha) {
 			blobs.push(fullTree.tree[i]);
 		}
 	}
-
-	console.log("blobs are:", blobs);
 
 	// clear course contents
 	content.innerHTML = "";
@@ -70,8 +66,6 @@ function loadGithubSection(tree_sha) {
 	// load first blob as section
 	let resp = loadGithubBlob(versionID, fullTree.sha, blobs[0].path)
 	resp.then(function(json) {
-		console.log("text is:", json);
-
 		sectionTitle.innerText = desiredTree.path;
 
 		let courseContentsLanguage = document.getElementById("courseContentsLanguage")
@@ -86,7 +80,6 @@ function loadGithubSection(tree_sha) {
 
 		// FIX IMAGE LINKS
 		let images = markdown.querySelectorAll("img")
-		console.log("links to fix are:", images);
 
 		for (let i = 0; i < images.length; i++) {
 			let src = images[i].getAttribute("src")
@@ -96,8 +89,6 @@ function loadGithubSection(tree_sha) {
 				let name = src.slice(8, src.length);
 				let newSrc = "/media/"+versionID+"/name/"+name;
 				images[i].setAttribute("src", newSrc);
-
-				console.log("changed src to:", newSrc);
 			}
 		}
 

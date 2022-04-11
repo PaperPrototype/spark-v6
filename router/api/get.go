@@ -114,7 +114,3 @@ func getPostPlaintext(c *gin.Context) {
 		post,
 	)
 }
-
-func getPostComments(c *gin.Context) {
-	// TODO long polling
-}

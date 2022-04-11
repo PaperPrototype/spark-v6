@@ -9,6 +9,10 @@ import (
 )
 
 func main() {
+	// db connection pool used for course uploading
+	// and for performant db when ORM is too heavy
+	conn.Setup()
+
 	mailer.Setup()
 
 	payments.Setup()
@@ -16,8 +20,6 @@ func main() {
 	router.Setup()
 
 	db.Setup()
-
-	conn.Setup()
 
 	router.Run()
 

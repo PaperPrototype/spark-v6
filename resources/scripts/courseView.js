@@ -69,14 +69,11 @@ function loadPosts(versionID) {
 		method: "GET",
 	})
 	.then(function(resp) {
-		console.log("got response");
-
 		if (!resp.ok) {
 			SendMessage("Error loading post.");
 			throw new Error("Response for loadPosts was not ok");
 		}
 
-		console.log("response converted to json");
 		return resp.json();
 	})
 	.then(function(json) {
@@ -88,8 +85,6 @@ function loadPosts(versionID) {
 		posts.setAttribute("class", "post-cards");
 		posts.setAttribute("style", "margin-bottom:1rem;");
 		posts.innerHTML = "";
-
-		console.log("json is:", json);
 
 		for (let i = 0; i < json.length; i++) {
 			let post = document.createElement("div");
@@ -132,7 +127,7 @@ function loadPosts(versionID) {
 		seeAll.appendChild(arrow);
 
 		seeAll.addEventListener("click", function(event) {
-			console.log("TODO create see all view:",);
+			console.log("TODO create see all posts view");
 		});
 
 		let postsWrapper = document.createElement("div");
@@ -156,14 +151,11 @@ function viewEditPost() {
 		method: "GET",
 	})
 	.then(function(resp) {
-		console.log("got response");
-
 		if (!resp.ok) {
 			SendMessage("Error loading post.");
 			throw new Error("Response for loadPosts was not ok");
 		}
 
-		console.log("response converted to json");
 		return resp.json();
 	})
 	.then(function(json) {
@@ -217,13 +209,10 @@ function loadPost(postID) {
 		method: "GET",
 	})
 	.then(function(resp) {
-		console.log("got response");
-
 		if (!resp.ok) {
 			throw new Error("Response for loadPost was not ok");
 		}
 
-		console.log("response converted to json");
 		return resp.json();
 	})
 	.then(function(json) {
@@ -240,6 +229,12 @@ function loadPost(postID) {
 		postMountUser.innerText = "@" + json.User.Username;
 
 		Alpine.store("courseView").postID = postID;
+
+		// reset this so that when we clikc a different post the loadCommentsLongPolling function will know to
+		// load initial comments and not comments after a specific date
+		Alpine.store("courseView").newestCommentDate = "";
+
+		loadPostComments(postID);
 
 		// convert any elems with a link to open in new page
 		convertHrefs();
@@ -264,7 +259,6 @@ function menuFollowScroll() {
 
 		// prevent course contents from jumping into place when top nav disapears
 		courseMain.style.marginTop = courseNavTop.getBoundingClientRect().height + "px";
-		console.log(courseMain.style.marginTop);
 	} else {
 		// top
 
@@ -324,32 +318,68 @@ function sendComment(event) {
 	});
 }
 
-function loadComments() {
-	// long polling
-	// https://javascript.info/long-polling
-	async function subscribe() {
-		let response = await fetch("/subscribe");
-	
-		if (response.status == 502) {
-		// Status 502 is a connection timeout error,
-		// may happen when the connection was pending for too long,
-		// and the remote server or a proxy closed it
-		// let's reconnect
-		await subscribe();
-		} else if (response.status != 200) {
-		// An error - let's show it
-		showMessage(response.statusText);
-		// Reconnect in one second
+// long polling taken from here
+// https://javascript.info/long-polling
+async function loadPostComments(postID) {
+	if (Alpine.store("courseView").viewingPost === false) {
+		// stop long polling
+		return
+	}
+
+	console.log("loading comments...");
+
+	let lastCommentDate = Alpine.store("courseView").newestCommentDate;
+
+	let resp;
+	try {
+		resp = await fetch("/api/posts/"+postID+"/comments?newest="+lastCommentDate, {
+			method: "GET",
+		});
+	} catch {
+		console.log("error getting comments...");
+
+		// wait 1 second
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		await subscribe();
-		} else {
-		// Get and show the message
-		let message = await response.text();
-		showMessage(message);
-		// Call subscribe() again to get the next message
-		await subscribe();
+
+		// then long poll comments again
+		await loadPostComments(postID);
+
+		return
+	}
+
+	let postCommentsMount = document.getElementById("postCommentsMount")
+
+	// if first time loading, then clear inner html
+	if (lastCommentDate === "") {
+		postCommentsMount.innerHTML = "";
+	}
+
+	let json = await resp.json();
+
+	let lastComment;
+	for (let i = 0; i < json.length; i++) {
+		let comment = document.createElement("div");
+		comment.innerHTML =
+		`<div class="c-bold" style="margin-top:0.5rem; font-weight:600;" href="/` + json[i].User.Username + `" external> @` + json[i].User.Username  + ` <i class="fa-solid fa-arrow-up-right-from-square"></i></div>` +
+		`<p>` + json[i].Markdown + `</p>`;
+		comment.style = "border-top:0.08rem solid var(--c-light); margin-left:1rem; margin-right:1rem;";
+
+		postCommentsMount.append(comment);
+
+		if (i === json.length - 1) {
+			Alpine.store("courseView").newestCommentDate = json[i].CreatedAt;
+
+			// set last comment
+			lastComment = comment;
 		}
 	}
-	
-	subscribe();
+
+	if (lastComment !== undefined) {
+		lastComment.scrollIntoView();
+		convertHrefs();
+	}
+
+	// wait 1 seconds
+	await new Promise(resolve => setTimeout(resolve, 1000));
+	await loadPostComments(postID);
 }

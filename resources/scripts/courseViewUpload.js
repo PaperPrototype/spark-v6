@@ -9,13 +9,11 @@ function loadUploadSection(sectionID) {
 		method: "GET",
 	})
 	.then(function(resp) {
-		console.log("got response");
 
 		if (!resp.ok) {
 			throw new Error("Response for loadSection was not ok");
 		}
 
-		console.log("response converted to json");
 		return resp.json();
 	})
 	.then(function(sectionJson) {
@@ -53,7 +51,6 @@ function loadUploadSection(sectionID) {
 
 		// FIX IMAGE LINKS
 		let images = markdown.querySelectorAll("img")
-		console.log("links to fix are:", images);
 
 		let versionID = document.getElementById("versionID").innerText;
 
@@ -65,8 +62,6 @@ function loadUploadSection(sectionID) {
 				let name = src.slice(8, src.length);
 				let newSrc = "/media/"+versionID+"/name/"+name;
 				images[i].setAttribute("src", newSrc);
-
-				console.log("changed src to:", newSrc);
 			}
 		}
 
@@ -113,14 +108,12 @@ function loadEditSectionPlaintext() {
 		method: "GET",
 	})
 	.then(function(resp) {
-		console.log("got response");
 
 		if (!resp.ok) {
 			SendMessage("You must be the course author to edit this.")
 			throw new Error("Response for loadSection was not ok");
 		}
 
-		console.log("response converted to json");
 		return resp.json();
 	})
 	.then(function(sectionJson) {
@@ -160,7 +153,6 @@ function saveEditSectionContent() {
 		body: formData,
 	})
 	.then(function(resp) {
-		console.log("got response");
 
 		if (!resp.ok) {
 			throw new Error("Response for loadSection was not ok");

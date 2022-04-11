@@ -10,8 +10,6 @@ function loadRepoBranchCommits(elem, repoID, branch) {
 		return resp.json()
 	})
 	.then(function(commitsJson) {
-		console.log("json is:", commitsJson);
-
 		elem.innerHTML = "";
 
 		for (let i = 0; i < commitsJson.length; i++) {

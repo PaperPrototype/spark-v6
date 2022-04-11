@@ -5,7 +5,7 @@
 </div>
 
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
-	<h1 style="margin-bottom:0;">{{ .Course.Title }}</h1>
+	<h1 style="margin-bottom:0;" class="c-bold">{{ .Course.Title }}</h1>
 	{{ if .Release }}
 		<div style="margin-bottom:3rem;">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</div>
 	{{ end }}

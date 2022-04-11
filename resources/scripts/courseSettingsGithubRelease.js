@@ -10,8 +10,6 @@ function loadRepos() {
 		return resp.json()
 	})
 	.then(function(jsonOptions) {
-		console.log(`${jsonOptions.length} repos found through sparker api`);
-	
 		let courseSettingsSelects = document.querySelectorAll("[courseSettingsGithubConnectionSelect]");
 
 		for (let i = 0; i < courseSettingsSelects.length; i++) {
@@ -54,8 +52,6 @@ document.addEventListener("alpine:init", function(event) {
 		},
 
 		loadDone(elem) {
-			console.log("loadDone")
-
 			// fetch and display branches for selected repo
 			fetch("/api/github/repo/" + this.repoID + "/branches", {
 				method: "GET",
@@ -68,8 +64,6 @@ document.addEventListener("alpine:init", function(event) {
 				return resp.json()
 			})
 			.then(function(json) {
-				console.log("json is:", json);
-
 				elem.innerHTML = "";
 
 				for (let i = 0; i < json.length; i++) {

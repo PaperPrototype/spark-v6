@@ -94,8 +94,7 @@ type User struct {
 
 	Verified bool `gorm:"not null; default:f"`
 
-	Purchases        []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	StripeConnection StripeConnection
+	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Verify struct {

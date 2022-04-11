@@ -69,7 +69,6 @@
 			return resp.json();
 		})
 		.then(function(json) {
-			console.log("github tree json is:", json)
 
 			let menuItems = document.getElementById("courseMenuItems")
 			let courseResources = document.getElementById("courseMenuResources");
@@ -96,7 +95,6 @@
 				) {
 					if (saveFirstSection === true) {
 						Alpine.store("sections").current = json.tree[i].sha;
-						console.log("first section is:", json.tree[i])
 						saveFirstSection = false;
 					}
 
@@ -119,8 +117,6 @@
 						{{ .Name }} <i class="fa-solid fa-file-arrow-down"></i>
 					</a>
 					*/
-
-					console.log("resource git blob is:", json.tree[i]);
 
 					// remove "Resources/" from name
 					let mediaName = json.tree[i].path.slice(10, json.tree[i].path.length);

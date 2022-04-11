@@ -103,6 +103,10 @@
 	border-radius: 0.5rem;
 }
 
+[markdown] h1, [markdown] h2, [markdown] h3, [markdown] h4, [markdown] h5, [markdown] h6 {
+	color: var(--c-bold);
+}
+
 /* highlights selected section in menu */
 .selected {
 	background-color: var(--c-code);
