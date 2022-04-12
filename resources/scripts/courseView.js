@@ -262,8 +262,10 @@ function menuFollowScroll() {
 	} else {
 		// top
 
-		// stop menu from sticking to the top nav bar
+		// stop menu from sticking to the top as a nav bar
 		courseNavTop.classList.remove("course-top-nav-fixed");
+
+		// reset courseMain's margin
 		courseMain.style.marginTop = "0";
 
 		// make menu still follow

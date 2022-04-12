@@ -152,92 +152,95 @@
 		</div>
 	</div>
 
-	<!-- posts by students -->
-	<div x-cloak x-show="$store.courseView.view === 'posts'" class="bg-overlay pad-top-2rem pad-bot-2rem">
-		<div x-show="$store.courseView.viewingPost" class="pad-sides-5" style="width: 100%;">
-			<div class="bg-overlay bd">
-				<div style="display:flex;">
-					<div style="padding: 0.5rem;">
-						by <span id="postMountUser"></span>
-					</div>
-					<div x-show="$store.courseView.editingPost === false" id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
-						<i class="fa-solid fa-pen-to-square"></i>
-					</div>
-					<div x-show="$store.courseView.editingPost === true" @click="$store.courseView.editingPost = false;" style="margin-left:auto; padding: 0.5rem;">
-						<i style="margin-left:auto;" class="fa-solid fa-xmark"></i>
-					</div>
-				</div>
-				<div x-show="$store.courseView.editingPost">
-					<textarea class="bd" id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
-					<div>
-						<button class="bd bd-none bg-code pad-05" @click="updatePost()" style="width:100%;">Update</button>
-					</div>
-				</div>
-				<div x-show="!$store.courseView.editingPost" style="padding: 0.5rem; width: 100%;" class="bd thin-light">
-					<div markdown id="postMount" x-show="!$store.courseView.viewingComments">
-					</div>
-					<div x-show="$store.courseView.viewingComments">
-						<div id="postCommentsMount" style="height:25rem; overflow-y:scroll; display:flex; justify-content:flex-end; flex-direction:column;">
+	<div id="courseMain" >
+		<!-- posts by students -->
+		<div x-cloak x-show="$store.courseView.view === 'posts'" class="bg-overlay pad-top-2rem pad-bot-2rem">
+			<div x-show="$store.courseView.viewingPost" class="pad-sides-5" style="width: 100%;">
+				<div class="bg-overlay bd">
+					<div style="display:flex;">
+						<div style="padding: 0.5rem;">
+							by <span id="postMountUser"></span>
+						</div>
+						<div x-show="$store.courseView.editingPost === false" id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
+							<i class="fa-solid fa-pen-to-square"></i>
+						</div>
+						<div x-show="$store.courseView.editingPost === true" @click="$store.courseView.editingPost = false;" style="margin-left:auto; padding: 0.5rem;">
+							<i style="margin-left:auto;" class="fa-solid fa-xmark"></i>
 						</div>
 					</div>
-					<div style="display:flex;" class="bg-overlay">
-						<div x-show="$store.courseView.viewingComments" style="width:100%; margin-right:0.5rem;">
-							<form id="postCommentsForm">
-								<input id="postCommentsSend" class="bd thin-light pad-05" placeholder="comment..." style="width:100%;">
-							</form>
+					<div x-show="$store.courseView.editingPost">
+						<textarea class="bd" id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+						<div>
+							<button class="bd bd-none bg-code pad-05" @click="updatePost()" style="width:100%;">Update</button>
 						</div>
-						<div @click="$store.courseView.viewingComments = ! $store.courseView.viewingComments" style="margin-left:auto;">
-							<i :class="$store.courseView.viewingComments ? 'fa-arrow-turn-up' : 'fa-message' " class="fa-solid hoverable pad-05 bd"></i>
+					</div>
+					<div x-show="!$store.courseView.editingPost" style="padding: 0.5rem; width: 100%;" class="bd thin-light">
+						<div markdown id="postMount" x-show="!$store.courseView.viewingComments">
+						</div>
+						<div x-show="$store.courseView.viewingComments">
+							<div id="postCommentsMount" style="height:25rem; overflow-y:scroll; display:flex; justify-content:flex-end; flex-direction:column;">
+							</div>
+						</div>
+						<div style="display:flex;" class="bg-overlay">
+							<div x-show="$store.courseView.viewingComments" style="width:100%; margin-right:0.5rem;">
+								<form id="postCommentsForm">
+									<input id="postCommentsSend" class="bd thin-light pad-05" placeholder="comment..." style="width:100%;">
+								</form>
+							</div>
+							<div @click="$store.courseView.viewingComments = ! $store.courseView.viewingComments" style="margin-left:auto;">
+								<i :class="$store.courseView.viewingComments ? 'fa-arrow-turn-up' : 'fa-message' " class="fa-solid hoverable pad-05 bd"></i>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			<!-- when not viewing a specific post, show all posts -->
+			<div x-show="!$store.courseView.viewingPost" id="coursePostsMount">
+				<!-- insert posts with js -->
+			</div>
 		</div>
-		<!-- when not viewing a specific post, show all posts -->
-		<div x-show="!$store.courseView.viewingPost" id="coursePostsMount">
-			<!-- insert posts with js -->
-		</div>
-	</div>
 
-	<!-- live chat -->
-	<div x-cloak x-show="$store.courseView.view === 'chat'" class="bg-overlay pad-top-2rem pad-bot-2rem">
-		<h1 class="pad-sides-5">Chat</h1>
-		<div>
-			{{ template "courseView_chat.html" . }}
+		<!-- live chat -->
+		<div x-cloak x-show="$store.courseView.view === 'chat'" class="bg-overlay pad-top-2rem pad-bot-2rem">
+			<h1 class="pad-sides-5">Chat</h1>
+			<div>
+				{{ template "courseView_chat.html" . }}
+			</div>
 		</div>
-	</div>
 
-	<!-- course contents-->
-	<div x-show="$store.courseView.view === 'contents'" id="courseMain" class="bg-overlay" style="padding-top:1rem; padding-bottom:2rem;">
-		<div class="bd thin-light mar-sides-5">
-			<div style="display:flex;" class="thin-bot">
-				<div class="hoverable pad-05 bd" id="courseContentsLanguage"></div>
-				{{ if eq .User.ID .Course.UserID }}
-					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
-					<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = false" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
-				{{ end }}
+		<!-- course contents-->
+		<div x-show="$store.courseView.view === 'contents'" class="bg-overlay" style="padding-top:1rem; padding-bottom:2rem;">
+			<div class="bd thin-light mar-sides-5">
+				<div style="display:flex;" class="thin-bot">
+					<div class="hoverable pad-05 bd" id="courseContentsLanguage"></div>
+					{{ if eq .User.ID .Course.UserID }}
+						<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === false" @click="loadEditSectionPlaintext();" style="margin-left:auto;"><i class="fa-solid fa-pen-to-square"></i></div>
+						<div class="hoverable pad-05 bd" x-show="$store.courseView.editingContent === true" @click="$store.courseView.editingContent = false" style="margin-left:auto;"><i style="margin-left:auto;" class="fa-solid fa-xmark"></i></div>
+					{{ end }}
+				</div>
+				<div x-show="$store.courseView.editingContent === false" style="padding-right:2%; padding-left:2%;" id="courseContent">
+				</div>
 			</div>
-			<div x-show="$store.courseView.editingContent === false" style="padding-right:2%; padding-left:2%;" id="courseContent">
+			<div x-cloak x-show="$store.courseView.editingContent === true" class="pad-sides-5 bg-overlay">
+				<textarea id="courseContentEdit" class="bd" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+				<button id="courseContentEditSaveButton" @click="saveEditSectionContent(); $store.courseView.editingContent = ! $store.courseView.editingContent" class="form-btn bd" style="width:100%">Update</button>
 			</div>
+			<div class="bg-overlay pad-sides-5" style="padding-top:2rem; padding-bottom:2rem;">
+				{{ template "courseView_newPost.html" . }}
+			</div>
+			<table class="bg-overlay pad-sides-5 pad-bot-2rem" style="width: 100%;">
+				<tr>
+					<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="coursePrevious">
+						<i class="fa-solid fa-arrow-left-long"></i> Previous Section 
+					</td>
+					<td style="width:20%;"></td>
+					<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="courseNext">
+						Next Section <i class="fa-solid fa-arrow-right-long"></i>
+					</td>
+				</tr>
+			</table>
 		</div>
-		<div x-cloak x-show="$store.courseView.editingContent === true" class="pad-sides-5 bg-overlay">
-			<textarea id="courseContentEdit" class="bd" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
-			<button id="courseContentEditSaveButton" @click="saveEditSectionContent(); $store.courseView.editingContent = ! $store.courseView.editingContent" class="form-btn bd" style="width:100%">Update</button>
-		</div>
-		<div class="bg-overlay pad-sides-5" style="padding-top:2rem; padding-bottom:2rem;">
-			{{ template "courseView_newPost.html" . }}
-		</div>
-		<table class="bg-overlay pad-sides-5 pad-bot-2rem" style="width: 100%;">
-			<tr>
-				<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="coursePrevious">
-					<i class="fa-solid fa-arrow-left-long"></i> Previous Section 
-				</td>
-				<td style="width:20%;"></td>
-				<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="courseNext">
-					Next Section <i class="fa-solid fa-arrow-right-long"></i>
-				</td>
-			</tr>
-		</table>
+
 	</div>
 </div>
 {{ template "_footer.html" . }}
