@@ -303,7 +303,9 @@ function sendComment(event) {
 	let formData = new FormData();
 	formData.append("markdown", postCommentsSend.value);
 
-	fetch("/api/posts/" + postID + "/comment", {
+	let versionID = document.getElementById("versionID").innerText;
+
+	fetch("/api/version/" + versionID + "/posts/" + postID + "/comment", {
 		method: "POST",
 		body: formData,
 	})
