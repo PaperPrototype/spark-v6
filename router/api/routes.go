@@ -19,6 +19,11 @@ func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/posts/:postID/plaintext", getPostPlaintext)
 	group.POST("/posts/:postID/update", postUpdatePost)
 
+	// notifications
+	group.GET("/notifications/newest", middlewares.MustBeLoggedIn, getNewNotifications)
+	group.POST("/notifications/done", middlewares.MustBeLoggedIn, postDoneNotification) // set notification as read
+	group.GET("/notifications", middlewares.MustBeLoggedIn)                             // get all notifications in pages
+
 	// getting an UPLOAD based course
 	group.GET("/section/:sectionID", getSection)
 	group.GET("/section/:sectionID/plaintext", mustBeCourseAuthor, getSectionPlaintext)

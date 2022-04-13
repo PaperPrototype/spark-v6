@@ -4,8 +4,13 @@ Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure yo
 - support multiple languages other than an `english.md` file
 - chat
 - projects (final projects and proposals system)
+- course hierarchy 
+	- search page can have a hierarchy
 
 ## Chore Todo's (stuff that can be done later)
+- users home page (in `/home`) course links should take user to exact version they are working on
+	- if user updates version they are seeing then create "user_current_version"
+
 - generate 5% off coupon when users land on 404 not found page
 - course hierarchy system.
 	- if Course.Level <= 1 it has to be free.

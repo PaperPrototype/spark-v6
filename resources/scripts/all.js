@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 document.addEventListener("alpine:init", function(event) {
-	Alpine.store("sideNav", {
+	Alpine.store("nav", {
 		show: false,
 	});
 });

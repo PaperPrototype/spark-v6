@@ -28,7 +28,9 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/:username/:course/settings/version/delete", mustBeCourseEditor, postDeleteVersion)
 
 	// view inside of course content
-	router.GET("/:username/:course/view/:versionID", MustHaveAccessToCourseRelease, getCourseVersion)                   // view a version of the course
+	router.GET("/:username/:course/view/:versionID", MustHaveAccessToCourseRelease, getCourseVersion) // view a version of the course
+
+	// if viewing an upload based version
 	router.GET("/:username/:course/view/:versionID/:sectionID", MustHaveAccessToCourseRelease, getCourseVersionSection) // view a section of the course
 
 	// TODO pass as url params instead of through routes

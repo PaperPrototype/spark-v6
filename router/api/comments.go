@@ -1,8 +1,10 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"main/db"
+	"main/helpers"
 	"main/router/auth"
 	"net/http"
 	"strconv"
@@ -11,11 +13,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// heroku times out at 30 seconds https://devcenter.heroku.com/articles/request-timeout
-const MaxTimeoutSeconds float64 = 20
-const SleepTime time.Duration = 3
-
 func postPostComment(c *gin.Context) {
+	versionID := c.Params.ByName("versionID")
 	postID := c.Params.ByName("postID")
 	markdown := c.PostForm("markdown")
 
@@ -33,6 +32,7 @@ func postPostComment(c *gin.Context) {
 		return
 	}
 
+	// create the comment
 	comment := db.Comment{
 		UserID:   user.ID,
 		PostID:   postIDNum,
@@ -45,7 +45,33 @@ func postPostComment(c *gin.Context) {
 		return
 	}
 
-	log.Println("comment is:", comment)
+	version, err3 := db.GetVersion(versionID)
+	if err3 != nil {
+		log.Println("api/comments ERROR getting version in postPostComment:", err3)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	author, err4 := version.GetAuthorUser()
+	if err4 != nil {
+		log.Println("api/comments ERROR getting version author user in postPostComment:", err4)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	course, err5 := db.GetCourse(version.CourseID)
+	if err5 != nil {
+		log.Println("api/comments ERROR getting version course in postPostComment:", err5)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	usernames := helpers.GetUserMentions(markdown)
+	log.Println("usernames to notify:", usernames)
+	err6 := db.NotifyUsers(usernames, "@"+user.Username+" mentioned you in a posts comments", "/"+author.Username+"/"+course.Name+"/view/"+fmt.Sprint(version.ID))
+	if err6 != nil {
+		log.Println("api/comments ERROR notifying users in postPostComment:", err6)
+	}
 
 	c.Status(http.StatusOK)
 }

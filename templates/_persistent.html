@@ -21,7 +21,7 @@
 		<li>
 			<a class="hoverable" href="/signup">signup</a>
 		</li>
-		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show">
+		<li x-data @click="$store.nav.show = ! $store.nav.show">
 			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
 		</li>
 	{{ else }}
@@ -39,46 +39,93 @@
 				</label>
 			</form>
 		</li>
-		<li class="nav-search-hidden-stick-right">
+		<li x-data x-init="loadNotifications()" @click="$store.notify.show = ! $store.notify.show;" class="nav-search-hidden-stick-right">
+			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto; display:flex;">
+				<i x-show="$store.notify.new" x-text="$store.notify.count"
+				style="display:block; font-size:0.7rem; background-color:var(--c-code); padding:0.3rem; 
+				padding-bottom:0.05rem; padding-top:0.1rem; padding-right:0.4rem; border-radius:0.5rem; margin-right:0.2rem;"></i>
+				<i :class="$store.notify.new ? 'fa-solid fa-bell' : 'fa-regular fa-bell' "></i>
+			</a>
+		</li>
+		<li>
 			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/home"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
 		</li>
-		<li x-data @click="$store.sideNav.show = ! $store.sideNav.show">
+		<li x-data @click="$store.nav.show = ! $store.nav.show">
 			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
 		</li>
 	{{ end }}
 </ul>
 
-<div @click.outside="$store.sideNav.show = false" x-data x-cloak x-show="$store.sideNav.show" style="position:fixed; top:3.5rem; right:5%; box-shadow: 0rem 0rem 0.5rem grey; padding-right:1rem;" class="bd bg-overlay">
-	<div class="nav" style="padding:0.5rem;">
-		{{ if .LoggedIn }}
-			<li>
-				<a class="hoverable" href="/courses"><i class="fa-solid fa-arrow-pointer" style="padding-left:0.3rem; padding-right:0.5rem;"></i> courses</a>
-			</li>
-			{{ if .User.Verified }}
-				<li>
-					<a class="hoverable" href="/new"><i class="fa-solid fa-code" style="padding-right:0.26rem;"></i> new</a>
-				</li>
-			{{ end }}
-			<li>
-				<a class="hoverable" href="/home"><i class="fa-solid fa-at pad-right-05rem"></i> {{ .User.Username }}</a>
-			</li>
-			<li>
-				<a class="hoverable" href="/settings"><i class="fa-solid fa-gear pad-right-05rem"></i> settings</a>
-			</li>
-			<li>
-				<a class="hoverable" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket pad-right-05rem"></i> logout</a>
-			</li>
-		{{ else }}
-			<li>
-				<a class="hoverable" href="/courses"><i class="fa-solid fa-arrow-pointer" style="padding-left:0.2rem; padding-right:0.95rem;"></i> courses</a>
-			</li>
-			<li>
-				<a class="hoverable" href="/login"><i class="fa-solid fa-right-to-bracket" style="padding-left:0.1rem; padding-right:0.7rem;"></i> login</a>
-			</li>
-			<li>
-				<a class="hoverable" href="/signup"><i class="fa-solid fa-user-plus" style="padding-left:0.1rem; padding-right:0.5rem;"></i> signup</a>
-			</li>
-		{{ end }}
+<!-- notifications dropdown -->
+{{ if .LoggedIn }}
+	<script src="/resources/scripts/notify.js" defer></script>
+	<div @click.outside="$store.notify.show = false" x-data x-cloak x-show="$store.notify.show" style="position:fixed; top:3.5rem; right:5%; width:20rem; padding:0.5rem; padding-right:1rem;" class="bd bg-overlay shadow">
+		<div id="navNotifications">
+			loading...
+		</div>
+		<p>
+			<a href="/home/notifications">see all</a>
+		</p>
+	</div>
+{{ end }}
+
+<style>
+	[nav] table, [nav] td { 
+		border-collapse: collapse; 
+	}
+	[nav] td {
+		border:none; 
+	}
+	[nav] tr
+		td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+	[nav] tr
+		td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+</style>
+
+<!-- menu dropdown -->
+<div @click.outside="$store.nav.show = false" x-data x-cloak x-show="$store.nav.show" style="position:fixed; top:3.5rem; right:5%;" class="bd bg-overlay shadow">
+	<div nav style="padding:0.5rem;">
+		<table>
+			<tb>
+				{{ if .LoggedIn }}
+					<tr class="hoverable bd" href="/courses">
+						<td class="pad-05-lefty"><i class="fa-solid fa-code"></i></td>
+						<td class="pad-05"> Courses</td>
+					</tr>
+					{{ if .User.Verified }}
+						<tr class="hoverable bd" href="/new">
+							<td class="pad-05"><i class="fa-solid fa-plus"></i></td>
+							<td class="pad-05"> Course</td>
+						</tr>
+					{{ end }}
+					<tr class="hoverable bd" href="/home">
+						<td class="pad-05"><i class="fa-solid fa-at"></i></td>
+						<td class="pad-05">{{ .User.Username }}</td>
+					</tr>
+					<tr class="hoverable bd" href="/settings">
+						<td class="pad-05"><i class="fa-solid fa-gear"></i></td>
+						<td class="pad-05">Settings</td>
+					</tr>
+					<tr class="hoverable bd" href="/logout">
+						<td class="pad-05"><i class="fa-solid fa-arrow-right-from-bracket"></i></td>
+						<td class="pad-05">Logout</td>
+					</tr>
+				{{ else }}
+					<tr class="hoverable bd" href="/courses">
+						<td class="pad-05"><i class="fa-solid fa-code"></i></td>
+						<td class="pad-05">Courses</td>
+					</tr>
+					<tr class="hoverable bd" href="/login">
+						<td class="pad-05"><i class="fa-solid fa-right-to-bracket"></i></td>
+						<td class="pad-05">Login<td>
+					</tr>
+					<tr class="hoverable bd" href="/signup">
+						<td class="pad-05"><i class="fa-solid fa-user-plus" style="padding-left:0.1rem; padding-right:0.5rem;"></i></td>
+						<td class="pad-05">Signup</td>
+					</tr>
+				{{ end }}
+			</tb>
+		</table>
 	</div>
 </div>
 

@@ -8,7 +8,7 @@
 	--c-text: rgb(34, 34, 34);
 	--c-bold: rgb(0, 0, 0);
 	--c-code: rgb(255, 33, 133);
-	--c-code-hover: rgb(227, 0, 102);
+	--c-code-darker: rgb(227, 0, 102);
 	--c-shadow: rgb(198, 198, 198);
 }
 
@@ -27,10 +27,10 @@
 		--c-bg: rgb(20, 20, 20);
 		--c-text: rgb(228, 228, 228);
 		--c-bold: rgb(255, 255, 255);
-		--c-shadow: rgb(126, 126, 126);
+		--c-shadow: rgb(0, 0, 0);
 
 		--c-code: hsl(206, 100%, 56%);
-		--c-code-hover: hsl(206, 100%, 45%);
+		--c-code-darker: hsl(206, 100%, 45%);
 	}
 
 	a {
@@ -43,6 +43,10 @@
 	}
 }
 
+.shadow {
+	box-shadow: 0rem 0rem 0.5rem var(--c-shadow);
+}
+
 .hide-focus:focus {
 	outline: none;
 }
@@ -51,9 +55,12 @@
 	background-color: var(--c-bg);
 }
 
-.hoverable-bg-code:hover {
+.hoverable-bg-code {
 	color:var(--c-white);
-	background-color: var(--c-code-hover);
+	background-color: var(--c-code-darker);
+}
+.hoverable-bg-code:hover {
+	background-color: var(--c-code);
 }
 
 .hoverable-bg-overlay:hover {
@@ -87,6 +94,18 @@
 
 .pad-05 {
 	padding: 0.5rem;
+}
+
+.pad-05-righty {
+	padding-top: 0.5rem;
+	padding-right: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.pad-05-lefty {
+	padding-top: 0.5rem;
+	padding-left: 0.5rem;
+	padding-bottom: 0.5rem;
 }
 
 .pad-sides-05rem {

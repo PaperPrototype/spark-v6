@@ -148,3 +148,28 @@ func IsAllowedUsername(username string) bool {
 	}
 	return true
 }
+
+// get usernames after an @ out of markdown and return them
+func GetUserMentions(textWithMentions string) []string {
+	usernames := []string{}
+	for i, c := range textWithMentions {
+		if c == '@' {
+			usernames = append(usernames, getUntilSpace(i+1, textWithMentions))
+		}
+	}
+
+	return usernames
+}
+
+func getUntilSpace(index int, src string) string {
+	name := []rune{}
+	for index < len(src) {
+		if src[index] == ' ' {
+			break
+		}
+		name = append(name, rune(src[index]))
+		index++
+	}
+
+	return string(name)
+}

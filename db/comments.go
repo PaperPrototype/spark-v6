@@ -1,6 +1,7 @@
 package db
 
-func GetComments(postID string, limit int) ([]Comment, int64, error) {
+// get up to `num` comments
+func GetComments(postID string, num int64) ([]Comment, int64, error) {
 	comments := []Comment{}
 	var count int64
 
@@ -15,7 +16,7 @@ func GetComments(postID string, limit int) ([]Comment, int64, error) {
 		return comments, count, nil
 	}
 
-	err1 := gormDB.Model(&Comment{}).Where("post_id = ?", postID).Preload("User").Limit(limit).Find(&comments).Error
+	err1 := gormDB.Model(&Comment{}).Where("post_id = ?", postID).Preload("User").Limit(int(num)).Offset(int(count - num)).Order("created_at ASC").Find(&comments).Error
 
 	return comments, count, err1
 }
@@ -34,7 +35,7 @@ func GetNewComments(postID string, newestCommentDate string) ([]Comment, int64, 
 		return comments, count, nil
 	}
 
-	err1 := gormDB.Model(&Comment{}).Where("post_id = ?", postID).Where("created_at > ?", newestCommentDate).Preload("User").Find(&comments).Error
+	err1 := gormDB.Model(&Comment{}).Where("post_id = ?", postID).Where("created_at > ?", newestCommentDate).Preload("User").Order("created_at ASC").Find(&comments).Error
 
 	return comments, count, err1
 }

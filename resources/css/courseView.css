@@ -53,6 +53,7 @@
 	background-color: var(--c-bg-overlay);
 	margin: 1rem;
 	box-shadow: 0rem 0rem 0.5rem var(--c-shadow);
+	border: 0.08rem solid var(--c-light);
 	color: var(--c-text);
 	cursor: pointer;
 }

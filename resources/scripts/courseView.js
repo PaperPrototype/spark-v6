@@ -9,6 +9,8 @@ let ogTopOffset;
 // form for sending comments on a post
 let postCommentsForm;
 
+let abortCommentsController = new AbortController();
+
 document.addEventListener("DOMContentLoaded", function(event) {
 	courseNavTop = document.getElementById("courseNavTop");
 	courseMain = document.getElementById("courseMain");
@@ -25,6 +27,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 // show chat view
 function viewChat() {
+	resetComments();
+
 	Alpine.store("courseView").view = 'chat';
 	Alpine.store("courseView").menuAvailable = false;
 	Alpine.store("courseView").menuOpen = false;
@@ -33,6 +37,8 @@ function viewChat() {
 
 // show posts view
 function viewPosts() {
+	resetComments();
+	
 	Alpine.store("courseView").view = 'posts';
 	Alpine.store("courseView").menuAvailable = false;
 	Alpine.store("courseView").menuOpen = false;
@@ -43,6 +49,8 @@ function viewPosts() {
 
 // show contents/lecture/section view
 function viewContents() {
+	resetComments();
+	
 	Alpine.store("courseView").view = 'contents';
 	Alpine.store("courseView").menuAvailable = true;
 	Alpine.store("courseView").allowNewPost = true;
@@ -61,6 +69,8 @@ function toggleMenu() {
 
 function loadPosts(versionID) {
 	console.log("loading posts...");
+
+	resetComments();
 
 	let coursePostsMount = document.getElementById("coursePostsMount");
 	coursePostsMount.innerHTML = "";
@@ -230,9 +240,11 @@ function loadPost(postID) {
 
 		Alpine.store("courseView").postID = postID;
 
-		// reset this so that when we clikc a different post the loadCommentsLongPolling function will know to
+		// reset this so that when we click a different post the loadCommentsLongPolling function will know to
 		// load initial comments and not comments after a specific date
 		Alpine.store("courseView").newestCommentDate = "";
+
+		resetComments();
 
 		loadPostComments(postID);
 
@@ -322,9 +334,18 @@ function sendComment(event) {
 	});
 }
 
+// abort any previous polling requests in for comments
+function resetComments() {
+	abortCommentsController.abort();
+
+	abortCommentsController = new AbortController();
+}
+
 // long polling taken from here
 // https://javascript.info/long-polling
 async function loadPostComments(postID) {
+	resetComments();
+	
 	if (Alpine.store("courseView").viewingPost === false) {
 		// stop long polling
 		return
@@ -338,9 +359,15 @@ async function loadPostComments(postID) {
 	try {
 		resp = await fetch("/api/posts/"+postID+"/comments?newest="+lastCommentDate, {
 			method: "GET",
+			signal: abortCommentsController.signal,
 		});
-	} catch {
-		console.log("error getting comments...");
+	} catch (err) {
+		if (err.name === "AbortError") {
+			console.log("fetch comments was aborted...");
+			return
+		}
+
+		console.log("error getting comments...:", err);
 
 		// wait 1 second
 		await new Promise(resolve => setTimeout(resolve, 1000));
@@ -378,6 +405,7 @@ async function loadPostComments(postID) {
 		}
 	}
 
+	// if there is a last comment
 	if (lastComment !== undefined) {
 		lastComment.scrollIntoView();
 		convertHrefs();

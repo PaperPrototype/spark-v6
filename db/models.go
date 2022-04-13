@@ -12,6 +12,7 @@ func migrate() {
 		&User{},
 		&Session{},
 		&Verify{},
+		&Notif{},
 
 		// course
 		&Course{},
@@ -94,7 +95,20 @@ type User struct {
 
 	Verified bool `gorm:"not null; default:f"`
 
+	Notifs    []Notif    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+// general purpose notification
+type Notif struct {
+	ID        uint64 `gorm:"primaryKey"`
+	UserID    uint64
+	Message   string
+	URL       string
+	CreatedAt time.Time
+
+	// if the user has read the notification
+	Read bool `gorm:"default:f"`
 }
 
 type Verify struct {

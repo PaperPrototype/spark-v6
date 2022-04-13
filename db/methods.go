@@ -274,3 +274,15 @@ func (version *Version) GetResourceMediasLogError() []Media {
 
 	return medias
 }
+
+func (user *User) NewNotifLogError(message, url string) {
+	notif := Notif{
+		UserID:  user.ID,
+		Message: message,
+		URL:     url,
+	}
+	err := gormDB.Create(&notif).Error
+	if err != nil {
+		log.Println("db/methods ERROR creating notif in NewNotifLogError:", err)
+	}
+}
