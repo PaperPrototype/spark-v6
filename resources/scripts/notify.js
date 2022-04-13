@@ -78,8 +78,10 @@ async function loadNotifications() {
 		}
 	}
 
-	// helper for checkiing if this is the first load
-	Alpine.store("notify").firstLoad = false;
+	// helper for checkiing if this is the first load and if there were any new notifications
+	if (Alpine.store("notify").new) {
+		Alpine.store("notify").firstLoad = false;
+	}
 
 	// wait 1 second
 	await new Promise(resolve => setTimeout(resolve, 1000));
