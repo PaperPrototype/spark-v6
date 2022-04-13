@@ -102,9 +102,6 @@ function loadGithubSection(tree_sha) {
 	// close menu
 	Alpine.store("courseView").menuOpen = false;
 
-	// show contents view
-	viewContents();
-
 	// get current course URL
 	let courseURL = document.getElementById("courseURL").innerText;
 

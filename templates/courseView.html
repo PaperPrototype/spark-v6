@@ -20,18 +20,20 @@
 
 			// posts
 			postID: 0,
-			allowNewPost: true,
 			viewingPost: false,
 			viewingComments: false,
+			allowNewPost: true,
 			editingPost: false,
 			newestCommentDate: "",
 			comments: [],
 
+			// course
 			editingContent: false,
 			usingGithub: false,
 
 			// views
 			views: ['contents', 'chat', 'posts', 'menu'],
+
 			view: 'contents',
 		});
 	});
@@ -41,8 +43,21 @@
 <script defer src="/resources/scripts/courseViewGithub.js"></script>
 <script defer src="/resources/scripts/courseViewUpload.js"></script>
 
+{{ if ne .PostID "" }}
+	<script defer>
+		document.addEventListener("alpine:init", function(event) {
+			viewPosts(); loadPost({{ .PostID }});
+		});
+	</script>
+{{ else }}
+	<script>
+		// show contents view
+		viewContents();
+	</script>
+{{ end }}
+
 <!-- inline template build script for non github based course versions -->
-{{ template "courseView_inlineScripts.html" . }}
+{{ template "courseView_firstSectionScript.html" . }}
 
 <link href="/resources/css/courseView.css" rel="stylesheet">
 
@@ -180,7 +195,7 @@
 					<div x-show="!$store.courseView.editingPost" style="padding: 0.5rem; width: 100%;" class="bd thin-light">
 						<div markdown id="postMount" x-show="!$store.courseView.viewingComments">
 						</div>
-						<!-- comments -->
+						<!-- post comments -->
 						<div x-show="$store.courseView.viewingComments">
 							<div style="height:25rem; overflow-y:scroll;">
 								<div id="postCommentsMount" style="display:flex; justify-content:flex-end; flex-direction:column;"></div>

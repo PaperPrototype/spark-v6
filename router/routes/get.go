@@ -269,6 +269,8 @@ func getCourseVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
+	postID := c.Query("post_id")
+
 	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
 	if err1 != nil {
 		log.Println("routes ERROR getting course from db:", err1)
@@ -325,6 +327,7 @@ func getCourseVersion(c *gin.Context) {
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"PostID":     postID,
 			"PostsCount": postsCount,
 			"Release":    release,
 			"Course":     course,
