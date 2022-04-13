@@ -68,7 +68,7 @@ func postPostComment(c *gin.Context) {
 
 	usernames := helpers.GetUserMentions(markdown)
 	log.Println("usernames to notify:", usernames)
-	err6 := db.NotifyUsers(usernames, "@"+user.Username+" mentioned you in a posts comments", "/"+author.Username+"/"+course.Name+"/view/"+fmt.Sprint(version.ID))
+	err6 := db.NotifyUsers(usernames, "@"+user.Username+" mentioned you in a post's comments in "+course.Title, "/"+author.Username+"/"+course.Name+"/view/"+fmt.Sprint(version.ID))
 	if err6 != nil {
 		log.Println("api/comments ERROR notifying users in postPostComment:", err6)
 	}

@@ -14,7 +14,7 @@ async function loadNotifications() {
 	const navNotifications = document.getElementById("navNotifications");
 
 	if (Alpine.store("notify").firstLoad) {
-		navNotifications.innerHTML = "";
+		navNotifications.innerText = "no new notifications";
 	}
 
 	let newest = Alpine.store("notify").newestDate;
@@ -44,20 +44,21 @@ async function loadNotifications() {
 		navNotifications.innerText = "no new notifications";
 		Alpine.store("notify").new = false;
 	} else {
+		if (Alpine.store("notify").firstLoad) {
+			navNotifications.innerHTML = "";
+		}
+
 		for (let i = 0; i < json.Notifs.length; i++) {
 			let notif = document.createElement("p");
 			notif.innerText = json.Notifs[i].Message;
 			notif.setAttribute("notifURL", json.Notifs[i].URL);
 			notif.setAttribute("notifID", json.Notifs[i].ID);
-	
-			console.log("notification is:", json.Notifs[i]);
-	
+
+			// append new notification
 			navNotifications.append(notif);
 	
 			notif.addEventListener("click", function(event) {
-				console.log("click notification!");
-				console.log("url is:", this.getAttribute("notifURL"));
-				console.log("id is:", this.getAttribute("notifID"));
+				console.log("clicked notification!");
 
 				// set notification as read
 				notifSetRead(this.getAttribute("notifID"));
@@ -81,6 +82,8 @@ async function loadNotifications() {
 	// helper for checkiing if this is the first load and if there were any new notifications
 	if (Alpine.store("notify").new) {
 		Alpine.store("notify").firstLoad = false;
+	} else {
+		navNotifications.innerText = "no new notifications";
 	}
 
 	// wait 1 second
