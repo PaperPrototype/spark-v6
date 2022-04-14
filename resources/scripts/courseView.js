@@ -1,3 +1,4 @@
+
 let courseNavTop;
 let courseMain;
 let courseMenu;

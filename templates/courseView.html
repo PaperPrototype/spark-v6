@@ -50,9 +50,11 @@
 		});
 	</script>
 {{ else }}
-	<script>
-		// show contents view
-		viewContents();
+	<script defer>
+		document.addEventListener("alpine:init", function(e) {
+			// show contents view
+			viewContents();
+		});
 	</script>
 {{ end }}
 
