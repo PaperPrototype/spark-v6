@@ -13,6 +13,14 @@ var router *gin.Engine
 
 func Setup() {
 	router = gin.Default()
+
+	// Logger middleware will write the logs to gin.DefaultWriter even when you set GIN_MODE=release.
+	// By default gin.DefaultWriter = os.Stdout
+	// router.Use(gin.Logger())
+
+	// recovery middleware recovers from any panics and writes a 500 if there was one.
+	router.Use(gin.Recovery())
+
 	router.RemoveExtraSlash = true
 	router.RedirectTrailingSlash = true
 

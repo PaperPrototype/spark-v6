@@ -127,7 +127,7 @@ func (content *Content) GetMarkdownHTMLLogError() template.HTML {
 
 // get the number of posts in a course version
 func (release *Release) UserPostsCountLogError(userID uint64) int64 {
-	postIDs := gormDB.Model(&PostToRelease{}).Select("post_id").Where("release_id = ?", release.ID)
+	postIDs := gormDB.Model(&PostToCourse{}).Select("post_id").Where("release_id = ?", release.ID)
 
 	var count int64
 	err := gormDB.Model(&Post{}).Where("user_id = ?", userID).Where("id IN (?)", postIDs).Count(&count).Error
@@ -263,16 +263,6 @@ func (version *Version) GetGithubVersion() (*GithubVersion, error) {
 	githubVersion := GithubVersion{}
 	err := gormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).First(&githubVersion).Error
 	return &githubVersion, err
-}
-
-func (version *Version) GetResourceMediasLogError() []Media {
-	medias := []Media{}
-	err := gormDB.Model(&Media{}).Where("version_id = ?", version.ID).Find(&medias).Error
-	if err != nil {
-		log.Println("db/method ERROR getting in GetResourceMediasLogError:", err)
-	}
-
-	return medias
 }
 
 func (user *User) NewNotifLogError(message, url string) {

@@ -1,5 +1,5 @@
-function convertHrefs() {
-	let hrefs = document.querySelectorAll("[href]");
+function convertHrefs(element) {
+	let hrefs = element.querySelectorAll("[href]");
 
 	for (let i = 0; i < hrefs.length; i++) {
 		hrefs[i].addEventListener("click", function(event) {
@@ -16,7 +16,7 @@ function convertHrefs() {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-	convertHrefs();
+	convertHrefs(document);
 });
 
 document.addEventListener("alpine:init", function(event) {

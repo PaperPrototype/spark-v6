@@ -139,8 +139,11 @@
 
 			Alpine.store("githubTree").json = json;
 
-			let current = Alpine.store("sections").current;
-			loadGithubSection(current);
+			{{ if .SHA }}
+				loadGithubSection("{{ .SHA }}");
+			{{ else }}
+				loadGithubSection(Alpine.store("sections").current);
+			{{ end }}
 		})
 		.catch(function(err) {
 			console.error(err);

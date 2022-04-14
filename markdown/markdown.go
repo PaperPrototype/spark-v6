@@ -7,12 +7,16 @@ import (
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting"
 	"github.com/yuin/goldmark/extension"
+	"github.com/yuin/goldmark/parser"
 	xurls "mvdan.cc/xurls/v2"
 
 	embed "github.com/13rac1/goldmark-embed"
 )
 
 var markdowner goldmark.Markdown = goldmark.New(
+	goldmark.WithParserOptions(
+		parser.WithAutoHeadingID(),
+	),
 	goldmark.WithExtensions(
 		highlighting.NewHighlighting(
 			highlighting.WithStyle("native"),

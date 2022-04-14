@@ -33,7 +33,7 @@ func GetUser(userID uint64) (*User, error) {
 	return &user, err
 }
 
-func GetUserCoursePreloadUser(username string, name string) (*Course, error) {
+func GetUserCoursePreloadUser(username string, courseName string) (*Course, error) {
 	user := User{}
 	course := Course{}
 
@@ -42,7 +42,7 @@ func GetUserCoursePreloadUser(username string, name string) (*Course, error) {
 		return &course, err
 	}
 
-	err1 := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", name).First(&course).Error
+	err1 := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", courseName).First(&course).Error
 
 	// fill in user
 	course.User = user
@@ -130,8 +130,8 @@ func GetSectionPreload(sectionID string) (*Section, error) {
 	return &section, err
 }
 
-func GetReleasePosts(releaseID uint64) ([]Post, error) {
-	postIDs := gormDB.Model(&PostToRelease{}).Select("post_id").Where("release_id = ?", releaseID)
+func GetReleasePosts(releaseID uint64, courseID uint64) ([]Post, error) {
+	postIDs := gormDB.Model(&PostToCourse{}).Select("post_id").Where("release_id = ?", releaseID)
 
 	posts := []Post{}
 	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Order("created_at DESC").Find(&posts).Error
@@ -175,12 +175,6 @@ func GetPost(postID string) (*Post, error) {
 	post := Post{}
 	err := gormDB.Model(&Post{}).Where("id = ?", postID).First(&post).Error
 	return &post, err
-}
-
-func GetMedia(versionID string, mediaName string) (*Media, error) {
-	media := Media{}
-	err := gormDB.Model(&Media{}).Where("version_id = ?", versionID).Where("name = ?", mediaName).First(&media).Error
-	return &media, err
 }
 
 func GetNewestPublicCourseRelease(courseID uint64) (*Release, error) {

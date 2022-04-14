@@ -80,7 +80,6 @@ function loadGithubSection(tree_sha) {
 
 		// FIX IMAGE LINKS
 		let images = markdown.querySelectorAll("img")
-
 		for (let i = 0; i < images.length; i++) {
 			let src = images[i].getAttribute("src")
 
@@ -92,21 +91,59 @@ function loadGithubSection(tree_sha) {
 			}
 		}
 
+		// SET HEADER LINKS
+		let headersWithID = markdown.querySelectorAll("[id]")
+		for (let i = 0; i < headersWithID.length; i++) {
+			headersWithID[i].style = "cursor:pointer;"
+			headersWithID[i].addEventListener("click", function(event) {
+				let id = this.getAttribute("id")
+
+				// if there is an anchor tag then go to the anchor
+				window.location = courseURL + "/" + Alpine.store("sections").current + "#" + id;
+				
+				// anchor is hidden by default so scroll up a bit.
+				window.scrollBy(0, -80);
+
+				console.log("scrolling down so user can see anchor");
+			});
+		}
+
 		markdown.setAttribute("markdown", "");
+
+		convertHrefs(markdown);
 		
 		content.append(markdown);
 
-		window.scroll(0, 0);
+		// get the anchor tag
+		let currentUrl = document.URL,
+		urlParts = currentUrl.split('#');
+		let headerID = (urlParts.length > 1) ? urlParts[1] : null;
+
+		// get current course URL
+		let courseURL = document.getElementById("courseURL").innerText;
+
+		// if there is not an anchor tag
+		if (headerID === null || headerID === undefined) {
+			console.log("headerID was undefined or null");
+
+			window.scroll(0, 0);
+
+			// close menu
+			Alpine.store("courseView").menuOpen = false;
+
+			// change location of window
+			window.history.replaceState("", "", courseURL + "/" + tree_sha)
+		} else {
+			// if there is an anchor tag then go to the anchor
+			window.location = courseURL + "/" + tree_sha + "#" + headerID;
+			
+			// anchor is hidden by default so scroll up a bit.
+			window.scrollBy(0, -80);
+
+			// close menu
+			Alpine.store("courseView").menuOpen = false;
+		}
 	});
-
-	// close menu
-	Alpine.store("courseView").menuOpen = false;
-
-	// get current course URL
-	let courseURL = document.getElementById("courseURL").innerText;
-
-	// change location of window
-	// window.history.replaceState("", "", courseURL + "/sha/" + tree_sha)
 }
 
 async function loadGithubBlob(versionID, sha, path) {

@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"main/conn"
 	"main/db"
 	"main/mailer"
 	"main/markdown"
@@ -423,9 +422,11 @@ func getCourseRelease(c *gin.Context) {
 }
 
 func getCourseVersionSection(c *gin.Context) {
-	courseName := c.Params.ByName("course")
-	username := c.Params.ByName("username")
 	versionID := c.Params.ByName("versionID")
+	username := c.Params.ByName("username")
+	courseName := c.Params.ByName("course")
+
+	postID := c.Query("post_id")
 
 	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
 	if err1 != nil {
@@ -437,7 +438,8 @@ func getCourseVersionSection(c *gin.Context) {
 	version, err := course.GetVersion(versionID)
 	if err != nil {
 		log.Println("routes ERROR getting version from db:", err)
-		notFound(c)
+		msg.SendMessage(c, "That course upload may have been deleted.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
 		return
 	}
 
@@ -449,20 +451,20 @@ func getCourseVersionSection(c *gin.Context) {
 		return
 	}
 
-	sectionID := c.Params.ByName("sectionID")
 	section := &db.Section{}
 	var err2 error
 	if !version.HasGithubVersion() {
-		section, err2 = db.GetSectionPreload(sectionID)
+		section, err2 = version.GetFirstSectionPreload()
 		if err2 != nil {
 			log.Println("routes/get ERROR getting versions first section in getCourseVersion:", err2)
-			msg.SendMessage(c, "Error getting first section.")
 		}
 	}
 
 	var progress int64
 	user := auth.GetLoggedInUserLogError(c)
 	postsCount := release.UserPostsCountLogError(user.ID)
+	log.Println("posts count is:", postsCount)
+
 	if auth.IsLoggedInValid(c) {
 		if release.PostsNeededNum != 0 {
 			// convert to float for division
@@ -482,6 +484,8 @@ func getCourseVersionSection(c *gin.Context) {
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"SHA":        c.Params.ByName("sha"),
+			"PostID":     postID,
 			"PostsCount": postsCount,
 			"Release":    release,
 			"Course":     course,
@@ -639,18 +643,7 @@ func getNameMedia(c *gin.Context) {
 		return
 	}
 
-	media, err := db.GetMedia(versionID, mediaName)
-	if err != nil {
-		log.Println("routes/get ERROR getting media in getNameMedia:", err)
-		c.AbortWithStatus(http.StatusNotFound)
-		return
-	}
-
-	c.Writer.Header().Set("Content-Type", media.Type)
-	c.Writer.Header().Set("Content-Length", fmt.Sprint(media.Length))
-
-	conn := conn.GetConn()
-	WriteMediaChunks(conn, c.Writer, media.ID)
+	c.AbortWithStatus(http.StatusNoContent)
 }
 
 func getReleaseDelete(c *gin.Context) {

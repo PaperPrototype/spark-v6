@@ -20,8 +20,7 @@ func migrate() {
 		&Version{},
 		&Section{},
 		&Content{},
-		&Media{},
-		&MediaChunk{},
+		&Channel{},
 
 		// github based courses
 		&GithubRelease{},
@@ -38,8 +37,13 @@ func migrate() {
 		// posts
 		&Post{},
 		&Comment{},
-		&PostToRelease{},
+		&PostToCourse{},
 	)
+
+	// get rid of old outdated tables
+	gormDB.Migrator().DropTable(&PostToRelease{})
+	gormDB.Migrator().DropTable("media")
+	gormDB.Migrator().DropTable("media_chunks")
 }
 
 type AttemptBuyRelease struct {
@@ -144,8 +148,9 @@ type Course struct {
 	// ORM preloadable property
 	User User
 
-	Releases []Release `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Versions []Version `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Channels []Channel `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // channels for the courses chat
+	Releases []Release `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // course releases
+	Versions []Version `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // course versions (have a parent release)
 }
 
 type Coupon struct {
@@ -208,7 +213,6 @@ type Version struct {
 	// if using manual uploading option with sections
 	Error    string    `gorm:"default:null"`
 	Sections []Section `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Media    []Media   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type GithubVersion struct {
@@ -238,25 +242,6 @@ type Content struct {
 	Language  string
 	SectionID uint64 `gorm:"not null"`
 	Markdown  string
-}
-
-// media files for the course
-type Media struct {
-	ID        uint64 `gorm:"primaryKey"`
-	VersionID uint64 `gorm:"not null"`
-	Name      string
-	Length    uint32
-	Type      string // the "type" of file (.zip .png .gif)
-
-	MediaChunks []MediaChunk `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-}
-
-type MediaChunk struct {
-	MediaID uint64 `gorm:"not null"`
-	// the raw bytes from the file
-	Data []byte
-	// Order to load chunks from db
-	Position uint16
 }
 
 /* SOCIAL */
@@ -303,9 +288,15 @@ type Message struct {
 }
 
 /* RELATIONS */
-// relate posts to a course release and section
 type PostToRelease struct {
 	PostID    uint64 `gorm:"not null"`
+	ReleaseID uint64 `gorm:"not null"`
+}
+
+// relate posts to a course release and section
+type PostToCourse struct {
+	PostID    uint64 `gorm:"not null"`
+	CourseID  uint64 `gorm:"not null"`
 	ReleaseID uint64 `gorm:"not null"`
 }
 

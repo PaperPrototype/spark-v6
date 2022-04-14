@@ -37,7 +37,7 @@ func CreatePost(post *Post) error {
 	return gormDB.Create(post).Error
 }
 
-func CreatePostToRelease(relation *PostToRelease) error {
+func CreatePostToCourse(relation *PostToCourse) error {
 	return gormDB.Create(relation).Error
 }
 

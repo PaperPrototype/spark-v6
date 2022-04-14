@@ -329,14 +329,7 @@ func postNewRelease(c *gin.Context) {
 		return
 	}
 
-	author, err3 := db.GetUser(course.UserID)
-	if err3 != nil {
-		msg.SendMessage(c, "Error getting the course author.")
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
-		return
-	}
-
-	if !author.HasStripeConnection() {
+	if !course.User.HasStripeConnection() {
 		correctPriceNum = 0
 		msg.SendMessage(c, "You must connect your account to stripe to charge money for a course!")
 	}
@@ -485,6 +478,14 @@ func postEditRelease(c *gin.Context) {
 	publicStr := c.PostForm("public")
 	postsNeeded := c.PostForm("postsNeededNum")
 
+	course, err6 := db.GetUserCoursePreloadUser(username, courseName)
+	if err6 != nil {
+		log.Println("routes/post ERROR getting user course in postEditRelease:", err6)
+		msg.SendMessage(c, "Error getting course.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
+		return
+	}
+
 	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
 	if err5 != nil {
 		log.Println("routes ERROR parsing postsNeedeNum for version in postNewGithubVersion:", err5)
@@ -505,6 +506,13 @@ func postEditRelease(c *gin.Context) {
 		return
 	}
 
+	// make sure release is release from this course
+	if release.CourseID != course.ID {
+		msg.SendMessage(c, "Error getting release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
 	priceNumIncorrect, err2 := strconv.ParseUint(price, 10, 64)
 	if err2 != nil {
 		log.Println("routes ERROR getting course:", err2)
@@ -521,14 +529,7 @@ func postEditRelease(c *gin.Context) {
 		return
 	}
 
-	author, err3 := release.GetAuthorUser()
-	if err3 != nil {
-		msg.SendMessage(c, "Error getting the course author.")
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
-		return
-	}
-
-	if !author.HasStripeConnection() {
+	if !course.User.HasStripeConnection() {
 		correctPriceNum = 0
 		msg.SendMessage(c, "You must connect your account to stripe to charge money for a course!")
 	}
@@ -695,6 +696,14 @@ func postNewGithubVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
+	course, err5 := db.GetUserCoursePreloadUser(username, courseName)
+	if err5 != nil {
+		log.Println("routes/post ERROR getting user course in postNewGithubVersion:", err5)
+		msg.SendMessage(c, "Error getting course.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
 	releaseID := c.PostForm("releaseID")
 	sha := c.PostForm("sha")
 
@@ -712,7 +721,14 @@ func postNewGithubVersion(c *gin.Context) {
 
 	release, err2 := db.GetAllRelease(releaseID)
 	if err2 != nil {
-		log.Println("routes/post ERROR getting release in GetAllRelease:", err2)
+		log.Println("routes/post ERROR getting release in postNewGithubVersion:", err2)
+		msg.SendMessage(c, "Error getting release.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	// make sure release is release from this course
+	if release.CourseID != course.ID {
 		msg.SendMessage(c, "Error getting release.")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 		return
@@ -763,4 +779,11 @@ func postNewGithubVersion(c *gin.Context) {
 
 	msg.SendMessage(c, "Successfully created github version!")
 	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+}
+
+func postNewChannel(c *gin.Context) {
+	// username := c.Params.ByName("username")
+	// courseName := c.Params.ByName("course")
+	// channelName := c.PostForm("name")
+
 }

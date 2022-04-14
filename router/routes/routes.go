@@ -27,11 +27,12 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/:username/:course/settings/version/new/github", mustBeCourseEditor, postNewGithubVersion)
 	router.POST("/:username/:course/settings/version/delete", mustBeCourseEditor, postDeleteVersion)
 
-	// view inside of course content
-	router.GET("/:username/:course/view/:versionID", MustHaveAccessToCourseRelease, getCourseVersion) // view a version of the course
+	// create a channel
+	router.POST("/:username/:course/channel/new", mustBeCourseEditor, postNewChannel)
 
-	// if viewing an upload based version
-	router.GET("/:username/:course/view/:versionID/:sectionID", MustHaveAccessToCourseRelease, getCourseVersionSection) // view a section of the course
+	// view inside of course contents
+	router.GET("/:username/:course/view/:versionID", MustHaveAccessToCourseRelease, getCourseVersion)             // view a version of the course
+	router.GET("/:username/:course/view/:versionID/:sha", MustHaveAccessToCourseRelease, getCourseVersionSection) // view a section of the course
 
 	// TODO pass as url params instead of through routes
 	router.GET("/:username/:course/view/:versionID/sha/:sha", MustHaveAccessToCourseRelease) // view a github versions content

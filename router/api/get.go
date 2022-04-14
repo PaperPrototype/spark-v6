@@ -57,7 +57,7 @@ func getVersionPortfolioPosts(c *gin.Context) {
 		return
 	}
 
-	releasePosts, err1 := db.GetReleasePosts(version.ReleaseID)
+	releasePosts, err1 := db.GetReleasePosts(version.ReleaseID, version.CourseID)
 	if err1 != nil {
 		log.Println("api ERROR getting posts for api/getVersionPosts:", err1)
 		c.AbortWithStatus(http.StatusInternalServerError)

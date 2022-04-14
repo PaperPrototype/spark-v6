@@ -17,6 +17,8 @@
 		Alpine.store('courseView', {
 			menuAvailable: true,
 			menuOpen: false,
+			// whether the dropdown menu is showing the chat or the posts
+			menu: 'sections', // 'sections' or 'chat'
 
 			// posts
 			postID: 0,
@@ -31,8 +33,8 @@
 			editingContent: false,
 			usingGithub: false,
 
-			// views
-			views: ['contents', 'chat', 'posts', 'menu'],
+			// views = posts and contents
+			views: ['contents', 'posts'],
 
 			view: 'contents',
 		});
@@ -59,7 +61,7 @@
 {{ end }}
 
 <!-- inline template build script for non github based course versions -->
-{{ template "courseView_firstSectionScript.html" . }}
+{{ template "courseView_initDataFirstSection.html" . }}
 
 <link href="/resources/css/courseView.css" rel="stylesheet">
 
@@ -134,7 +136,7 @@
 		</div>
 
 		<!-- view chat -->
-		<div title="Chat" @click="viewChat()"
+		<div title="Chat" @click="toggleChat()"
 		class="bd thin-light hoverable"
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.4rem; padding-right:0.4rem; padding-top:0.4rem;">
 			<i class="fa-solid fa-comments"></i>
@@ -142,30 +144,18 @@
 	</div>
 
 	<!-- dropdown menu for course -->
-	<div x-cloak x-show="$store.courseView.menuOpen" id="courseMenu" style="padding-top: 2rem; padding-bottom: 3rem; overflow-y: scroll; margin-top:0;" class="bg-overlay pad-sides-5">
-		<div id="courseMenuResources">
-			<h2 style="margin-top:0rem;">Resources</h2>
-			{{ range .Version.GetResourceMediasLogError }}
-				<a style="display:block; width:max-content;" class="bd pad-05 hoverable-bg-code" href="/media/{{ .Version.ID }}/name/{{ .Name }}" download>
-					{{ .Name }} <i class="fa-solid fa-file-arrow-down"></i>
-				</a>
-			{{ end }}
+	<div x-cloak x-show="$store.courseView.menuOpen"  id="courseMenu" style="padding-top: 2rem; padding-bottom: 3rem; overflow-y: scroll; margin-top:0;" class="bg-overlay pad-sides-5">
+		<!-- live chat -->
+		<div x-cloak x-show="$store.courseView.menu === 'chat'" class="bg-overlay" style="height:100%;">
+			{{ template "courseView_chat.html" . }}
 		</div>
-		<div id="courseMenuItems">
-			<h2>Sections</h2>
-			{{ range .Version.GetBaseSectionsLogError }}
-				<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
-					{{ .Name }}
-				</div>
-				<div style="margin-left:2rem;">
-					{{ range .GetChildrenSectionsLogError }}
-						<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
-							{{ .Name }}
-						</div>
-						{{ template "courseView_menu.html" . }}
-					{{ end }}
-				</div>
-			{{ end }}
+		<div x-cloak x-show="$store.courseView.menu === 'sections'">
+			<div id="courseMenuResources">
+				<h2 style="margin-top:0rem;">Resources</h2>
+			</div>
+			<div id="courseMenuItems">
+				<h2>Sections</h2>
+			</div>
 		</div>
 	</div>
 
@@ -224,14 +214,6 @@
 			<!-- when not viewing a specific post, show all posts -->
 			<div x-show="!$store.courseView.viewingPost" id="coursePostsMount">
 				<!-- insert posts with js -->
-			</div>
-		</div>
-
-		<!-- live chat -->
-		<div x-cloak x-show="$store.courseView.view === 'chat'" class="bg-overlay pad-top-2rem pad-bot-2rem">
-			<h1 class="pad-sides-5">Chat</h1>
-			<div>
-				{{ template "courseView_chat.html" . }}
 			</div>
 		</div>
 

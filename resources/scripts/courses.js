@@ -39,6 +39,6 @@ async function loadCourses() {
 document.addEventListener("DOMContentLoaded", function() {
 	loadCourses().then(function() {
 		console.log("finished getting courses");
-		convertHrefs();
+		convertHrefs(document);
 	});
 });

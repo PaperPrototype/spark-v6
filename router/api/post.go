@@ -98,11 +98,12 @@ func courseVersionNewPost(c *gin.Context) {
 		return
 	}
 
-	postToRelease := db.PostToRelease{
+	postToCourse := db.PostToCourse{
 		PostID:    post.ID,
 		ReleaseID: version.ReleaseID,
+		CourseID:  version.CourseID,
 	}
-	err3 := db.CreatePostToRelease(&postToRelease)
+	err3 := db.CreatePostToCourse(&postToCourse)
 	if err3 != nil {
 		log.Println("api ERROR creating postToRelease:", err3)
 		c.AbortWithStatus(http.StatusInternalServerError)

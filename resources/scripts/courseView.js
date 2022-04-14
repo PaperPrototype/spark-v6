@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	courseMenu = document.getElementById("courseMenu");
 	ogTopOffset = courseNavTop.offsetTop;
 
+	menuFollowScroll();
+
 	window.onscroll = function(){
 		menuFollowScroll();
 	}
@@ -26,14 +28,31 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	postCommentsForm.addEventListener("submit", sendComment, false)
 });
 
-// show chat view
-function viewChat() {
-	resetComments();
+// toggle nav menu
+function toggleMenu() {
+	// if the menu is available
+	if (Alpine.store("courseView").menuAvailable) {
+		if (Alpine.store("courseView").menu === 'chat' && Alpine.store("courseView").menuOpen === true) {
+			Alpine.store("courseView").menu = 'sections';
+		} else {
+			Alpine.store("courseView").menuOpen = ! Alpine.store("courseView").menuOpen;
+			Alpine.store("courseView").menu = 'sections';
+		}
+	// if the menu is not available
+	} else {
+		Alpine.store("courseView").menuOpen = false;
+	}
+}
 
-	Alpine.store("courseView").view = 'chat';
-	Alpine.store("courseView").menuAvailable = false;
-	Alpine.store("courseView").menuOpen = false;
-	Alpine.store("courseView").editingContent = false;
+// toggle chat view
+function toggleChat() {
+	// if viewing sections and menu is already open
+	if (Alpine.store("courseView").menu === 'sections' && Alpine.store("courseView").menuOpen === true) {
+		Alpine.store("courseView").menu = 'chat';
+	} else {
+		Alpine.store("courseView").menuOpen = ! Alpine.store("courseView").menuOpen;
+		Alpine.store("courseView").menu = 'chat';
+	}
 }
 
 // show posts view
@@ -51,21 +70,14 @@ function viewPosts() {
 // show contents/lecture/section view
 function viewContents() {
 	resetComments();
+	resetURL();
 	
+	Alpine.store('courseView').menuOpen = false;
 	Alpine.store("courseView").view = 'contents';
 	Alpine.store("courseView").menuAvailable = true;
 	Alpine.store("courseView").allowNewPost = true;
 	Alpine.store("courseView").editingContent = false;
 	Alpine.store("courseView").viewingComments = false;
-}
-
-// toggle nav menu
-function toggleMenu() {
-	if (Alpine.store("courseView").menuAvailable) {
-		Alpine.store("courseView").menuOpen = ! Alpine.store("courseView").menuOpen;
-	} else {
-		Alpine.store("courseView").menuOpen = false;
-	}
 }
 
 function loadPosts(versionID) {
@@ -249,8 +261,19 @@ function loadPost(postID) {
 
 		loadPostComments(postID);
 
-		// convert any elems with a link to open in new page
-		convertHrefs();
+		// convert any elems with a link to open in new page if they have external
+		convertHrefs(postMount);
+
+		// get current course URL
+		let courseURL = document.getElementById("courseURL").innerText;
+
+		if (Alpine.store("sections").current === "") {
+			// change location of window
+			window.history.replaceState("", "", courseURL + "?post_id=" + postID);
+		} else {
+			// change location of window
+			window.history.replaceState("", "", courseURL + "/" + Alpine.store("sections").current + "?post_id=" + postID);
+		}
 	})
 	.catch(function(err) {
 		console.error(err);
@@ -409,10 +432,51 @@ async function loadPostComments(postID) {
 	// if there is a last comment
 	if (lastComment !== undefined) {
 		lastComment.scrollIntoView();
-		convertHrefs();
+
+		// make links work?
+		// not sure why this is here
+		convertHrefs(document);
 	}
 
 	// wait 1 seconds
 	await new Promise(resolve => setTimeout(resolve, 1000));
 	await loadPostComments(postID);
+}
+
+async function sendMessage() {
+	let chatTextarea = document.getElementById("chatTextarea");
+	await fetch("/api/version/:versionID/channel/:channelID/new");
+}
+
+function loadChat() {
+
+}
+
+function fixImageLinks(markdown) {
+	// FIX IMAGE LINKS
+	let images = markdown.querySelectorAll("img")
+	let versionID = document.getElementById("versionID").innerText;
+	for (let i = 0; i < images.length; i++) {
+		let src = images[i].getAttribute("src")
+
+		if (src.includes("/Assets/") || src.includes("/assets/")) {
+			// get filename and strip away /Assets/
+			let name = src.slice(8, src.length);
+			let newSrc = "/media/"+versionID+"/name/"+name;
+			images[i].setAttribute("src", newSrc);
+		}
+	}
+}
+
+function resetURL() {
+	// get current course URL
+	let courseURL = document.getElementById("courseURL").innerText;
+
+	if (Alpine.store("sections").current === "") {
+		// change location of window
+		window.history.replaceState("", "", courseURL)
+	} else {
+		// change location of window
+		window.history.replaceState("", "", courseURL + "/" + Alpine.store("sections").current)
+	}
 }

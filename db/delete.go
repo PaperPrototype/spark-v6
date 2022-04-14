@@ -15,12 +15,6 @@ func DeleteSession(TokenUUID string) error {
 }
 
 func DeleteVersion(versionID string) error {
-	// delete media first
-	err1 := DeleteVersionMedias(versionID)
-	if err1 != nil {
-		return err1
-	}
-
 	// delete sections
 	err2 := DeleteVersionSections(versionID)
 	if err2 != nil {
@@ -49,24 +43,6 @@ func DeleteVersionSections(versionID string) error {
 	err1 := gormDB.Where("section_id = ?", section.ID).Delete(&Content{}).Error
 	if err1 != nil {
 		log.Println("db ERROR deleting Version Section:", err1)
-		return err1
-	}
-
-	return nil
-}
-
-func DeleteVersionMedias(versionID string) error {
-	media := Media{}
-	err := gormDB.Where("version_id = ?", versionID).Delete(&media).Error
-	if err != nil {
-		log.Println("db ERROR deleting Version Media:", err)
-		return err
-	}
-
-	// also delete media chunks
-	err1 := gormDB.Where("media_id = ?", media.ID).Model(&MediaChunk{}).Error
-	if err1 != nil {
-		log.Println("db ERROR deleting Version MediaChunk:", err1)
 		return err1
 	}
 
