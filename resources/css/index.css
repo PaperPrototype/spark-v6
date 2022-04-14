@@ -51,6 +51,10 @@
 	outline: none;
 }
 
+.hovered {
+	background-color: var(--c-bg);
+}
+
 .hoverable:hover {
 	background-color: var(--c-bg);
 }

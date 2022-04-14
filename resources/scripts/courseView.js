@@ -472,11 +472,11 @@ function resetURL() {
 	// get current course URL
 	let courseURL = document.getElementById("courseURL").innerText;
 
-	if (Alpine.store("sections").current === "") {
-		// change location of window
-		window.history.replaceState("", "", courseURL)
-	} else {
+	try {
 		// change location of window
 		window.history.replaceState("", "", courseURL + "/" + Alpine.store("sections").current)
+	} catch {
+		// change location of window
+		window.history.replaceState("", "", courseURL)
 	}
 }

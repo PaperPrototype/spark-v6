@@ -105,6 +105,7 @@
 		<!-- dropdown menu -->
 		<div title="Contents" x-show="$store.courseView.menuAvailable" @click="toggleMenu()"
 		class="bd thin-light hoverable"
+		:class="$store.courseView.menu === 'sections' && $store.courseView.menuOpen ? 'hovered' : '' "
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.37rem; padding-bottom:0.4rem;">
 			<i class="fa-solid fa-list-ul"></i>
 		</div>
@@ -131,6 +132,7 @@
 		<!-- view posts -->
 		<div title="Posts" @click="viewPosts(); loadPosts({{ .Version.ID }});"
 		class="bd thin-light hoverable"
+		:class="$store.courseView.view === 'posts' && $store.courseView.menuOpen === false ? 'hovered' : '' "
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.6rem; padding-right:0.6rem; padding-top:0.5rem; margin-left:auto; margin-right:0.5rem;">
 			<i class="fa-solid fa-message"></i>
 		</div>
@@ -138,6 +140,7 @@
 		<!-- view chat -->
 		<div title="Chat" @click="toggleChat()"
 		class="bd thin-light hoverable"
+		:class="$store.courseView.menu === 'chat' && $store.courseView.menuOpen ? 'hovered' : '' "
 		style="font-size:1.5rem; cursor:pointer; padding-left:0.4rem; padding-right:0.4rem; padding-top:0.4rem;">
 			<i class="fa-solid fa-comments"></i>
 		</div>
