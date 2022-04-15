@@ -157,12 +157,12 @@
 	</div>
 
 	<!-- dropdown menu for course -->
-	<div x-cloak x-show="$store.courseView.menuOpen"  id="courseMenu" style="padding-top: 2rem; padding-bottom: 3rem; overflow-y: scroll; margin-top:0;" class="bg-overlay pad-sides-5">
+	<div x-cloak x-show="$store.courseView.menuOpen"  id="courseMenu" style="padding-top: 2rem; padding-bottom: 3rem; overflow-y: hidden; margin-top:0;" class="bg-overlay pad-sides-5">
 		<!-- live chat -->
 		<div x-cloak x-show="$store.courseView.menu === 'chat'" class="bg-overlay" style="height:100%;">
 			{{ template "courseView_chat.html" . }}
 		</div>
-		<div x-cloak x-show="$store.courseView.menu === 'sections'">
+		<div x-cloak x-show="$store.courseView.menu === 'sections'" style="overflow-y:scroll;">
 			<div id="courseMenuResources">
 				<h2 style="margin-top:0rem;">Resources</h2>
 			</div>
