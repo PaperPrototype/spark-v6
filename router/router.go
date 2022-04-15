@@ -47,6 +47,8 @@ func Setup() {
 	router.LoadHTMLGlob("./templates/*")
 	router.Static("/resources", "./resources")
 
+	router.StaticFile("favicon.ico", "./resources/images/favicon.ico")
+
 	api.AddRoutes(router.Group("/api"))
 	routes.AddRoutes(router)
 }
