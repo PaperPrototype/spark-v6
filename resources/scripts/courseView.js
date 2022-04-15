@@ -11,6 +11,7 @@ let ogTopOffset;
 let postCommentsForm;
 
 let abortCommentsController = new AbortController();
+let abortMessagesController = new AbortController();
 
 document.addEventListener("DOMContentLoaded", function(event) {
 	courseNavTop = document.getElementById("courseNavTop");
@@ -53,6 +54,10 @@ function toggleChat() {
 		Alpine.store("courseView").menuOpen = ! Alpine.store("courseView").menuOpen;
 		Alpine.store("courseView").menu = 'chat';
 	}
+
+	console.log("scrolling to bottom");
+	let channelMount = document.getElementById("channelMount");
+	channelMount.scrollTo(0, 100);
 }
 
 // show posts view
@@ -473,21 +478,39 @@ async function sendMessage() {
 	chatTextarea.value = "";
 }
 
+// abort any previous polling requests for comments
+function resetMessages() {
+	abortMessagesController.abort();
+	abortMessagesController = new AbortController();
+}
+
 function chatResetTextarea() {
 	let textareaElement = document.getElementById("chatTextarea");
 	// set the height to 0 in case of it has to be shrinked
 	textareaElement.style.height = "1.2rem";
 }
 
-async function loadChannelMessages(channelID) {
+function loadChannel(channelID) {
+	resetMessages();
+
+	// new channel loaded, clear the old comments and set this as new channel
+	Alpine.store("courseView").channelID = channelID;
+	channelMount.innerHTML = "";
+	Alpine.store("courseView").newestMessageDate = "";
+
 	if (channelID === 0) {
-		console.log("no channels to laod messages from");
+		console.log("no channels to load messages from.");
 		return
 	}
 
+	loadChannelMessages(channelID);
+}
+
+async function loadChannelMessages(channelID) {
+	let newest = Alpine.store("courseView").newestMessageDate;
+
 	console.log("loading messages...");
 
-	let newest = Alpine.store("courseView").newestMessageDate;
 	let channelMount = document.getElementById("channelMount");
 
 	// if this is the first time we load we should clear the html
@@ -495,19 +518,15 @@ async function loadChannelMessages(channelID) {
 		channelMount.innerHTML = "";
 	}
 
-	// new channel loaded, clear the old comments
-	if (Alpine.store("courseView").channelID !== channelID) {
-		channelMount.innerHTML = "";
-	}
-
 	let resp;
 	try {
 		resp = await fetch("/api/channels/"+channelID+"?newest="+newest, {
 			method: "GET",
+			signal: abortMessagesController.signal,
 		})
 	} catch (err) {
 		if (err.name === "AbortError") {
-			console.log("fetch comments was aborted...");
+			console.log("fetch messages was aborted...");
 			return
 		}
 
@@ -522,6 +541,9 @@ async function loadChannelMessages(channelID) {
 	}
 
 	let json = await resp.json()
+
+	let channelTitle = document.getElementById("channelTitle");
+	channelTitle.innerText = json.Channel.Name;
 	
 	let lastMessage;
 	for (let i = 0; i < json.Messages.length; i++) {

@@ -34,12 +34,10 @@
 </script>
 <div style="height:100%" x-data="{ channelsSelect: false }">
 	<div style="display:flex;">
-		{{ if .Channels }}
-			<p @click="channelsSelect = ! channelsSelect" class="pad-05 bd hoverable" style="max-width:50%;">
-				{{ .Channel.Name }}
-				<i class="fa-solid fa-caret-down" style="margin-left:0.5rem;"></i>
-			</p>
-		{{ end }}
+		<p @click="channelsSelect = ! channelsSelect" class="pad-05 bd hoverable" style="max-width:50%; display:block;">
+			<inline id="channelTitle"></inline>
+			<i class="fa-solid fa-caret-down" style="margin-left:0.5rem;"></i>
+		</p>
 
 		<!-- only if the user is logged in and matches the author id -->
 		{{ if eq .User.ID .Course.User.ID }}
@@ -66,7 +64,7 @@
 			<div>
 				<div x-show="channelsSelect" style="padding-top:0.5rem;">
 					{{ range .Channels }}
-						<p class="pad-05 bd bg" style="margin:0.5rem; margin-top:0;">{{ .Name }}</p>
+						<p @click="loadChannel({{ .ID }}); channelsSelect = false;" class="pad-05 bd bg" style="margin:0.5rem; margin-top:0;">{{ .Name }}</p>
 					{{ end }}
 				</div>
 				<!-- messages -->

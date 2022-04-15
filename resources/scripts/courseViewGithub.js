@@ -44,6 +44,7 @@ function loadGithubSection(tree_sha) {
 		console.error("sectionTitle element was null!");
 	}
 
+	// if there is no blobs
 	if (blobs.length === 0) {
 		// fill in "this section is empty"
 
@@ -128,9 +129,6 @@ function loadGithubSection(tree_sha) {
 
 			window.scroll(0, 0);
 
-			// close menu
-			Alpine.store("courseView").menuOpen = false;
-
 			// change location of window
 			window.history.replaceState("", "", courseURL + "/" + tree_sha)
 		} else {
@@ -139,9 +137,6 @@ function loadGithubSection(tree_sha) {
 			
 			// anchor is hidden by default so scroll up a bit.
 			window.scrollBy(0, -80);
-
-			// close menu
-			Alpine.store("courseView").menuOpen = false;
 		}
 	});
 }

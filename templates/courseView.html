@@ -49,10 +49,16 @@
 <script defer src="/resources/scripts/courseViewGithub.js"></script>
 <script defer src="/resources/scripts/courseViewUpload.js"></script>
 
+<!-- inline templated script -->
+{{ template "courseView_initDataFirstSection.html" . }}
+
 {{ if ne .PostID "" }}
 	<script defer>
 		document.addEventListener("alpine:init", function(event) {
 			viewPosts(); loadPost({{ .PostID }});
+
+			// loading the chat channel
+			loadChannel({{ .Channel.ID }});
 		});
 	</script>
 {{ else }}
@@ -60,18 +66,18 @@
 		document.addEventListener("alpine:init", function(e) {
 			// show contents view
 			viewContents();
+
+			{{ if ne .ChannelID "" }}
+				console.log("channel id provided, loading chat view")
+				// if the page was loaded wit a channel_id query then this is a notification so load channel
+				toggleChat();
+				loadChannel({{ .Channel.ID }});
+			{{ else }}
+				loadChannel({{ .Channel.ID }});
+			{{ end }}
 		});
 	</script>
 {{ end }}
-
-<script defer>
-	document.addEventListener("DOMContentLoaded", function(event) {
-		loadChannelMessages({{ .Channel.ID }});
-	});
-</script>
-
-<!-- inline template build script for non github based course versions -->
-{{ template "courseView_initDataFirstSection.html" . }}
 
 <link href="/resources/css/courseView.css" rel="stylesheet">
 

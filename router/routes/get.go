@@ -268,6 +268,8 @@ func getCourseVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
+	channelID := c.Query("channel_id")
+
 	postID := c.Query("post_id")
 
 	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
@@ -324,15 +326,27 @@ func getCourseVersion(c *gin.Context) {
 		log.Println("routes/get ERROR getting channels in getCourseVersion:", err4)
 	}
 
-	channel := db.Channel{}
-	if len(channels) != 0 {
-		channel = channels[0]
+	channel := &db.Channel{}
+	if len(channels) != 0 && channelID == "" {
+		channel = &channels[0]
+	}
+
+	if channelID != "" {
+		var err5 error
+		channel, err5 = db.GetChannel(channelID)
+		if err5 != nil {
+			log.Println("routes/get ERROR getting channel in getCourseVersion:", err5)
+			if len(channels) != 0 {
+				channel = &channels[0]
+			}
+		}
 	}
 
 	c.HTML(
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"ChannelID":  channelID, // if this is not an empty string then we load the channel since it was sent from a notification!
 			"Channel":    channel,
 			"Channels":   channels,
 			"PostID":     postID,

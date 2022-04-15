@@ -80,9 +80,6 @@ function loadUploadSection(sectionID) {
 	// set the current sectionID
 	Alpine.store("sections").current = sectionID;
 
-	// close menu
-	Alpine.store("courseView").menuOpen = false;
-
 	// get current course URL
 	let courseURL = document.getElementById("courseURL").innerText;
 

@@ -69,7 +69,7 @@ func postChannelSendMessage(c *gin.Context) {
 	}
 
 	usernames := helpers.GetUserMentions(markdown)
-	err5 := db.NotifyUsers(usernames, "@"+user.Username+" mentioned you in the chat of "+course.Title, "/"+course.User.Username+"/"+course.Name+"/view/"+versionID)
+	err5 := db.NotifyUsers(usernames, "@"+user.Username+" mentioned you in the chat of "+course.Title, "/"+course.User.Username+"/"+course.Name+"/view/"+versionID+"?channel_id="+channelID)
 	if err5 != nil {
 		log.Println("api/channels ERROR notifying users in postChannelNewMessage:", err5)
 	}

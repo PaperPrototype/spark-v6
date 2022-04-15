@@ -1,4 +1,4 @@
-// js api for application frontend
+// sparkers interal js api for the website frontend
 package api
 
 import (

@@ -1,6 +1,6 @@
 <div style="margin-left:2rem;">
 	{{ range .GetChildrenSectionsLogError }}
-		<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }});">
+		<div :class="$store.sections.current === {{ .ID }} ? 'selected' : ''" class="bd pad-05" @click="loadSection({{ .ID }}); $store.courseView.menuOpen = false;">
 			{{ .Name }}
 		</div>
 		{{ template "courseView_menu.html" . }}
