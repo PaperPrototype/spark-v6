@@ -72,3 +72,11 @@ func CreateGithubVersion(githubVersion *GithubVersion) error {
 func CreateComment(comment *Comment) error {
 	return gormDB.Create(comment).Error
 }
+
+func CreateChannel(channel *Channel) error {
+	return gormDB.Create(channel).Error
+}
+
+func CreateMessage(message *Message) error {
+	return gormDB.Create(&message).Error
+}

@@ -37,6 +37,10 @@
 			views: ['contents', 'posts'],
 
 			view: 'contents',
+			
+			// current channelID for the chat
+			channelID: {{ .Channel.ID }},
+			newestMessageDate: "", // newest message date
 		});
 	});
 </script>
@@ -59,6 +63,12 @@
 		});
 	</script>
 {{ end }}
+
+<script defer>
+	document.addEventListener("DOMContentLoaded", function(event) {
+		loadChannelMessages({{ .Channel.ID }});
+	});
+</script>
 
 <!-- inline template build script for non github based course versions -->
 {{ template "courseView_initDataFirstSection.html" . }}

@@ -782,8 +782,33 @@ func postNewGithubVersion(c *gin.Context) {
 }
 
 func postNewChannel(c *gin.Context) {
-	// username := c.Params.ByName("username")
-	// courseName := c.Params.ByName("course")
-	// channelName := c.PostForm("name")
+	username := c.Params.ByName("username")
+	courseName := c.Params.ByName("course")
+	channelName := c.PostForm("name")
+	versionID := c.PostForm("versionID")
 
+	channelName = helpers.ConvertToAllowedName(channelName)
+
+	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	if err != nil {
+		log.Println("routes/post ERROR getting user course in postNewChannel:", err)
+		msg.SendMessage(c, "Error getting course.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+versionID)
+		return
+	}
+
+	channel := db.Channel{
+		CourseID: course.ID,
+		Name:     channelName,
+	}
+	err1 := db.CreateChannel(&channel)
+	if err1 != nil {
+		log.Println("routes/post ERROR creating channel in postNewChannel:", err1)
+		msg.SendMessage(c, "Error getting course.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+versionID)
+		return
+	}
+
+	msg.SendMessage(c, "Successfully created channel")
+	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+versionID)
 }

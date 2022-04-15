@@ -361,7 +361,6 @@ function sendComment(event) {
 // abort any previous polling requests in for comments
 function resetComments() {
 	abortCommentsController.abort();
-
 	abortCommentsController = new AbortController();
 }
 
@@ -393,8 +392,8 @@ async function loadPostComments(postID) {
 
 		console.log("error getting comments...:", err);
 
-		// wait 1 second
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		// wait 3 seconds
+		await new Promise(resolve => setTimeout(resolve, 3000));
 
 		// then long poll comments again
 		await loadPostComments(postID);
@@ -444,12 +443,102 @@ async function loadPostComments(postID) {
 }
 
 async function sendMessage() {
+
 	let chatTextarea = document.getElementById("chatTextarea");
-	await fetch("/api/version/:versionID/channel/:channelID/new");
+
+	if (chatTextarea.value === "") {
+		SendMessage("Can't send an empty message!");
+		return
+	}
+
+	let versionID = document.getElementById("versionID").innerText;
+	let channelID = Alpine.store("courseView").channelID;
+
+	let formData = new FormData();
+	formData.append("markdown", chatTextarea.value);
+
+	try {
+		console.log("sending message...");
+		await fetch("/api/version/" + versionID + "/channel/" + channelID + "/message", {
+			method: "POST",
+			body: formData,
+		});
+	} catch {
+		SendMessage("Error sending message.");
+	}
+
+	chatTextarea.value = "";
 }
 
-function loadChat() {
+async function loadChannelMessages(channelID) {
+	if (channelID === 0) {
+		console.log("no channels to laod messages from");
+		return
+	}
 
+	console.log("loading messages...");
+
+	let newest = Alpine.store("courseView").newestMessageDate;
+	let channelMount = document.getElementById("channelMount");
+
+	// if this is the first time we load we should clear the html
+	if (newest === "") {
+		channelMount.innerHTML = "";
+	}
+
+	// new channel loaded, clear the old comments
+	if (Alpine.store("courseView").channelID !== channelID) {
+		channelMount.innerHTML = "";
+	}
+
+	let resp;
+	try {
+		resp = await fetch("/api/channels/"+channelID+"?newest="+newest, {
+			method: "GET",
+		})
+	} catch (err) {
+		if (err.name === "AbortError") {
+			console.log("fetch comments was aborted...");
+			return
+		}
+
+		console.log("error getting messages...:", err);
+
+		// wait 3 seconds
+		await new Promise(resolve => setTimeout(resolve, 3000));
+
+		// then long poll messages again
+		await loadChannelMessages(channelID);
+		return
+	}
+
+	let json = await resp.json()
+	
+	let lastMessage;
+	for (let i = 0; i < json.Messages.length; i++) {
+		let message = document.createElement("div");
+		message.innerHTML = `<p>` + json.Messages[i].Markdown + `</p>`;
+
+		channelMount.append(message);
+
+		if (i === json.Messages.length - 1) {
+			Alpine.store("courseView").newestMessageDate = json.Messages[i].CreatedAt;
+
+			console.log("messages delivered...");
+
+			// set last comment
+			lastMessage = message;
+		}
+	}
+
+	// if there is a last comment
+	if (lastMessage !== undefined) {
+		lastMessage.scrollIntoView();
+	}
+
+	// wait 1 second
+	await new Promise(resolve => setTimeout(resolve, 1000));
+	await loadChannelMessages(channelID);
 }
 
 function fixImageLinks(markdown) {

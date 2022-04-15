@@ -273,9 +273,8 @@ func postSettingsEditUser(c *gin.Context) {
 				return
 			}
 
-			msg.SendMessage(c, "Invalid username username is already taken.")
-			c.Redirect(http.StatusFound, "/settings")
-			return
+			msg.SendMessage(c, "Username contained invalid characters. Valid characters are "+helpers.AllowedUsernameCharacters)
+			username = helpers.ConvertToAllowedName(username)
 		}
 	}
 

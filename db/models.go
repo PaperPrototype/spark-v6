@@ -21,6 +21,7 @@ func migrate() {
 		&Section{},
 		&Content{},
 		&Channel{},
+		&Message{},
 
 		// github based courses
 		&GithubRelease{},
@@ -285,6 +286,9 @@ type Message struct {
 	ChannelID uint64 `gorm:"not null"`
 	CreatedAt time.Time
 	Markdown  string
+
+	// preloads
+	User User
 }
 
 /* RELATIONS */

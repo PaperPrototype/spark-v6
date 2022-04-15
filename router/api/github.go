@@ -108,7 +108,7 @@ func getGithubRepoCommitTree(c *gin.Context) {
 	}
 
 	// get course owner
-	course, err2 := db.GetCourse(version.CourseID)
+	course, err2 := db.GetCoursePreloadUser(version.CourseID)
 	if err2 != nil {
 		log.Println("api/github ERROR getting course in getGithubRepoCommitTree:", err2)
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -195,7 +195,7 @@ func getGithubRepoCommitContent(c *gin.Context) {
 	}
 
 	// get course owner
-	course, err2 := db.GetCourse(version.CourseID)
+	course, err2 := db.GetCoursePreloadUser(version.CourseID)
 	if err2 != nil {
 		log.Println("api/github ERROR getting course in getGithubRepoCommitContent:", err2)
 		c.AbortWithStatus(http.StatusInternalServerError)

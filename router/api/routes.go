@@ -13,6 +13,8 @@ func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/version/:versionID/posts/proposal", getVersionProposalPosts)                             // proposal posts for final project
 	group.GET("/version/:versionID/projects", getVersionProjects)                                        // course final projects
 	group.POST("/version/:versionID/posts/:postID/comment", middlewares.MustBeLoggedIn, postPostComment) // creates notification linked to course release
+	group.POST("/version/:versionID/channel/:channelID/message", middlewares.MustBeLoggedIn, postChannelSendMessage)
+	group.GET("/channels/:channelID", getChannelMessages)
 
 	group.GET("/posts/:postID", getPost)
 	group.GET("/posts/:postID/comments", getPostComments) // utilizes long polling

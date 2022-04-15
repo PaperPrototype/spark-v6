@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"bytes"
 	"strings"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -147,6 +148,29 @@ func IsAllowedUsername(username string) bool {
 		}
 	}
 	return true
+}
+
+func ConvertToAllowedName(username string) string {
+	newUsername := ""
+
+	for i := range username {
+		newUsername += replaceToAllowed(username[i])
+	}
+	return newUsername
+}
+
+// replaces the character with a reasonable valid character or removes the character completely
+func replaceToAllowed(char byte) string {
+	char = bytes.ToLower([]byte{char})[0]
+
+	// if bad character
+	if !strings.Contains(AllowedUsernameCharacters, string(char)) {
+		if char == ' ' {
+			return "-"
+		}
+	}
+
+	return string(char)
 }
 
 // get usernames after an @ out of markdown and return them

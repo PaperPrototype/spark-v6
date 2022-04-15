@@ -40,7 +40,7 @@ func GetNewUnreadNotifs(userID uint64, newestDate string) ([]Notif, int64, error
 	return notifs, count, err1
 }
 
-func NotifyUsers(usernames []string, messsage string, url string) error {
+func NotifyUsers(usernames []string, message string, url string) error {
 	var userIDs []uint64
 
 	err := gormDB.Model(&User{}).Where("username IN (?)", usernames).Pluck("id", &userIDs).Error
@@ -52,7 +52,7 @@ func NotifyUsers(usernames []string, messsage string, url string) error {
 	for _, id := range userIDs {
 		notif := Notif{
 			UserID:  id,
-			Message: messsage,
+			Message: message,
 			URL:     url,
 		}
 		err1 := gormDB.Create(&notif).Error

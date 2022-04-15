@@ -305,7 +305,6 @@ func getCourseVersion(c *gin.Context) {
 	var progress int64
 	user := auth.GetLoggedInUserLogError(c)
 	postsCount := release.UserPostsCountLogError(user.ID)
-	log.Println("posts count is:", postsCount)
 
 	if auth.IsLoggedInValid(c) {
 		if release.PostsNeededNum != 0 {
@@ -318,14 +317,24 @@ func getCourseVersion(c *gin.Context) {
 			// cast and save
 			progress = int64(floatProgress)
 		}
+	}
 
-		log.Println("progress:", progress)
+	channels, err4 := db.GetChannels(course.ID)
+	if err4 != nil {
+		log.Println("routes/get ERROR getting channels in getCourseVersion:", err4)
+	}
+
+	channel := db.Channel{}
+	if len(channels) != 0 {
+		channel = channels[0]
 	}
 
 	c.HTML(
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"Channel":    channel,
+			"Channels":   channels,
 			"PostID":     postID,
 			"PostsCount": postsCount,
 			"Release":    release,
@@ -463,7 +472,6 @@ func getCourseVersionSection(c *gin.Context) {
 	var progress int64
 	user := auth.GetLoggedInUserLogError(c)
 	postsCount := release.UserPostsCountLogError(user.ID)
-	log.Println("posts count is:", postsCount)
 
 	if auth.IsLoggedInValid(c) {
 		if release.PostsNeededNum != 0 {
@@ -476,14 +484,24 @@ func getCourseVersionSection(c *gin.Context) {
 			// cast and save
 			progress = int64(floatProgress)
 		}
+	}
 
-		log.Println("progress:", progress)
+	channels, err4 := db.GetChannels(course.ID)
+	if err4 != nil {
+		log.Println("routes/get ERROR getting channels in getCourseVersion:", err4)
+	}
+
+	channel := db.Channel{}
+	if len(channels) != 0 {
+		channel = channels[0]
 	}
 
 	c.HTML(
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"Channel":    channel,
+			"Channels":   channels,
 			"SHA":        c.Params.ByName("sha"),
 			"PostID":     postID,
 			"PostsCount": postsCount,

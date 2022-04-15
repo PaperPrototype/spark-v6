@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-func GetCourse(courseID interface{}) (*Course, error) {
+func GetCoursePreloadUser(courseID interface{}) (*Course, error) {
 	course := Course{}
-	err := gormDB.Model(&Course{}).Where("id = ?", courseID).First(&course).Error
+	err := gormDB.Model(&Course{}).Where("id = ?", courseID).Preload("User").First(&course).Error
 	return &course, err
 }
 

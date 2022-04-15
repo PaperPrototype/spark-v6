@@ -19,9 +19,9 @@
         window.addEventListener('resize', function() {
             adjustHeight(chatTextarea, minHeight);
         });
-
 	});
 
+	// taken from https://bdadam.com/blog/automatically-adapting-the-height-textarea.html
 	function adjustHeight(textareaElement, minHeight) {
         // compute the height difference which is caused by border and outline
         var outerHeight = parseInt(window.getComputedStyle(textareaElement).height, 10);
@@ -35,15 +35,18 @@
         textareaElement.style.height = Math.max(minHeight, textareaElement.scrollHeight + diff) + 'px';
     }
 </script>
-<div style="height:100%">
-	<div style="width:20rem; min-width:20rem; display:block">
-		{{ range .Channels }}
-			<p class="pad-05 bd">{{ .Name }}</p>
+<div style="height:100%" x-data="{ channelsSelect: false }">
+	<div style="display:flex;">
+		{{ if .Channels }}
+			<p @click="channelsSelect = ! channelsSelect" class="pad-05 bd hoverable" style="max-width:50%;">
+				{{ .Channel.Name }}
+				<i class="fa-solid fa-caret-down" style="margin-left:0.5rem;"></i>
+			</p>
 		{{ end }}
 
 		<!-- only if the user is logged in and matches the author id -->
 		{{ if eq .User.ID .Course.User.ID }}
-			<div x-data="{ open: false }">
+			<div x-data="{ open: false }" style="width:50%; margin-left:auto;">
 				<div x-show="open === false">
 					<p @click="open = true;" class="pad-05 bd bg" style="display:flex;">
 						new channel
@@ -52,6 +55,7 @@
 				</div>
 				<form x-show="open" action="/{{ .Course.User.Username }}/{{ .Course.Name }}/channel/new" method="post">
 					<p class="bg bd" style="display:flex;">
+						<input name="versionID" value="{{ .Version.ID }}" hidden>
 						<input name="name" class="hide-focus pad-05" style="border:none; background-color: transparent; width:100%;" placeholder="channel name...">
 						<i @click="open = false" style="margin-left:auto;" class="fa-solid fa-xmark pad-05"></i>
 						<button type="submit" class="pad-05 bd bd-none hoverable-bg-code">Save</button>
@@ -62,8 +66,14 @@
 	</div>
 	{{ if .Channels }}
 		<div class="bd thin-light" style="position:absolute; bottom:1rem; left:5%; right:5%; top:6rem;">
-			<div style="height:80%;">
-				messages
+			<div>
+				<div x-show="channelsSelect" style="padding-top:0.5rem;">
+					{{ range .Channels }}
+						<p class="pad-05 bd bg" style="margin:0.5rem; margin-top:0;">{{ .Name }}</p>
+					{{ end }}
+				</div>
+				<div class="pad-05" x-show="!channelsSelect" id="channelMount">
+				</div>
 			</div>
 			<div class="pad-05" style="position:absolute; bottom:0rem; left:0; right:0;">
 				<!--
@@ -72,11 +82,19 @@
 					<i class="fa-solid fa-circle-plus"></i>
 				</div>
 				-->
-				<div style="display:flex; padding-bottom: 0.5rem;">
-					<i x-data @click="sendMessage()" style="margin-left:auto;" class="fa-solid fa-paper-plane bd hoverable pad-05"></i>
-				</div>
+				{{ if .LoggedIn }}
+					<div style="display:flex; padding-bottom: 0.5rem;">
+						<i x-data @click="sendMessage()" style="margin-left:auto;" class="fa-solid fa-paper-plane bd hoverable pad-05"></i>
+					</div>
+				{{ end }}
 				<form class="bd thin-light pad-05 bg" style="min-width:100%; max-width:100%;">
-					<textarea id="chatTextarea" placeholder="chat..." class="bg bd-none hide-focus" style="display:block; width:100%; max-width:100%; min-width:100%; max-height: 20rem;"></textarea>
+					{{ if .LoggedIn  }}
+						<textarea id="chatTextarea" placeholder="chat..." class="bg bd-none hide-focus" style="display:block; width:100%; max-width:100%; min-width:100%; max-height: 20rem;"></textarea>
+					{{ else }}
+						<div id="chatTextarea" class="bg bd-none hide-focus" style="display:block; width:100%; max-width:100%; min-width:100%; max-height: 20rem;">
+							You must be <a href="/login">logged in</a> to send messages
+						</div>
+					{{ end }}
 				</form>
 			</div>
 		</div>
