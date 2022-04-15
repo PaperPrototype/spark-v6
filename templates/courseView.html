@@ -58,7 +58,7 @@
 			viewPosts(); loadPost({{ .PostID }});
 
 			// loading the chat channel
-			loadChannel({{ .Channel.ID }});
+			loadChannel({{ .Channel.ID }}, '{{ .Channel.Name }}');
 		});
 	</script>
 {{ else }}
@@ -71,9 +71,9 @@
 				console.log("channel id provided, loading chat view")
 				// if the page was loaded wit a channel_id query then this is a notification so load channel
 				toggleChat();
-				loadChannel({{ .Channel.ID }});
+				loadChannel({{ .Channel.ID }}, '{{ .Channel.Name }}');
 			{{ else }}
-				loadChannel({{ .Channel.ID }});
+				loadChannel({{ .Channel.ID }}, '{{ .Channel.Name }}');
 			{{ end }}
 		});
 	</script>

@@ -490,8 +490,11 @@ function chatResetTextarea() {
 	textareaElement.style.height = "1.2rem";
 }
 
-function loadChannel(channelID) {
+function loadChannel(channelID, channelName) {
 	resetMessages();
+
+	let channelTitle = document.getElementById("channelTitle");
+	channelTitle.innerText = channelName;
 
 	// new channel loaded, clear the old comments and set this as new channel
 	Alpine.store("courseView").channelID = channelID;
@@ -540,10 +543,7 @@ async function loadChannelMessages(channelID) {
 		return
 	}
 
-	let json = await resp.json()
-
-	let channelTitle = document.getElementById("channelTitle");
-	channelTitle.innerText = json.Channel.Name;
+	let json = await resp.json();
 	
 	let lastMessage;
 	for (let i = 0; i < json.Messages.length; i++) {

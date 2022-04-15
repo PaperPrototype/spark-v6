@@ -64,7 +64,7 @@
 			<div>
 				<div x-show="channelsSelect" style="padding-top:0.5rem;">
 					{{ range .Channels }}
-						<p @click="loadChannel({{ .ID }}); channelsSelect = false;" class="pad-05 bd bg" style="margin:0.5rem; margin-top:0;">{{ .Name }}</p>
+						<p @click="loadChannel({{ .ID }}, '{{ .Name }}'); channelsSelect = false;" class="pad-05 bd bg" style="margin:0.5rem; margin-top:0;">{{ .Name }}</p>
 					{{ end }}
 				</div>
 				<!-- messages -->
