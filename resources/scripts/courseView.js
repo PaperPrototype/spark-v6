@@ -548,7 +548,9 @@ async function loadChannelMessages(channelID) {
 	let lastMessage;
 	for (let i = 0; i < json.Messages.length; i++) {
 		let message = document.createElement("div");
-		message.innerHTML = `<p>` + json.Messages[i].Markdown + `</p>`;
+		message.innerHTML = `<div class="c-bold" style="margin-top:0.5rem; font-weight:600;" href="/` + json.Messages[i].User.Username + `" external> @` + json.Messages[i].User.Username + ` <i class="fa-solid fa-arrow-up-right-from-square"></i></div>` +
+		`<p>` + json.Messages[i].Markdown + `</p>`;
+		message.style = "border-top:0.08rem solid var(--c-light); margin-left:1rem; margin-right:1rem;";
 
 		channelMount.append(message);
 
