@@ -67,7 +67,7 @@
 			// show contents view
 			viewContents();
 
-			{{ if ne .ChannelID "" }}
+			{{ if .ChannelID }}
 				console.log("channel id provided, loading chat view")
 				// if the page was loaded wit a channel_id query then this is a notification so load channel
 				toggleChat();
