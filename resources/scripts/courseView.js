@@ -467,7 +467,16 @@ async function sendMessage() {
 		SendMessage("Error sending message.");
 	}
 
+	// minimize textarea after sending a message
+	chatResetTextarea();
+
 	chatTextarea.value = "";
+}
+
+function chatResetTextarea() {
+	let textareaElement = document.getElementById("chatTextarea");
+	// set the height to 0 in case of it has to be shrinked
+	textareaElement.style.height = "1.2rem";
 }
 
 async function loadChannelMessages(channelID) {
