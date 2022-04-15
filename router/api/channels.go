@@ -4,6 +4,7 @@ import (
 	"log"
 	"main/db"
 	"main/helpers"
+	"main/markdown"
 	"main/router/auth"
 	"net/http"
 	"strconv"
@@ -131,7 +132,17 @@ func getChannelMessages(c *gin.Context) {
 			}
 		}
 
-		// sending initial comments!
+		// convert markdown to html
+		for i := range messages {
+			buffer, err4 := markdown.Convert([]byte(messages[i].Markdown))
+			if err4 != nil {
+				log.Println("api/channels ERROR converting markdown in getChannelMessages:", err4)
+				break
+			}
+			messages[i].Markdown = buffer.String()
+		}
+
+		// sending initial messages!
 		c.JSON(
 			http.StatusOK,
 			ChannelPayload{
@@ -180,7 +191,16 @@ func getChannelMessages(c *gin.Context) {
 		}
 	}
 
-	// sending new comments!
+	for i := range messages {
+		buffer, err4 := markdown.Convert([]byte(messages[i].Markdown))
+		if err4 != nil {
+			log.Println("api/channels ERROR converting markdown in getChannelMessages:", err4)
+			break
+		}
+		messages[i].Markdown = buffer.String()
+	}
+
+	// sending new messages!
 	c.JSON(
 		http.StatusOK,
 		ChannelPayload{
