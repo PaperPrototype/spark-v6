@@ -69,16 +69,14 @@
 	</h4>
 	<p><span x-text="$store.progress.progress"></span>% done</p>
 	{{ if .LoggedIn }}
-		<p>Once you write {{ .Release.PostsNeededNum }} showcase posts you will have completed the course and will be able to join or create a final project proposal!</p>
+		<p>Once you write {{ .Release.PostsNeededNum }} showcase posts you will have completed the course and will be able to join or create a final project!</p>
 	{{ else }}
-		<p class="c-grey">You need to login if you want to write a post. Once you write {{ .Release.PostsNeededNum }} posts, you can join a final project or create a final project proposal!</p>
+		<p class="c-grey">You need to login if you want to write a post. Once you write {{ .Release.PostsNeededNum }} posts, you can join a final project!</p>
 	{{ end }}
 	<div x-show="open">
 	{{ if .LoggedIn }}
 		<div>
-			<a href="">See current proposals</a>
-			<p>A short post showcasing your skills! This will go on your portfolio!</p>
-			<textarea class="bd bg-overlay thin-light"  id="course_submitNewPostMarkdown" style="color:var(--c-text); padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
+			<textarea class="bd bg-overlay thin-light"  id="course_submitNewPostMarkdown" style="height:30rem; color:var(--c-text); padding: 0.5rem; max-width: 100%; min-width: 100%; min-height: 8rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;" 
 			placeholder=
 			"Write about what you made   
 
