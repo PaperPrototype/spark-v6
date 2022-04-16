@@ -437,9 +437,8 @@ async function loadPostComments(postID) {
 	if (lastComment !== undefined) {
 		lastComment.scrollIntoView();
 
-		// make links work?
-		// not sure why this is here
-		convertHrefs(document);
+		// make username links work
+		convertHrefs(postCommentsMount);
 	}
 
 	// wait 1 seconds
@@ -567,6 +566,9 @@ async function loadChannelMessages(channelID) {
 	// if there is a last comment
 	if (lastMessage !== undefined) {
 		lastMessage.scrollIntoView();
+		
+		// make username links work
+		convertHrefs(postCommentsMount);
 	}
 
 	// wait 1 second
