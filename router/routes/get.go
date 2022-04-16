@@ -20,7 +20,7 @@ import (
 )
 
 var metaDefault = Meta{
-	Title: "Sparker - Software and Programming Courses",
+	Title: "Sparker - Coding Courses",
 	Desc:  "It's time to ditch software degree's and switch to portfolio's",
 }
 
@@ -135,7 +135,10 @@ func getLanding(c *gin.Context) {
 			"Messages": msg.GetMessages(c),
 			"User":     auth.GetLoggedInUserLogError(c),
 			"LoggedIn": auth.IsLoggedInValid(c),
-			"Meta":     metaDefault,
+			"Meta": Meta{
+				Title: "Home - Sparker",
+				Desc:  "Coding Courses",
+			},
 		},
 	)
 }
