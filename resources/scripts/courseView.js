@@ -566,9 +566,9 @@ async function loadChannelMessages(channelID) {
 	// if there is a last comment
 	if (lastMessage !== undefined) {
 		lastMessage.scrollIntoView();
-		
+
 		// make username links work
-		convertHrefs(postCommentsMount);
+		convertHrefs(channelMount);
 	}
 
 	// wait 1 second

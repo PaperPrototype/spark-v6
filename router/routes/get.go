@@ -136,7 +136,7 @@ func getLanding(c *gin.Context) {
 			"User":     auth.GetLoggedInUserLogError(c),
 			"LoggedIn": auth.IsLoggedInValid(c),
 			"Meta": Meta{
-				Title: "Home - Sparker",
+				Title: "Sparker",
 				Desc:  "Coding Courses",
 			},
 		},
