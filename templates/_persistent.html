@@ -21,9 +21,6 @@
 		<li>
 			<a class="hoverable" href="/signup">signup</a>
 		</li>
-		<li x-data @click="$store.nav.show = ! $store.nav.show">
-			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
-		</li>
 	{{ else }}
 		<!-- Logged in -->
 		<img href="/" class="nav-logo" style="height:2.2rem; display: inline-block; position: relative;">
@@ -40,7 +37,7 @@
 			</form>
 		</li>
 		<li x-data x-init="loadNotifications()" @click="$store.notify.show = ! $store.notify.show;" class="nav-search-hidden-stick-right">
-			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto; display:flex;">
+			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto; display:flex; margin-top:0.2rem;">
 				<i x-show="$store.notify.new" x-text="$store.notify.count"
 				style="display:block; font-size:0.7rem; background-color:var(--c-code); padding:0.3rem; 
 				padding-bottom:0.05rem; padding-top:0.1rem; padding-right:0.4rem; border-radius:0.5rem; margin-right:0.2rem;"></i>
@@ -50,10 +47,10 @@
 		<li>
 			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/home"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
 		</li>
-		<li x-data @click="$store.nav.show = ! $store.nav.show">
-			<i class="fa-solid fa-bars hoverable bd pad-05"></i>
-		</li>
 	{{ end }}
+	<li x-data @click="$store.nav.show = ! $store.nav.show">
+		<i class="fa-solid fa-bars hoverable bd pad-05" style="margin-top:0.2rem;"></i>
+	</li>
 </ul>
 
 <!-- notifications dropdown -->
