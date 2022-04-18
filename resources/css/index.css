@@ -13,8 +13,8 @@
 }
 
 .nav-logo {
-	margin-top:1.1rem;
-	content:url('/resources/images/sparker_black.png');
+	margin-top:1rem;
+	content:url('/resources/images/sparker_code_black_transp.png');
 }
 
 /* dark mode */
@@ -38,8 +38,7 @@
 	}
 
 	.nav-logo {
-		margin-top:0.4rem;
-		content:url('/resources/images/spark_white.png');
+		content:url('/resources/images/sparker_code_transp.png');
 	}
 }
 

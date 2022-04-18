@@ -2,15 +2,15 @@
 
 <ul class="nav nav-row pad-sides-5 bg-overlay" id="topNav" style="z-index: -1; border-bottom:0.08rem solid var(--c-light);">
 	{{ if not .LoggedIn }}
-		<img href="/" class="nav-logo" style="height:2.1rem; display: inline-block; position: relative;">
+		<img href="/" class="nav-logo" style="height:2.2rem; display: inline-block; position: relative;">
 		<li>
-			<a href="/" style="font-size:1.2rem; font-weight:600; padding-left:0;">
-				sparker
+			<a href="/" style="font-size:1.2rem; font-weight:600;">
+				Sparker
 			</a>
 		</li>
 		<li style="margin-left:auto;" class="nav-search-bar-signup">
 			<form action="/courses" method="get">
-				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0rem;">
+				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0.15rem;">
 					<i class="fa-solid fa-magnifying-glass"></i><input name="query" placeholder="search..." class="pad-05 bd-none bd hide-focus bg-overlay">
 				</label>
 			</form>
@@ -23,15 +23,15 @@
 		</li>
 	{{ else }}
 		<!-- Logged in -->
-		<img href="/" class="nav-logo" style="height:2.1rem; display: inline-block; position: relative;">
+		<img href="/" class="nav-logo" style="height:2.2rem; display: inline-block; position: relative;">
 		<li>
-			<a href="/" style="font-size:1.2rem; font-weight:600; padding-left:0;">
-				sparker
+			<a href="/" style="font-size:1.2rem; font-weight:600;">
+				Sparker
 			</a>
 		</li>
 		<li style="margin-left:auto;" class="nav-search-bar">
 			<form action="/courses" method="get">
-				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0rem;">
+				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0.15rem;">
 					<i class="fa-solid fa-magnifying-glass"></i><input name="query" placeholder="search..." class="pad-05 bd-none bd hide-focus bg-overlay">
 				</label>
 			</form>
