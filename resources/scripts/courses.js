@@ -44,6 +44,7 @@ async function loadCourses() {
 				`</div>` +
 				`<div class="course-card-content">` + 
 					`<h3 class="c-bold course-card-title">` + title + `</h3>` +
+					`<div class="course-card-subtitle">` + json[i].Subtitle + `</div>` + 
 				`</div>` +
 			`</div>` + 
 			`<p>` + `by <a href="/` + json[i].User.Username + `">@` + json[i].User.Username + `</a></p>`;

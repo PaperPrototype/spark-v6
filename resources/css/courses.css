@@ -24,41 +24,72 @@
 .course-card-content {
 	height: 4.5rem;
 	padding:0.1rem;
+	transition: 1s;
 }
 
 .course-card-content h1, .course-card-content h2, .course-card-content h3, .course-card-content h4, .course-card-content h5, .course-card-content h6 {
 	margin-top: 0.5rem;
 }
 
-.course-card:hover .course-card-content {
-	height:20%;
+.course-card-title {
+	opacity: 1;
+	height:100%;
+	transition: 0.25s;
+	overflow: hidden;
+}
+
+.course-card-subtitle {
+	padding-top:0.2rem;
+	display:none;
+	opacity: 0;
+	transition: 0.25s;
+	height:100%;
+}
+
+.course-card:hover .course-card-title {
+	height:0;
+	margin:0;
+	padding:0;
 	opacity:0;
 }
 
+.course-card:hover .course-card-subtitle {
+	display:block;
+	opacity:1;
+}
+
 .course-card-img {
-	background-position: 50% 50%;
-    background-size: 100%;
-	opacity: 0.8;
+	background-position: 50% 40%;
+    background-size: 130%;
+	
 	height:100%;
-	width:20rem;;
-	transition: 2s;
+	width:20rem;
+	transition: 1s;
 }
 
 .course-card-img-wrapper {
 	background-color: black;
 	overflow: hidden;
 	height:12rem;
-	width:20rem;;
+	width:20rem;
+	transition: 1s;
 }
 
 .course-card:hover .course-card-img {
 	filter:blur(0rem);
-    background-size: 120%;
-	opacity: 1;
+
+	background-position: 50% 0%;
+    background-size: 110%;
 }
 
+/* make image larger */
 .course-card:hover .course-card-img-wrapper {
-	height:80%;
+	height:14rem;
+}
+
+/* make content smaller */
+.course-card:hover .course-card-content {
+	height:2.5rem;
 }
 
 .course-card-temp {
@@ -76,7 +107,7 @@
 	background-image: linear-gradient(rgb(255, 255, 255), hsl(0, 0, 80%));
 }
 
-@keyframes h {
+@keyframes animatecards {
 	0% {
 		background-image: linear-gradient(rgb(255, 255, 255), hsl(0, 0, 80%));
 	}
