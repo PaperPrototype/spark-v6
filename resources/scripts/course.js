@@ -1,6 +1,6 @@
 document.addEventListener("alpine:init", function(event) {
 	Alpine.store("course", {
-		tab: "course",
+		tab: "course", // defaults to the course tab
 		viewingReview: false,
 		editingReview: false,
 		viewingComments: false,
@@ -168,7 +168,7 @@ function postReview() {
 	})
 	.then(function(resp) {
 		if (!resp.ok) {
-			SendMessage("Error posting review");
+			SendMessage("Error posting review (you can only post 1 review per course).");
 			throw new Error("Response for postReview was not ok!");
 		}
 

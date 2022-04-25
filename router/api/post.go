@@ -211,7 +211,34 @@ func postNewReview(c *gin.Context) {
 
 	if markdown == "" || ratingStr == "" {
 		// cannot post an empty post
-		c.AbortWithStatus(http.StatusNotAcceptable)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	version, err := db.GetVersion(versionID)
+	if err != nil {
+		log.Println("api/post ERROR getting version in postNewReview:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	user := auth.GetLoggedInUserLogError(c)
+
+	numberOfReviews := db.CountUserReviewsLogError(user.ID, version.CourseID)
+	if numberOfReviews > 1 {
+		// user can only post 1 review per course
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	post := db.Post{
+		UserID:   user.ID,
+		Markdown: markdown,
+	}
+	err1 := db.CreatePost(&post)
+	if err1 != nil {
+		log.Println("api/post ERROR creating Post in postNewReview:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
@@ -225,26 +252,6 @@ func postNewReview(c *gin.Context) {
 	// keep in range of 0 to 5
 	if rating > 5 {
 		rating = 5
-	}
-
-	version, err := db.GetVersion(versionID)
-	if err != nil {
-		log.Println("api/post ERROR getting version in postNewReview:", err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	user := auth.GetLoggedInUserLogError(c)
-
-	post := db.Post{
-		UserID:   user.ID,
-		Markdown: markdown,
-	}
-	err1 := db.CreatePost(&post)
-	if err1 != nil {
-		log.Println("api/post ERROR creating Post in postNewReview:", err1)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
 	}
 
 	review := db.PostToCourseReview{

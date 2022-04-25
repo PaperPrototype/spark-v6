@@ -271,3 +271,12 @@ func CountCourseReviewsLogError(courseID uint64) int64 {
 	}
 	return count
 }
+
+func CountUserReviewsLogError(userID uint64, courseID uint64) int64 {
+	var count int64
+	err := gormDB.Model(&PostToCourseReview{}).Where("course_id = ?", courseID).Where("user_id = ?", userID).Count(&count).Error
+	if err != nil {
+		log.Println("db/utils ERROR counting PostToCourseReviews in CountUserReviewsLogError:", err)
+	}
+	return count
+}

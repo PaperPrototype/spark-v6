@@ -18,14 +18,15 @@
 </style>
 
 <div x-data style="display:flex;" class="pad-sides-5">
+	<!-- TODO final projects -->
+	<div @click="$store.course.tab = 'projects'" @click.once="loadProjects()" class="course-tab-item" :class="$store.course.tab === 'projects' ? 'selected' : '' ">
+		Student Work
+	</div>
 	<div @click="$store.course.tab = 'course'" class="course-tab-item" :class="$store.course.tab === 'course' ? 'selected' : '' ">
 		Course
 	</div>
 	<div @click="$store.course.tab = 'reviews'" @click.once="loadReviews()" class="course-tab-item" :class="$store.course.tab === 'reviews' ? 'selected' : '' ">
 		Reviews
-	</div>
-	<div @click.once="loadProjects()" class="course-tab-item" :class="$store.course.tab === 'projects' ? 'selected' : '' " style="cursor:not-allowed;">
-		Student Work
 	</div>
 </div>
 <div x-data class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
@@ -72,7 +73,7 @@
 	</div>
 	<div x-show="$store.course.tab === 'reviews'">
 		<!-- view an individual review -->
-		<div x-show="$store.course.viewingReview" class="pad-sides-5" style="width: 100%;">
+		<div x-show="$store.course.viewingReview" style="width: 100%;">
 			<div class="bg-overlay bd">
 				<div style="display:flex;">
 					<div style="padding: 0.5rem;">
@@ -126,36 +127,41 @@
 				</div>
 			</div>
 		</div>
-		<div class="pad-sides-5">
+		<div>
 			<h3><inline id="reviewsCount">Loading</inline> Reviews</h3>
 		</div>
 		<!-- post a new review -->
-		<div x-data="{ open: false }" x-show="!$store.course.viewingReview && $store.course.allowNewReview" class="pad-sides-5">
-			<h5 @click="open = ! open" class="bd hoverable-bg-code pad-05" style="width:fit-content;">Have a Review? <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
-			<di x-show="open">
-				<label for="postNewReviewRating">Rating</label>
-				<div>
-					<input class="bd-none bd thin-light pad-05" name="rating" id="postNewReviewRating" type="number" value="5" max="5" min="0">
-				</div>
-				<label for="postNewReviewMarkdown">Review</label>
-				<div>
-					<textarea placeholder="I love this course because..." class="bd pad-05 thin-light" id="postNewReviewMarkdown" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
-				</div>
-				<div>
-					<!-- TODO make sure users can only leave 1 review and not multiple reviews? -->
-					<button class="bd bd-none pad-05 hoverable-bg-code" @click.once="postReview()" style="width:100%;">Post</button>
+		{{ if .LoggedIn }}
+			<div x-data="{ open: false }" x-show="!$store.course.viewingReview && $store.course.allowNewReview">
+				<h5 @click="open = ! open" class="bd hoverable-bg-code pad-05" style="width:fit-content;">Have a Review? <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
+				<div x-show="open">
+					<label for="postNewReviewRating">Rating</label>
+					<div>
+						<input class="bd-none bd thin-light pad-05" name="rating" id="postNewReviewRating" type="number" value="5" max="5" min="0">
+					</div>
+					<label for="postNewReviewMarkdown">Review</label>
+					<div>
+						<textarea placeholder="I love this course because..." class="bd pad-05 thin-light" id="postNewReviewMarkdown" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+					</div>
+					<div>
+						<!-- TODO make sure users can only leave 1 review and not multiple reviews? -->
+						<button class="bd bd-none pad-05 hoverable-bg-code" @click.once="postReview()" style="width:100%;">Post</button>
+					</div>
 				</div>
 			</div>
-		</div>
+		{{ end }}
 		<!-- see all reviews -->
-		<div x-show="!$store.course.viewingPost" id="reviewsMount" class="pad-sides-5 pad-top-2rem">
+		<div x-show="!$store.course.viewingPost" id="reviewsMount" class="pad-top-2rem">
 			All reviews
 		</div>
-		<div class="pad-sides-5">
+		<div>
 			<!-- load more reviews -->
 			<!-- automatically remember's the db offset-->
 			<button class="pad-05 bd bd-none hoverable-bg-code" @click="loadMoreReviews()">Load more</button>
 		</div>
+	</div>
+	<div x-show="$store.course.tab === 'projects'">
+		<h2>"Final Projects" coming soon.</h2>
 	</div>
 </div>
 
