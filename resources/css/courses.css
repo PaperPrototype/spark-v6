@@ -22,7 +22,12 @@
 }
 
 .course-card-content {
-	height: 4rem;
+	height: 4.5rem;
+	padding:0.1rem;
+}
+
+.course-card-content h1, .course-card-content h2, .course-card-content h3, .course-card-content h4, .course-card-content h5, .course-card-content h6 {
+	margin-top: 0.5rem;
 }
 
 .course-card:hover .course-card-content {
