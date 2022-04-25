@@ -2,18 +2,26 @@
 
 <link href="/resources/css/courses.css" rel="stylesheet">
 
-<div class="pad-sides-5 pad-top-5rem text-center">
+<div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1>Home</h1>
 	<a href="/{{ .User.Username }}">View public profile</a>
 </div>
-<div class="pad-sides-5">
+<div class="pad-sides-5 bg-overlay pad-top-2rem">
 	<h2>Taken Courses</h2>
 	{{ if .ProfileCourses }}
 		<div class="course-cards">
 			{{ range .ProfileCourses }}
-				<div class="course-card">
-					<h2 href="/{{ $.User.Username }}/{{ .Name }}">{{ .Title }}</h2>
-					<a href="/:course/view/:versionID/posts/user/:username">User posts</a>
+				<div class="course-card-wrapper">
+					<div class="course-card" href="/{{ $.User.Username }}/{{ .Name }}">
+						<div class="course-card-img-wrapper">
+							<img class="course-card-img" style="background-image:url(/resources/images/homepage.png);">
+						</div>
+						<div class="course-card-content">
+							<h2 class="c-bold course-card-title">{{ .Title }}</h2>
+						</div>
+					</div>
+					<p><a href="/:course/view/:versionID/posts/user/:username">{{ .User.Username }}'s posts</a></p>
+					<p>by <a href="/{{ $.User.Username }}">@{{ $.User.Username }}</a></p>
 				</div>
 			{{ end }}
 		</div>
@@ -24,9 +32,16 @@
 	{{ if .AuthoredCourses }}
 		<div class="course-cards">
 			{{ range .AuthoredCourses }}
-				<div class="course-card">
-					<h2 href="/{{ $.User.Username }}/{{ .Name }}">{{ .Title }}</h2>
-					<a href="/:course/view/:versionID/posts/user/:username">User posts</a>
+				<div class="course-card-wrapper">
+					<div class="course-card" href="/{{ $.User.Username }}/{{ .Name }}">
+						<div class="course-card-img-wrapper">
+							<img class="course-card-img" style="background-image:url(/resources/images/homepage.png);">
+						</div>
+						<div class="course-card-content">
+							<h2 class="c-bold course-card-title">{{ .Title }}</h2>
+						</div>
+					</div>
+					<p><a href="/:course/view/:versionID/posts/user/:username">{{ $.User.Username }}'s posts</a></p>
 				</div>
 			{{ end }}
 		</div>

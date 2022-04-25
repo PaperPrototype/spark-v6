@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"main/router/api"
 	"main/router/routes"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,6 +24,9 @@ func Setup() {
 
 	router.RemoveExtraSlash = true
 	router.RedirectTrailingSlash = true
+	router.NoRoute(func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/lost")
+	})
 
 	router.SetFuncMap(template.FuncMap{
 		// a sictionary util that can be used to pass input to templates

@@ -20,13 +20,18 @@ async function loadCourses() {
 
 		for (let i = 0; i < json.length; i++) {
 			let card = document.createElement("div");
-			card.classList.add("course-card");
-			card.classList.add("c-bold");
-			card.setAttribute("href", "/"+json[i].User.Username + "/" + json[i].Name);
+			card.setAttribute("class", "course-card-wrapper");
 
 			card.innerHTML = 
-			`<h2>` + json[i].Title + `</h2>` +
-			`<p>` + `by @` + json[i].User.Username + `</p>`;
+			`<div class="course-card" href="/` + json[i].User.Username + "/" + json[i].Name + `">` +
+				`<div class="course-card-img-wrapper">` +
+					`<img class="course-card-img" style='background-image:url(/resources/images/homepage.png);'>` + 
+				`</div>` +
+				`<div class="course-card-content">` + 
+					`<h2 class="c-bold course-card-title">` + json[i].Title + `</h2>` +
+				`</div>` +
+			`</div>` + 
+			`<p>` + `by <a href="/` + json[i].User.Username + `">@` + json[i].User.Username + `</a></p>`;
 
 			cards.appendChild(card);
 		}
