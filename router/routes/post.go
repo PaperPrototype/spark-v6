@@ -477,6 +477,7 @@ func postEditRelease(c *gin.Context) {
 	price := c.PostForm("price")
 	publicStr := c.PostForm("public")
 	postsNeeded := c.PostForm("postsNeededNum")
+	imageURL := c.PostForm("imageURL")
 
 	course, err6 := db.GetUserCoursePreloadUser(username, courseName)
 	if err6 != nil {
@@ -539,7 +540,7 @@ func postEditRelease(c *gin.Context) {
 		public = true
 	}
 
-	err := db.UpdateRelease(releaseID, desc, correctPriceNum, public, uint16(postsNeededNum))
+	err := db.UpdateRelease(releaseID, desc, correctPriceNum, public, uint16(postsNeededNum), imageURL)
 	if err != nil {
 		log.Println("routes ERROR updating release:", err)
 		msg.SendMessage(c, "Error updating release.")

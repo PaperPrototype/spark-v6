@@ -11,6 +11,8 @@ async function loadCourses() {
 		return resp.json();
 	})
 	.then(function(json) {
+		console.log("courses:", json);
+
 		let cards = document.getElementById("cards");
 		cards.innerHTML = "";
 
@@ -28,10 +30,17 @@ async function loadCourses() {
 				title += "...";
 			}
 
+			let imageURL = json[i].Release.ImageURL;
+			if (imageURL === "")
+			{
+				// set default
+				imageURL = "/resources/images/planet.png";
+			}
+
 			card.innerHTML = 
 			`<div class="course-card" href="/` + json[i].User.Username + "/" + json[i].Name + `">` +
 				`<div class="course-card-img-wrapper">` +
-					`<img class="course-card-img" style='background-image:url(/resources/images/homepage.png);'>` + 
+					`<img class="course-card-img" style='background-image:url(` + imageURL + `);'>` + 
 				`</div>` +
 				`<div class="course-card-content">` + 
 					`<h3 class="c-bold course-card-title">` + title + `</h3>` +

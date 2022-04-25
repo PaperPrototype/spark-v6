@@ -2,12 +2,30 @@
 package routes
 
 import (
+	"main/msg"
+	"main/router/auth"
 	"main/router/middlewares"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AddRoutes(router *gin.Engine) {
+	// TODO
+	// how to and courses advice page
+	router.GET("/guidelines", func(c *gin.Context) {
+		c.HTML(
+			http.StatusOK,
+			"guidelines.html",
+			gin.H{
+				"Messages": msg.GetMessages(c),
+				"User":     auth.GetLoggedInUserLogError(c),
+				"LoggedIn": auth.IsLoggedInValid(c),
+				"Meta":     metaDefault,
+			},
+		)
+	})
+
 	// landing page
 	router.GET("/", getLanding) // index
 

@@ -1,6 +1,6 @@
 {{ template "_header.html" . }}
 
-<div style="display:none;" id="courseID" value="{{ .Course.ID }}"></div>
+<div hidden id="courseID" value="{{ .Course.ID }}"></div>
 
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1><i class="fa-solid fa-arrow-left-long pad-05 bd hoverable-bg-overlay" href="/{{ .Course.User.Username }}/{{ .Course.Name }}"></i>{{ .Course.Title }} Setting's</h1>
@@ -64,8 +64,10 @@
 	{{ if .Releases }}
 		<h2>Releases</h2>
 		<div>
+			<script defer src="/resources/scripts/courseSettingsRelease.js"></script>
 			{{ range .Releases }}
 				<div x-data="dropdown" class="thin-grey bd" style="margin-bottom: 2rem; padding: 1rem;">
+					<!-- a release -->
 					<div>
 						<div style="display:flex;">
 							<h4 style="margin-top: 0.5rem; margin-right: 0.5rem;" @click="toggle()">
@@ -84,9 +86,10 @@
 								<div style="margin-bottom: 1rem;">
 									<input min="0" max="10" step="1" name="price" class="form-input" type="number" value="{{ .GetPriceUSD }}">
 								</div>
+								<label>Needed Number of Posts</label>
 								<div>
 									<input name="postsNeededNum" class="form-input" type="number" step="1" max="100" min="1" value="2">
-									<p class="c-grey">Number of posts a student must write to complete the course. About 1 post per 3 sections, or 1 post per each project/challenge section.</p>
+									<p class="c-grey">Number of posts a student must write to complete the course. Usually 1 per "challenge". <a href="/guidelines">Learn more about challenges.</a></p>
 								</div>
 								<label style="margin-top: 0.5rem;">Markdown Description</label>
 								<div style="margin-bottom: 1rem;">
@@ -95,6 +98,17 @@
 								<label>Public</label>
 								<div style="margin-bottom: 1rem;">
 									<input type="checkbox" name="public" {{ if .Public }} checked {{ end }}>
+								</div>
+								<div style="padding-bottom:1rem;">
+									<label>Cover/Banner Image</label>
+									<select name="imageURL" @click.once="loadReleaseImageURLs($el, {{ .GetNewestVersionLogError.ID }})" class="bg-overlay bd pad-05 thin-light">
+										{{ if .ImageURL }}
+											<option value="{{ .ImageURL }}">{{ .ImageURL }}</option>
+										{{ else }}
+											<option value="">None</option>
+										{{ end }}
+									</select>
+									<p class="c-grey">Select an image from the newest course version.</p>
 								</div>
 								<div>
 									<button class="bd bd-none bg-code pad-05" type="submit">Save</button>

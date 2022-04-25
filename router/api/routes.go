@@ -36,8 +36,8 @@ func AddRoutes(group *gin.RouterGroup) {
 
 	// getting a GITHUB based course
 	// for public viewing and paying customers
-	group.GET("/github/version/:versionID/tree", getGithubRepoCommitTree)
-	group.GET("/github/version/:versionID/content/:commit_sha/*path", getGithubRepoCommitContent)
+	group.GET("/github/version/:versionID/tree", getGithubRepoCommitTree)                         // get the contents in the repo at the commit for that version
+	group.GET("/github/version/:versionID/content/:commit_sha/*path", getGithubRepoCommitContent) // used primarily to get an english.md file from the repo
 
 	// get github info for logged in users with their githubConnection
 	group.GET("/github/user/repos", middlewares.MustBeLoggedIn, getGithubUserRepos)

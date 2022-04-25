@@ -151,7 +151,8 @@ type Course struct {
 	UserID uint64 `gorm:"not null"`
 
 	// ORM preloadable property
-	User User
+	User    User
+	Release Release // can be preloaded with the newest release
 
 	Channels []Channel `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // channels for the courses chat
 	Releases []Release `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // course releases
@@ -176,10 +177,12 @@ type Release struct {
 	Price          uint64 `gorm:"default:0"`
 	Num            uint16 `gorm:"default:0"`
 	Markdown       template.HTML
-	CourseID       uint64 `gorm:"not null"`
-	Public         bool   `gorm:"default:f"`
-	Level          uint32 `gorm:"default:0; not null"`
-	PostsNeededNum uint16 `gorm:"default:2;"`
+	CourseID       uint64    `gorm:"not null"`
+	Public         bool      `gorm:"default:f"`
+	Level          uint32    `gorm:"default:0; not null"`
+	PostsNeededNum uint16    `gorm:"default:2;"`
+	CreatedAt      time.Time `gorm:"default:now(); not null"`
+	ImageURL       string    `gorm:"default:'';"`
 
 	GithubRelease GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // githbu repo info
 

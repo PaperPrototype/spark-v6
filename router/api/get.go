@@ -11,7 +11,7 @@ import (
 )
 
 func getCourses(c *gin.Context) {
-	courses, err := db.GetAllPublicCoursesPreloadUser()
+	courses, err := db.GetAllPublicCoursesPreload()
 
 	if err != nil {
 		log.Println("api ERROR getting course for api/getCourses:", err)
