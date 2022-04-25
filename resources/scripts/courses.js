@@ -22,13 +22,19 @@ async function loadCourses() {
 			let card = document.createElement("div");
 			card.setAttribute("class", "course-card-wrapper");
 
+			let title = json[i].Title.slice(0, 100);
+			if (title.length < json[i].Title.length)
+			{
+				title += "...";
+			}
+
 			card.innerHTML = 
 			`<div class="course-card" href="/` + json[i].User.Username + "/" + json[i].Name + `">` +
 				`<div class="course-card-img-wrapper">` +
 					`<img class="course-card-img" style='background-image:url(/resources/images/homepage.png);'>` + 
 				`</div>` +
 				`<div class="course-card-content">` + 
-					`<h2 class="c-bold course-card-title">` + json[i].Title + `</h2>` +
+					`<h3 class="c-bold course-card-title">` + title + `</h3>` +
 				`</div>` +
 			`</div>` + 
 			`<p>` + `by <a href="/` + json[i].User.Username + `">@` + json[i].User.Username + `</a></p>`;

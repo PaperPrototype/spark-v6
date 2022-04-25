@@ -5,12 +5,29 @@
 	overflow-x: scroll;
 }
 
+.course-card-wrapper {
+	display:flex;
+	flex-direction: column;
+
+	width: 20rem;
+	height: auto;
+	margin: 1rem;
+}
+
 .course-card {
-	min-height:20rem;
-	max-height: 30rem;
+	height: 100%;
 	cursor: pointer;
 	background-color: var(--c-bg-overlay);
 	transition: 0.5s;
+}
+
+.course-card-content {
+	height: 4rem;
+}
+
+.course-card:hover .course-card-content {
+	height:20%;
+	opacity:0;
 }
 
 .course-card-img {
@@ -24,37 +41,18 @@
 .course-card-img-wrapper {
 	background-color: black;
 	overflow: hidden;
-	height:50%;
+	height:12rem;
 	width:20rem;;
 }
 
 .course-card:hover .course-card-img {
 	filter:blur(0rem);
-    background-size: 210%;
     background-size: 250%;
 	opacity: 1;
 }
 
 .course-card:hover .course-card-img-wrapper {
-	height:60%;
-}
-
-.course-card:hover .course-card-content {
-	height:40%;
-}
-
-.course-card-content {
-	padding:0.5rem;
-	height: 50%;
-}
-
-.course-card-wrapper {
-	display:flex;
-	flex-direction: column;
-
-	width: 20rem;
-	height: auto;
-	margin: 1rem;
+	height:80%;
 }
 
 .course-card-temp {
