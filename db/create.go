@@ -80,3 +80,7 @@ func CreateChannel(channel *Channel) error {
 func CreateMessage(message *Message) error {
 	return gormDB.Create(&message).Error
 }
+
+func CreateReview(review *PostToCourseReview) error {
+	return gormDB.Create(&review).Error
+}

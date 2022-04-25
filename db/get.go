@@ -238,3 +238,9 @@ func GetVerify(verifyUUID string) (*Verify, error) {
 	err := gormDB.Model(&Verify{}).Where("verify_uuid = ?", verifyUUID).First(&verify).Error
 	return &verify, err
 }
+
+func GetCourseReviews(courseID uint64, offset int, limit int) ([]PostToCourseReview, error) {
+	reviews := []PostToCourseReview{}
+	err := gormDB.Model(&PostToCourseReview{}).Where("course_id = ?", courseID).Preload("User").Preload("Post").Preload("Release").Order("created_at DESC").Offset(offset).Limit(limit).Find(&reviews).Error
+	return reviews, err
+}

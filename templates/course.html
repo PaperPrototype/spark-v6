@@ -21,8 +21,11 @@
 	<div @click="$store.course.tab = 'course'" class="course-tab-item" :class="$store.course.tab === 'course' ? 'selected' : '' ">
 		Course
 	</div>
-	<div @click="$store.course.tab = 'reviews'" class="course-tab-item" :class="$store.course.tab === 'reviews' ? 'selected' : '' ">
+	<div @click="$store.course.tab = 'reviews'" @click.once="loadReviews()" class="course-tab-item" :class="$store.course.tab === 'reviews' ? 'selected' : '' ">
 		Reviews
+	</div>
+	<div @click.once="loadProjects()" class="course-tab-item" :class="$store.course.tab === 'projects' ? 'selected' : '' " style="cursor:not-allowed;">
+		Student Work
 	</div>
 </div>
 <div x-data class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
@@ -68,10 +71,90 @@
 		{{ end }}
 	</div>
 	<div x-show="$store.course.tab === 'reviews'">
-		<h2>Highest <i class="fa-solid fa-caret-down"></i></h2>
-		<div>
-			<div>Lowest</div>
-			<div>Highest</div>
+		<!-- view an individual review -->
+		<div x-show="$store.course.viewingReview" class="pad-sides-5" style="width: 100%;">
+			<div class="bg-overlay bd">
+				<div style="display:flex;">
+					<div style="padding: 0.5rem;">
+						by <span id="postMountUser"></span>
+					</div>
+					<!-- edit buttons-->
+					<div x-show="$store.course.editingReview === false" class="hoverable bd" id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
+						<i class="fa-solid fa-pen-to-square"></i>
+					</div>
+					<div x-show="$store.course.editingReview === true" class="hoverable bd" @click="$store.course.editingReview = false;" style="margin-left:auto; padding: 0.5rem;">
+						<i style="margin-left:auto;" class="fa-solid fa-xmark"></i>
+					</div>
+				</div>
+				<!-- update post -->
+				<div x-show="$store.course.editingReview">
+					<textarea class="bd" id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+					<div>
+						<button class="bd bd-none pad-05 hoverable-bg-code" @click="updatePost()" style="width:100%;">Update</button>
+					</div>
+				</div>
+				<!-- post -->
+				<div x-show="!$store.course.editingReview" style="padding: 0.5rem; width: 100%;" class="bd thin-light">
+					<div markdown id="postMount" x-show="!$store.course.viewingComments">
+					</div>
+					<!-- post comments -->
+					<div x-show="$store.course.viewingComments">
+						<div style="height:25rem; overflow-y:scroll;">
+							<div style="display:flex; justify-content:flex-end; flex-direction:column;">
+								<p style="margin-left:1rem; margin-right:1rem;">
+									This is the beginning of the comments.
+								</p>
+								<div id="postCommentsMount"></div>
+							</div>
+						</div>
+					</div>
+					<div style="display:flex;" class="bg-overlay">
+						<div x-show="$store.course.viewingComments" style="width:100%; margin-right:0.5rem;">
+							<form id="postCommentsForm">
+								<!-- comment input -->
+								{{ if .LoggedIn }}
+									<input id="postCommentsSend" class="bd thin-light pad-05 bg" placeholder="comment..." style="width:100%;">
+								{{ else }}
+									<div class="pad-05 thin-top"><a href="/login">login</a> to comment</div>
+								{{ end }}
+							</form>
+						</div>
+						<div @click="$store.course.viewingComments = ! $store.course.viewingComments" style="margin-left:auto;">
+							<i :class="$store.course.viewingComments ? 'fa-arrow-turn-up' : 'fa-comments' " class="fa-solid hoverable pad-05 bd"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="pad-sides-5">
+			<h3><inline id="reviewsCount">Loading</inline> Reviews</h3>
+		</div>
+		<!-- post a new review -->
+		<div x-data="{ open: false }" x-show="!$store.course.viewingReview && $store.course.allowNewReview" class="pad-sides-5">
+			<h5 @click="open = ! open" class="bd hoverable-bg-code pad-05" style="width:fit-content;">Have a Review? <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
+			<di x-show="open">
+				<label for="postNewReviewRating">Rating</label>
+				<div>
+					<input class="bd-none bd thin-light pad-05" name="rating" id="postNewReviewRating" type="number" value="5" max="5" min="0">
+				</div>
+				<label for="postNewReviewMarkdown">Review</label>
+				<div>
+					<textarea placeholder="I love this course because..." class="bd pad-05 thin-light" id="postNewReviewMarkdown" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
+				</div>
+				<div>
+					<!-- TODO make sure users can only leave 1 review and not multiple reviews? -->
+					<button class="bd bd-none pad-05 hoverable-bg-code" @click.once="postReview()" style="width:100%;">Post</button>
+				</div>
+			</div>
+		</div>
+		<!-- see all reviews -->
+		<div x-show="!$store.course.viewingPost" id="reviewsMount" class="pad-sides-5 pad-top-2rem">
+			All reviews
+		</div>
+		<div class="pad-sides-5">
+			<!-- load more reviews -->
+			<!-- automatically remember's the db offset-->
+			<button class="pad-05 bd bd-none hoverable-bg-code" @click="loadMoreReviews()">Load more</button>
 		</div>
 	</div>
 </div>

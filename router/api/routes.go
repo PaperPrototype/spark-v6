@@ -9,9 +9,11 @@ import (
 
 func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/courses", getCourses)
-	group.GET("/version/:versionID/posts/portfolio", getVersionPortfolioPosts)                           // portfolio proof of work posts
-	group.GET("/version/:versionID/posts/proposal", getVersionProposalPosts)                             // proposal posts for final project
-	group.GET("/version/:versionID/projects", getVersionProjects)                                        // course final projects
+	group.GET("/version/:versionID/posts/portfolio", getVersionPortfolioPosts) // portfolio proof of work posts
+	group.GET("/version/:versionID/posts/proposal", getVersionProposalPosts)   // proposal posts for final project
+	group.GET("/version/:versionID/projects", getVersionProjects)              // course final projects
+	group.GET("/version/:versionID/reviews", getCourseReviews)
+	group.POST("/version/:versionID/reviews/new", middlewares.MustBeLoggedIn, postNewReview)
 	group.POST("/version/:versionID/posts/:postID/comment", middlewares.MustBeLoggedIn, postPostComment) // creates notification linked to course release
 	group.POST("/version/:versionID/channel/:channelID/message", middlewares.MustBeLoggedIn, postChannelSendMessage)
 	group.GET("/channels/:channelID", getChannelMessages)
@@ -37,7 +39,7 @@ func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/github/version/:versionID/tree", getGithubRepoCommitTree)
 	group.GET("/github/version/:versionID/content/:commit_sha/*path", getGithubRepoCommitContent)
 
-	// uses logged in users github connection
+	// get github info for logged in users with their githubConnection
 	group.GET("/github/user/repos", middlewares.MustBeLoggedIn, getGithubUserRepos)
 	group.GET("/github/repo/:repoID/branches", middlewares.MustBeLoggedIn, getGithubRepoBranches)
 	group.GET("/github/repo/:repoID/branch/:branch/commits", middlewares.MustBeLoggedIn, getGithubRepoBranchCommits)

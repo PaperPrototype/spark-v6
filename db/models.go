@@ -23,6 +23,9 @@ func migrate() {
 		&Channel{},
 		&Message{},
 
+		// hierarchy
+		CourseToNextCourse{},
+
 		// github based courses
 		&GithubRelease{},
 		&GithubVersion{},
@@ -39,6 +42,7 @@ func migrate() {
 		&Post{},
 		&Comment{},
 		&PostToCourse{},
+		&PostToCourseReview{},
 	)
 
 	// get rid of old outdated tables
@@ -67,8 +71,8 @@ type Purchase struct {
 	StripePaymentIntentID string
 
 	CreatedAt  time.Time `gorm:"not null"`
-	AmountPaid uint64    `gorm:"default:0"`
-	AuthorsCut uint64    `gorm:"default:0"`
+	AmountPaid uint64    `gorm:"default:0"` // amount the student paid for the course
+	AuthorsCut uint64    `gorm:"default:0"` // record of what was payed out to the author
 
 	Desc string // description or error or reason for purchase (eg. given to user for free since author payout failed)
 
@@ -77,9 +81,9 @@ type Purchase struct {
 	CourseID uint64 `gorm:"not null"`
 
 	// a specific course release
-	ReleaseID uint64
+	ReleaseID uint64 `gorm:"not null"`
 
-	// not a required parameter but used to keep track of version user is currently taking
+	// optional parameter but used to keep track of version purchased
 	// then in the "home" page of the website for logged in users we can show them their courses, and take them to the version they are currently taking
 	// also set to newest version when user first buys a course
 	VersionID uint64
@@ -212,8 +216,8 @@ type Version struct {
 	UsingGithub bool `gorm:"default:f;"`
 
 	// if using manual uploading option with sections
-	Error    string    `gorm:"default:null"`
-	Sections []Section `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Error    string    `gorm:"default:null"`                                  // uplaoding error
+	Sections []Section `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // delete sections when we delete the version
 }
 
 type GithubVersion struct {
@@ -253,7 +257,9 @@ type Post struct {
 	UserID    uint64    `gorm:"not null"`
 	Markdown  string
 
-	User     User      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	User User
+
+	// delete the comments when we delete the post
 	Comments []Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
@@ -276,7 +282,8 @@ type Channel struct {
 	CourseID uint64 `gorm:"not null"`
 	Name     string
 
-	Course   Course    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Course Course
+	// 					when we delete the channel the messages will also delete
 	Messages []Message `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
@@ -304,9 +311,32 @@ type PostToCourse struct {
 	ReleaseID uint64 `gorm:"not null"`
 }
 
-// maybe?
+// hierarchy for next courses and pre-requisite courses
+type CourseToNextCourse struct {
+	CourseID     uint64 `gorm:"not null"`
+	NextCourseID uint64 `gorm:"not null"`
+}
+
+// reviews on courses
+type PostToCourseReview struct {
+	ID        uint64    `gorm:"not null"`
+	CourseID  uint64    `gorm:"not null"`
+	ReleaseID uint64    `gorm:"not null"`
+	PostID    uint64    `gorm:"not null"`
+	Rating    uint8     `gorm:"not null"` // range of 0 to 5
+	UserID    uint64    `gorm:"not null"` // the person who posted the review
+	CreatedAt time.Time `gorm:"not null"`
+
+	// preloadable properties given foreign keys
+	User    User
+	Post    Post
+	Release Release
+}
+
+// thread system ideas:
 // allow for "thread-like" conversations to continue from messages?
-type Thread struct {
+// allow for child channels to be created?
+type ThreadTODO struct {
 	// the new channel ID
 	ChannelID uint64 `gorm:"not null"`
 
@@ -314,4 +344,9 @@ type Thread struct {
 	ParentMessageID uint64 `gorm:"not null"`
 	// the parent channel ID
 	ParentChannelID uint64 `gorm:"not null"`
+}
+
+// category ideas:
+// allow for channels to be grouped (like in discord)
+type ChannelCategoryTODO struct {
 }

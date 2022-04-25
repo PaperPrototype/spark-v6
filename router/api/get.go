@@ -5,6 +5,7 @@ import (
 	"main/db"
 	"main/markdown"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -112,5 +113,46 @@ func getPostPlaintext(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,
 		post,
+	)
+}
+
+func getCourseReviews(c *gin.Context) {
+	versionID := c.Params.ByName("versionID")
+	limitStr := c.Query("limit")
+	offsetStr := c.Query("offset")
+
+	version, err := db.GetVersion(versionID)
+	if err != nil {
+		log.Println("api/get ERROR getting course version in getCourseReviews:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	limit, err2 := strconv.ParseInt(limitStr, 10, 64)
+	if err2 != nil {
+		log.Println("api/get ERROR parsing limitStr in getCourseReviews:", err2)
+	}
+
+	offset, err3 := strconv.ParseInt(offsetStr, 10, 64)
+	if err2 != nil {
+		log.Println("api/get ERROR parsing limitStr in getCourseReviews:", err3)
+	}
+
+	reviews, err1 := db.GetCourseReviews(version.CourseID, int(offset), int(limit))
+	if err1 != nil {
+		log.Println("api/get ERROR getting course reviews in getCourseReviews:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		struct {
+			Count   int64
+			Reviews []db.PostToCourseReview
+		}{
+			Count:   db.CountCourseReviewsLogError(version.CourseID),
+			Reviews: reviews,
+		},
 	)
 }

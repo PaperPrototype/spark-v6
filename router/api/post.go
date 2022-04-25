@@ -5,6 +5,7 @@ import (
 	"main/db"
 	"main/router/auth"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -201,4 +202,64 @@ func postEditSectionContent(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+}
+
+func postNewReview(c *gin.Context) {
+	versionID := c.Params.ByName("versionID")
+	markdown := c.PostForm("markdown")
+	ratingStr := c.PostForm("rating")
+
+	if markdown == "" || ratingStr == "" {
+		// cannot post an empty post
+		c.AbortWithStatus(http.StatusNotAcceptable)
+		return
+	}
+
+	rating, err2 := strconv.ParseUint(ratingStr, 10, 8)
+	if err2 != nil {
+		log.Println("api/post ERROR parsing rating num in postNewReview:", err2)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	// keep in range of 0 to 5
+	if rating > 5 {
+		rating = 5
+	}
+
+	version, err := db.GetVersion(versionID)
+	if err != nil {
+		log.Println("api/post ERROR getting version in postNewReview:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	user := auth.GetLoggedInUserLogError(c)
+
+	post := db.Post{
+		UserID:   user.ID,
+		Markdown: markdown,
+	}
+	err1 := db.CreatePost(&post)
+	if err1 != nil {
+		log.Println("api/post ERROR creating Post in postNewReview:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	review := db.PostToCourseReview{
+		CourseID:  version.CourseID,
+		ReleaseID: version.ReleaseID,
+		PostID:    post.ID,
+		Rating:    uint8(rating),
+		UserID:    user.ID,
+	}
+	err3 := db.CreateReview(&review)
+	if err3 != nil {
+		log.Println("api/post ERROR creating post PostToCourseReview in postNewReview:", err3)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	// gin will set the status to ok
 }

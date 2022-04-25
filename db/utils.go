@@ -262,3 +262,12 @@ func (release *Release) GetAuthorUser() (*User, error) {
 	err := gormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
 	return &user, err
 }
+
+func CountCourseReviewsLogError(courseID uint64) int64 {
+	var count int64
+	err := gormDB.Model(&PostToCourseReview{}).Where("course_id = ?", courseID).Count(&count).Error
+	if err != nil {
+		log.Println("db/utils ERROR counting PostToCourseReviews in CountCourseReviewsLogError:", err)
+	}
+	return count
+}
