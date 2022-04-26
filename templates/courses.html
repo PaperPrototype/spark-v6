@@ -5,12 +5,12 @@
 <!-- js that loads courses -->
 <script defer src="/resources/scripts/courses.js"></script>
 
-<div class="pad-sides-5 pad-bot-2rem pad-top-5rem text-center bg-overlay">
+<div class="pad-sides-5 pad-bot-2rem pad-top-5rem text-center">
 	<h1>Courses</h1>
 	<div>
 		<form method="get" action="/courses">
 			<div>
-				<input class="form-input bd bg-overlay" name="query" placeholder="Search..." value="{{ .Search }}">
+				<input class="form-input bd bg" name="query" placeholder="Search..." value="{{ .Search }}">
 				<button class="bg-code bd bd-none pad-05" style="padding-left:1rem; padding-right:1rem;" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
 			</div>
 			<!-- hide this until it is needed -->
@@ -36,15 +36,53 @@
 	courses get loaded by js instead of server side
 	this speads up google search indexing, and prevents us from using db resources when the site is only being indexed
 -->
-<div class="pad-sides-5 pad-top-2rem pad-bot-5rem course-cards bg-overlay" id="cards">
-	<div class="course-card-temp">
-		temp 1
+<div class="pad-top-2rem bg-overlay thin-top">
+	<h3 class="pad-sides-5" style="margin-bottom:0;">Level 0</h3>
+	<div id="cards" class="course-cards">
+		<div class="course-card-temp">
+			temp 1
+		</div>
+		<div class="course-card-temp">
+			temp 2
+		</div>
+		<div class="course-card-temp">
+			temp 3
+		</div>
 	</div>
-	<div class="course-card-temp">
-		temp 2
-	</div>
-	<div class="course-card-temp">
-		temp 3
+</div>
+
+<!-- temporary -->
+<div class="pad-top-2rem pad-bot-2rem bg-overlay">
+	<h3 class="pad-sides-5" style="margin-bottom:0;">Level 1</h3>
+	<div class="course-cards">
+		<div>
+			<div class="course-card-wrapper">
+				<div class="course-card" href="/paper/minecraft">
+					<div class="course-card-img-wrapper">
+						<img src="/resources/images/planet.png" style="width:100%;">
+					</div>
+					<div class="course-card-content">
+						<h3 class="c-bold course-card-title">Minecraft Voxel Terrain in Unity</h3>
+						<div class="course-card-subtitle">Whats up!</div>
+					</div>
+				</div>
+			</div>
+			<p class="course-card-footer">by <a href="/paper">@paper</a></p>
+		</div>
+		<div>
+			<div class="course-card-wrapper">
+				<div class="course-card" href="/paper/minecraft">
+					<div class="course-card-img-wrapper">
+						<img src="/resources/images/planet.png" style="width:100%;">
+					</div>
+					<div class="course-card-content">
+						<h3 class="c-bold course-card-title">Minecraft Voxel Terrain in Unity</h3>
+						<div class="course-card-subtitle">Whats up!</div>
+					</div>
+				</div>
+			</div>
+			<p class="course-card-footer">by <a href="/paper">@paper</a></p>
+		</div>
 	</div>
 </div>
 

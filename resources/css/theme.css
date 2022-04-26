@@ -46,19 +46,19 @@
 .theme-dark {
 	--c-black: rgb(0, 0, 0);
 	--c-bg-overlay: rgb(44, 46, 51);
-	--c-light: rgb(66, 66, 66);
+	--c-light: rgb(129, 38, 58); /* rgb(66, 66, 66); */
 	--c-grey: rgb(109, 111, 119);
 	--c-bg: rgb(20, 20, 20);
 	--c-text: rgb(228, 228, 228);
 	--c-bold: rgb(255, 255, 255); /* for text that needs to stand out */
 	--c-shadow: rgb(0, 0, 0);
 
-	--c-code: hsl(206, 100%, 56%);
-	--c-code-darker: hsl(206, 100%, 45%);
+	--c-code: rgb(255, 0, 55); /* hsl(206, 100%, 56%); */
+	--c-code-darker: rgb(229, 10, 58);;
 }
 
 .theme-dark a {
-	color: rgb(113, 208, 255);
+	color: rgb(255, 0, 55);
 }
 
 .theme-dark .nav-logo {

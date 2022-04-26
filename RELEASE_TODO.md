@@ -2,6 +2,7 @@ TODO before going live:
 Stripe API key needs to be switched to the live key.
 Remove the "this site is in test mode" message in course_header.html
 Reset db. There is test data in it and, it will give us a clean slate.
+Set GIN_MODE to "release" in heroku environment variables
 
 Features in order of importance:
 - Course reviews

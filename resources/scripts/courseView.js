@@ -139,11 +139,11 @@ function loadPosts(versionID) {
 			});
 		}
 
+		// last post that is actually a button for seeing all posts
 		let seeAll = document.createElement("div");
 		seeAll.classList.add("text-center");
 		seeAll.classList.add("post-card");
 		seeAll.classList.add("bg-code");
-		seeAll.classList.add("hoverable");
 		posts.appendChild(seeAll);
 
 		let h3 = document.createElement("h3");
