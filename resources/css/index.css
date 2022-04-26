@@ -7,11 +7,11 @@
 }
 
 .hovered {
-	background-color: var(--c-bg);
+	background-color: var(--c-light);
 }
 
 .hoverable:hover {
-	background-color: var(--c-bg);
+	background-color: var(--c-light);
 }
 
 .hoverable-bg-code {

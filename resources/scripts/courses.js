@@ -48,7 +48,7 @@ function createCourseCard(course) {
 
 	card.innerHTML = 
 	`<div class="course-card-wrapper">` +
-		`<div class="course-card" href="/` + course.User.Username + "/" + course.Name + `">` +
+		`<div class="course-card hoverable" href="/` + course.User.Username + "/" + course.Name + `">` +
 			`<div class="course-card-img-wrapper">` +
 				`<img class="course-card-img" src="` + imageURL + `">` + 
 			`</div>` +
