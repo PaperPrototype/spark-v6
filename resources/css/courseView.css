@@ -1,10 +1,13 @@
+/* top nav bar */
 .course-top-nav-fixed {
 	position: fixed;
 	top: 0;
 	right: 0;
 	left: 0;
+	border-bottom: 0.08rem solid var(--c-light);
 }
 
+/* contents menu */
 .course-menu-normal {
 	position: fixed;
 	
@@ -14,7 +17,6 @@
 	left: 0;
 	bottom: 0;
 	z-index: 3;
-
 }
 
 .course-menu-fixed {

@@ -116,6 +116,10 @@
 	padding-bottom: 5rem;
 }
 
+.thin-code {
+	border: 0.08rem solid var(--c-code);
+}
+
 .thin-grey-right {
 	border-right: 0.08rem solid var(--c-grey);
 }
@@ -161,6 +165,10 @@
 .bg-code {
 	color: white;
 	background-color: var(--c-code);
+}
+
+.bg-light {
+	background-color: var(--c-light);
 }
 
 .nav {

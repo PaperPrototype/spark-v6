@@ -17,18 +17,18 @@ function toggleTheme() {
 	{
 		console.log("saved theme localStorage was empty");
 		if (theme.classList.contains("theme")) {
-			// set to dark
+			// set to gamer
 			theme.classList.remove("theme");
-			theme.classList.add("theme-dark");
+			theme.classList.add("theme-gamer");
 
 			// set local storage
-			localStorage.setItem("sparker/theme", "dark");
+			localStorage.setItem("sparker/theme", "gamer");
 
-			console.log("theme:dark")
-			themeText.innerText = "Dark";
+			console.log("theme:gamer")
+			themeText.innerText = "Gamer Mode. On.";
 		} else {
 			// set to auto
-			theme.classList.remove("theme-dark");
+			theme.classList.remove("theme-gamer");
 			theme.classList.add("theme");
 
 			// set local storage
@@ -40,18 +40,18 @@ function toggleTheme() {
 	} else {
 		console.log("saved theme was not empty");
 		if (savedTheme === "auto") {
-			// set to dark
+			// set to gamer
 			theme.classList.remove("theme");
-			theme.classList.add("theme-dark");
+			theme.classList.add("theme-gamer");
 
 			// set local storage
-			localStorage.setItem("sparker/theme", "dark");
+			localStorage.setItem("sparker/theme", "gamer");
 
-			console.log("theme:dark")
-			themeText.innerText = "Dark";
+			console.log("theme:gamer")
+			themeText.innerText = "Gamer Mode. On.";
 		} else {
 			// set to auto
-			theme.classList.remove("theme-dark");
+			theme.classList.remove("theme-gamer");
 			theme.classList.add("theme");
 
 			// set local storage
@@ -75,7 +75,7 @@ function setTheme() {
 	if (savedTheme !== "") {
 		if (savedTheme === "auto") {
 			// set to auto
-			theme.classList.remove("theme-dark");
+			theme.classList.remove("theme-gamer");
 			theme.classList.add("theme");
 
 			// set local storage
@@ -84,15 +84,15 @@ function setTheme() {
 			console.log("theme:auto")
 			themeText.innerText = "Auto";
 		} else {
-			// set to dark
+			// set to gamer
 			theme.classList.remove("theme");
-			theme.classList.add("theme-dark");
+			theme.classList.add("theme-gamer");
 
 			// set local storage
-			localStorage.setItem("sparker/theme", "dark");
+			localStorage.setItem("sparker/theme", "gamer");
 
-			console.log("theme:dark")
-			themeText.innerText = "Dark";
+			console.log("theme:gamer")
+			themeText.innerText = "Gamer Mode. On.";
 		}
 	}
 }

@@ -13,8 +13,11 @@ async function loadNotifications() {
 
 	const navNotifications = document.getElementById("navNotifications");
 
+	const noneHTML = `<p>no new notifications</p>`;
+	const errorHTML = `<p>error loading notifications</p>`;
+
 	if (Alpine.store("notify").firstLoad) {
-		navNotifications.innerText = "no new notifications";
+		navNotifications.innerHTML = noneHTML;
 	}
 
 	let newest = Alpine.store("notify").newestDate;
@@ -27,7 +30,7 @@ async function loadNotifications() {
 	} catch (err) {
 
 		if (Alpine.store("notify").firstLoad) {
-			navNotifications.innerText = "error loading notifications";
+			navNotifications.innerHTML = errorHTML;
 		}
 		
 		console.log("error getting notifications...:", err);
@@ -41,10 +44,11 @@ async function loadNotifications() {
 	const json = await response.json();
 
 	if (json.Notifs.length === 0 && Alpine.store("notify").firstLoad) {
-		navNotifications.innerText = "no new notifications";
+		navNotifications.innerHTML = noneHTML;
 		Alpine.store("notify").new = false;
 	} else {
 		if (Alpine.store("notify").firstLoad) {
+			// clear notifications
 			navNotifications.innerHTML = "";
 		}
 
@@ -53,6 +57,8 @@ async function loadNotifications() {
 			notif.innerText = json.Notifs[i].Message;
 			notif.setAttribute("notifURL", json.Notifs[i].URL);
 			notif.setAttribute("notifID", json.Notifs[i].ID);
+			notif.setAttribute("class", "thin-light pad-05 bd hoverable");
+			notif.setAttribute("style", "cursor:pointer;");
 
 			// append new notification
 			navNotifications.append(notif);
@@ -83,7 +89,7 @@ async function loadNotifications() {
 	if (Alpine.store("notify").new) {
 		Alpine.store("notify").firstLoad = false;
 	} else {
-		navNotifications.innerText = "no new notifications";
+		navNotifications.innerHTML = noneHTML;
 	}
 
 	// wait 1 second

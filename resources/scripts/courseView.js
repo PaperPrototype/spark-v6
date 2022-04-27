@@ -299,7 +299,7 @@ function menuFollowScroll() {
 		courseNavTop.classList.add("course-top-nav-fixed");
 
 		// prevent course contents from jumping into place when top nav disapears
-		courseMain.style.marginTop = courseNavTop.getBoundingClientRect().height + "px";
+		courseMain.style.paddingTop = courseNavTop.getBoundingClientRect().height + "px";
 	} else {
 		// top
 
@@ -307,7 +307,7 @@ function menuFollowScroll() {
 		courseNavTop.classList.remove("course-top-nav-fixed");
 
 		// reset courseMain's margin
-		courseMain.style.marginTop = "0";
+		courseMain.style.paddingTop = "0";
 
 		// make menu still follow
 		courseMenu.style.top = ((ogTopOffset + courseNavTop.getBoundingClientRect().height) - window.scrollY) + "px";

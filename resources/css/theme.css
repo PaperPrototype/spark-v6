@@ -43,10 +43,10 @@
 }
 
 /* manually set to dark mode */
-.theme-dark {
+.theme-gamer {
 	--c-black: rgb(0, 0, 0);
 	--c-bg-overlay: rgb(44, 46, 51);
-	--c-light: rgb(129, 38, 58); /* rgb(66, 66, 66); */
+	--c-light: rgb(152, 42, 65); /* rgb(66, 66, 66); */
 	--c-grey: rgb(109, 111, 119);
 	--c-bg: rgb(20, 20, 20);
 	--c-text: rgb(228, 228, 228);
@@ -57,10 +57,10 @@
 	--c-code-darker: rgb(229, 10, 58);;
 }
 
-.theme-dark a {
+.theme-gamer a {
 	color: rgb(255, 0, 55);
 }
 
-.theme-dark .nav-logo {
+.theme-gamer .nav-logo {
 	content:url('/resources/images/sparker_code_transp.png');
 }
