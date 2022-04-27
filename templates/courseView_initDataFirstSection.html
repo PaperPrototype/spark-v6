@@ -108,7 +108,7 @@
 					// using path as the id of a the section
 					let div = document.createElement('div');
 					div.setAttribute(":class", "$store.sections.current === '" + json.tree[i].sha + "' ? 'selected' : ''");
-					div.setAttribute("class", "bd pad-05");
+					div.setAttribute("class", "bd hoverable pad-05");
 					div.setAttribute("x-on:click", "loadSection('" + json.tree[i].sha + "'); $store.courseView.menuOpen = false;");
 					div.innerText = json.tree[i].path;
 					menuItems.append(div);
@@ -126,7 +126,7 @@
 
 					let resourceItem = document.createElement("a");
 					resourceItem.setAttribute("style", "display:block; width:max-content;");
-					resourceItem.setAttribute("class", "bd pad-05 hoverable-bg-code");
+					resourceItem.setAttribute("class", "bd pad-05 hoverable");
 					resourceItem.setAttribute("href", "/media/"+versionID+"/name/"+mediaName);
 					resourceItem.setAttribute("download", "");
 					resourceItem.innerHTML = mediaName + ` <i class="fa-solid fa-file-arrow-down"></i>`;

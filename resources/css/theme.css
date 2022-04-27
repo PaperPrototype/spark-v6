@@ -45,10 +45,10 @@
 /* manually set to dark mode */
 .theme-gamer {
 	--c-black: rgb(0, 0, 0);
-	--c-bg-overlay: rgb(44, 46, 51);
-	--c-light: rgb(152, 42, 65); /* rgb(66, 66, 66); */
+	--c-bg-overlay: rgb(18, 16, 24);
+	--c-light: rgb(231, 59, 83); /* rgb(66, 66, 66); */
 	--c-grey: rgb(109, 111, 119);
-	--c-bg: rgb(20, 20, 20);
+	--c-bg: rgb(9, 8, 13);
 	--c-text: rgb(228, 228, 228);
 	--c-bold: rgb(255, 255, 255); /* for text that needs to stand out */
 	--c-shadow: rgb(0, 0, 0);

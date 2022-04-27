@@ -5,6 +5,7 @@
 	right: 0;
 	left: 0;
 	border-bottom: 0.08rem solid var(--c-light);
+	border-top: none;
 }
 
 /* contents menu */
@@ -143,8 +144,8 @@
 
 /* highlights selected section in menu */
 .selected {
-	background-color: var(--c-code);
-	color: white;
+	border: 0.08rem solid var(--c-light);
+	color: var(--c-text);
 }
 
 @media (prefers-color-scheme: dark) {
