@@ -6,7 +6,17 @@
 	padding:2rem;
 	padding-left:5%;
 	padding-right:5%;
-	height:24rem;
+	height:25rem;
+	overflow-y: hidden;
+	  
+	/* Hide scrollbar for IE, Edge and Firefox */
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.course-cards::-webkit-scrollbar {
+	display: none;
 }
 
 .course-card-wrapper {
