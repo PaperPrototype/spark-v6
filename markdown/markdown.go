@@ -10,7 +10,7 @@ import (
 	"github.com/yuin/goldmark/parser"
 	xurls "mvdan.cc/xurls/v2"
 
-	embed "github.com/13rac1/goldmark-embed"
+	embed "github.com/PaperPrototype/goldmark-embed"
 )
 
 var markdowner goldmark.Markdown = goldmark.New(

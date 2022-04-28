@@ -1,24 +1,23 @@
 module main
 
-// +heroku goVersion go1.17
 go 1.17
 
 require (
-	github.com/13rac1/goldmark-embed v0.0.0-20201220231550-e6806f2de66a
+	github.com/PaperPrototype/goldmark-embed v0.0.0-20220428193505-60236e09045b
 	github.com/alecthomas/chroma v0.10.0
 	github.com/gin-gonic/gin v1.7.7
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/uuid v1.3.0
-	github.com/jackc/pgx/v4 v4.15.0
+	github.com/jackc/pgx/v4 v4.16.0
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/sendgrid/sendgrid-go v3.11.1+incompatible
-	github.com/stripe/stripe-go/v72 v72.98.0
-	github.com/yuin/goldmark v1.4.11
+	github.com/stripe/stripe-go/v72 v72.103.0
+	github.com/yuin/goldmark v1.4.12
 	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594
-	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064
-	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
-	gorm.io/driver/postgres v1.3.1
-	gorm.io/gorm v1.23.3
+	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f
+	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
+	gorm.io/driver/postgres v1.3.5
+	gorm.io/gorm v1.23.5
 	mvdan.cc/xurls/v2 v2.4.0
 )
 
@@ -35,12 +34,12 @@ require (
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
-	github.com/jackc/pgconn v1.11.0 // indirect
+	github.com/jackc/pgconn v1.12.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgproto3/v2 v2.2.0 // indirect
+	github.com/jackc/pgproto3/v2 v2.3.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
-	github.com/jackc/pgtype v1.10.0 // indirect
+	github.com/jackc/pgtype v1.11.0 // indirect
 	github.com/jackc/puddle v1.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
