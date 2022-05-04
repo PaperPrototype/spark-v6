@@ -72,7 +72,7 @@ function setToSavedTheme() {
 
 	// default leave as is
 	// otherwise 
-	if (savedTheme !== "") {
+	if (savedTheme !== null) {
 		if (savedTheme === "auto") {
 			// set to auto
 			theme.classList.remove("theme-gamer");
@@ -94,5 +94,7 @@ function setToSavedTheme() {
 			console.log("theme:gamer")
 			themeText.innerText = "Theme: Gamer Mode";
 		}
+	} else {
+		console.log("theme not set");
 	}
 }
