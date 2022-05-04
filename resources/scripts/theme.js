@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-	setTheme(); // inital page load
+	setToSavedTheme(); // inital page load
 
 	let toggle = document.getElementById("themeToggle");
 	toggle.addEventListener("click", function() {
@@ -64,7 +64,7 @@ function toggleTheme() {
 }
 
 // set the theme to whatever localStorage setting says
-function setTheme() {
+function setToSavedTheme() {
 	let theme = document.getElementById("theme");
 	let themeText = document.getElementById("themeToggleText");
 

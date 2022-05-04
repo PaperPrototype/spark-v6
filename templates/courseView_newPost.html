@@ -59,20 +59,14 @@
 </script>
 
 <div x-data="{ open: false }" x-show="$store.courseView.allowNewPost">
-	<h4 x-show="open === false" @click="open = true" class="bd bg-code pad-05 text-center hoverable-bg-code" style="width:100%;">
+	<h4 x-show="open === false" @click="open = true" class="bd pad-05 text-center hoverable-bg-code" style="cursor:pointer; width:100%;">
 		New Post 
 		<i class="fa-solid" :class="open ? 'fa-caret-up' : 'fa-caret-down' "></i>
 	</h4>
-	<h4 x-show="open === true" @click="open = false" class="bd bg-code pad-05 text-center hoverable-bg-code" style="width:100%;">
+	<h4 x-show="open === true" @click="open = false" class="bd pad-05 text-center hoverable-bg-code" style="cursor:pointer; width:100%;">
 		Hide 
 		<i class="fa-solid" :class="open ? 'fa-caret-up' : 'fa-caret-down' "></i>
 	</h4>
-	<p><span x-text="$store.progress.progress"></span>% done</p>
-	{{ if .LoggedIn }}
-		<p>Once you write {{ .Release.PostsNeededNum }} showcase posts you will have completed the course and will be able to join or create a final project!</p>
-	{{ else }}
-		<p class="c-grey">You need to login if you want to write a post. Once you write {{ .Release.PostsNeededNum }} posts, you can join a final project!</p>
-	{{ end }}
 	<div x-show="open">
 	{{ if .LoggedIn }}
 		<div>
@@ -80,10 +74,13 @@
 			placeholder=
 			"Write about what you made   
 
-You can embed pictures or Youtube videos ![example_name](https://example_link)" required></textarea>
+Make sure you embed at least 1 picture ![embed_example_name](https://embed_example_link)" required></textarea>
 		</div>
-		<button @click="course_submitNewPost();" class="bd bd-none pad-05 bg-code hoverable-bg-code" style="width: 100%;">Post</button>
+		<p><span x-text="$store.progress.progress"></span>% done</p>
+		<p>Once you write {{ .Release.PostsNeededNum }} showcase posts you will complete the course.</p>
+		<button @click="course_submitNewPost();" class="bd bd-none pad-05 hoverable-bg-code" style="cursor:pointer; width: 100%;">Post</button>
 	{{ else }}
+		<p class="c-grey">You need to login if you want to write a post. Once you write {{ .Release.PostsNeededNum }} showcase posts you will complete the course.</p>
 		<a href="/login">Login to write a post</a>
 	{{ end }}
 	</div>

@@ -20,8 +20,8 @@ import (
 )
 
 var metaDefault = Meta{
-	Title: "Sparker - Software and Coding Courses",
-	Desc:  "It's time to ditch software degree's and switch to portfolio's",
+	Title: "Sparker - Coding Courses",
+	Desc:  "It's time to ditch degree's and switch to portfolio's.",
 }
 
 func getCourse(c *gin.Context) {
@@ -401,7 +401,10 @@ func getCourseRelease(c *gin.Context) {
 				"Messages": msg.GetMessages(c),
 				"User":     auth.GetLoggedInUserLogError(c),
 				"LoggedIn": auth.IsLoggedInValid(c),
-				"Meta":     metaDefault,
+				"Meta": Meta{
+					Title: "Sparker - " + course.Title,
+					Desc:  course.Subtitle,
+				},
 			},
 		)
 		return

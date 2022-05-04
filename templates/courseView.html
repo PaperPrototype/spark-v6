@@ -21,6 +21,7 @@
 			menu: 'sections', // 'sections' or 'chat'
 
 			// posts
+			oldestPost: "",
 			postID: 0,
 			viewingPost: false,
 			viewingComments: false,
@@ -140,9 +141,13 @@
 			<i class="fa-solid fa-arrow-left-long"></i>
 		</div>
 
-		<div id="sectionTitle"
+		<div x-show="$store.courseView.view === 'contents'" id="sectionTitle"
 		style="width:70%; overflow-x:hidden; font-size:1.2rem; white-space: nowrap; text-overflow:hidden; cursor:pointer; padding-left:1rem; padding-right:0.6rem; padding-top:0.5rem; padding-bottom:0rem;">
 			{{ .Section.Name }}
+		</div>
+
+		<div x-show="$store.courseView.view === 'posts'" id="postsTitle"
+		style="width:70%; overflow-x:hidden; font-size:1.2rem; white-space: nowrap; text-overflow:hidden; cursor:pointer; padding-left:1rem; padding-right:0.6rem; padding-top:0.5rem; padding-bottom:0rem;">
 		</div>
 
 		<!-- view posts -->
@@ -263,11 +268,11 @@
 			</div>
 			<table class="bg-overlay pad-sides-5 pad-bot-2rem" style="width: 100%;">
 				<tr>
-					<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="coursePrevious">
+					<td class="bd hoverable-bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="coursePrevious">
 						<i class="fa-solid fa-arrow-left-long"></i> Previous Section 
 					</td>
 					<td style="width:20%;"></td>
-					<td class="bd bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="courseNext">
+					<td class="bd hoverable-bg-code bd-none" style="cursor:pointer; padding: 0.5rem; width: 40%; text-align: center;" id="courseNext">
 						Next Section <i class="fa-solid fa-arrow-right-long"></i>
 					</td>
 				</tr>

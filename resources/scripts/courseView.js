@@ -63,7 +63,11 @@ function toggleChat() {
 // show posts view
 function viewPosts() {
 	resetComments();
-	
+
+	let postsTitle = document.getElementById("postsTitle");
+	postsTitle.innerText = "Posts";
+
+	Alpine.store("courseView").oldestPost = "";
 	Alpine.store("courseView").view = 'posts';
 	Alpine.store("courseView").menuAvailable = false;
 	Alpine.store("courseView").menuOpen = false;
@@ -105,14 +109,26 @@ function loadPosts(versionID) {
 		return resp.json();
 	})
 	.then(function(json) {
-		let postsTitle = document.createElement("h3");
-		postsTitle.innerText = "Portfolio Posts";
-		postsTitle.style = "margin-bottom:0.5rem;";
-
 		let posts = document.createElement("div");
 		posts.setAttribute("class", "post-cards");
 		posts.setAttribute("style", "margin-bottom:1rem;");
 		posts.innerHTML = "";
+
+		// first post that is actually a button for creating a new post
+		let newPost = document.createElement("div");
+		newPost.classList.add("text-center");
+		newPost.classList.add("post-card");
+		let h3 = document.createElement("h3");
+		h3.innerText = `New Post`;
+		newPost.appendChild(h3);
+		let plusIcon = document.createElement("div");
+		plusIcon.innerHTML = `<i class="fa-solid fa-plus"></i>`;
+		newPost.appendChild(plusIcon);
+		newPost.addEventListener("click", function(event) {
+			console.log("TODO create a new posts view");
+		});
+
+		posts.appendChild(newPost);
 
 		for (let i = 0; i < json.length; i++) {
 			let post = document.createElement("div");
@@ -122,11 +138,19 @@ function loadPosts(versionID) {
 
 			let elements = document.createElement("div");
 			elements.innerHTML = json[i].Markdown;
-			let nodes = elements.querySelectorAll("*");
 
+			let nodes = elements.querySelectorAll("*");
 			let title = "";
 			for (let nodeIndex = 0; nodeIndex < 1; nodeIndex++) {
 				title = title + " " + nodes[nodeIndex].innerText;
+			}
+
+			let images = elements.querySelectorAll("img");
+			if (images.length !== 0)
+			{
+				let image = images[0];
+				image.style = "width: 100%;";
+				post.appendChild(image);
 			}
 
 			let h4 = document.createElement("h4");
@@ -139,32 +163,19 @@ function loadPosts(versionID) {
 			});
 		}
 
-		// last post that is actually a button for seeing all posts
-		let seeAll = document.createElement("div");
-		seeAll.classList.add("text-center");
-		seeAll.classList.add("post-card");
-		seeAll.classList.add("bg-code");
-		posts.appendChild(seeAll);
-
-		let h3 = document.createElement("h3");
-		h3.innerText = `See all`;
-		seeAll.appendChild(h3);
-
-		let arrow = document.createElement("div");
-		arrow.innerHTML = `<i class="fa-solid fa-arrow-right-long"></i>`;
-		seeAll.appendChild(arrow);
-
-		seeAll.addEventListener("click", function(event) {
-			console.log("TODO create see all posts view");
-		});
-
+		// all posts
 		let postsWrapper = document.createElement("div");
-		postsWrapper.setAttribute("style", "margin-bottom:1rem;");
-		postsWrapper.append(postsTitle);
-		postsWrapper.append(posts);
 		postsWrapper.classList.add("pad-sides-5");
+		postsWrapper.setAttribute("style", "margin-bottom:1rem;");
+		postsWrapper.append(posts);
 
-		coursePostsMount.append(postsWrapper);
+		// "load more posts" button
+		let footer = document.createElement("div");
+		footer.innerText = "Load more posts";
+		footer.setAttribute("class", "pad-05 mar-sides-5 bd hoverable thin-light text-center");
+
+		coursePostsMount.append(postsWrapper); // set posts
+		coursePostsMount.append(footer); // set footer
 	})
 	.catch(function(err) {
 		console.error(err);
@@ -246,6 +257,17 @@ function loadPost(postID) {
 	.then(function(json) {
 		let postMount = document.getElementById("postMount");
 		let postMountUser = document.getElementById("postMountUser");
+
+		// set title of post
+		let elements = document.createElement("div");
+		elements.innerHTML = json.Markdown;
+		let nodes = elements.querySelectorAll("*");
+		let title = "";
+		for (let nodeIndex = 0; nodeIndex < 1; nodeIndex++) {
+			title = title + " " + nodes[nodeIndex].innerText;
+		}
+		let postsTitle = document.getElementById("postsTitle");
+		postsTitle.innerText = title;
 
 		// if save for if user decides to edit the post
 		Alpine.store("courseView").postID = json.ID;
