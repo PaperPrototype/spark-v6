@@ -13,13 +13,13 @@ function toggleTheme() {
 
 	let savedTheme = localStorage.getItem("sparker/theme");
 
-	if (savedTheme === "")
+	if (savedTheme === null)
 	{
 		console.log("saved theme localStorage was empty");
 		if (theme.classList.contains("theme")) {
 			// set to gamer
-			theme.classList.remove("theme");
 			theme.classList.add("theme-gamer");
+			theme.classList.remove("theme");
 
 			// set local storage
 			localStorage.setItem("sparker/theme", "gamer");
@@ -28,8 +28,8 @@ function toggleTheme() {
 			themeText.innerText = "Theme: Gamer Mode";
 		} else {
 			// set to auto
-			theme.classList.remove("theme-gamer");
 			theme.classList.add("theme");
+			theme.classList.remove("theme-gamer");
 
 			// set local storage
 			localStorage.setItem("sparker/theme", "auto");
