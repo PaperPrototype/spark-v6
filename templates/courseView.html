@@ -98,7 +98,7 @@
 	white-space: -o-pre-wrap;
 	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
 	<div style="display:flex;">
-		<div class="hoverable-bg-overlay bd pad-05" href="https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO" external>
+		<div class="hoverable bd pad-05" href="https://open.spotify.com/playlist/37i9dQZF1DX4sWSpwq3LiO" external>
 			<i class="fa-brands fa-spotify"></i> focus music <i class="fa-solid fa-arrow-up-right-from-square"></i>
 		</div>
 		{{ if ne .Version.Num .Release.GetNewestVersionLogError.Num }}
@@ -113,7 +113,7 @@
 			<i class="bg-code pad-05 bd" style="width:max-content; margin-left:0.5rem;">preview</i>
 		{{ end }}
 		{{ if eq .User.ID .Course.UserID }}
-			<i class="fa-solid fa-gear hoverable-bg-overlay bd pad-05" style="margin-left:auto;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
+			<i class="fa-solid fa-gear hoverable bd pad-05" style="margin-left:auto;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
 		{{ end }}
 	</div>
 </div>
