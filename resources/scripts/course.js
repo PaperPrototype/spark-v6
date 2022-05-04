@@ -199,8 +199,8 @@ function loadShowcasePosts() {
 	})
 	.then(function(resp) {
 		if (!resp.ok) {
-			SendMessage("Error loading reviews");
-			throw new Error("Response for course reviews was not ok!");
+			SendMessage("Error loading showcase posts");
+			throw new Error("Response for course showcase posts was not ok!");
 		}
 
 		return resp.json();
