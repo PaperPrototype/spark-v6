@@ -60,6 +60,20 @@ function toggleChat() {
 	channelMount.scrollTo(0, 100);
 }
 
+
+// show contents/lecture/section view
+function viewContents() {
+	resetComments();
+	resetURL();
+	
+	Alpine.store('courseView').menuOpen = false;
+	Alpine.store("courseView").view = 'contents';
+	Alpine.store("courseView").menuAvailable = true;
+	Alpine.store("courseView").allowNewPost = true;
+	Alpine.store("courseView").editingContent = false;
+	Alpine.store("courseView").viewingComments = false;
+}
+
 // show posts view
 function viewPosts() {
 	resetComments();
@@ -76,17 +90,10 @@ function viewPosts() {
 	Alpine.store("courseView").viewingComments = false;
 }
 
-// show contents/lecture/section view
-function viewContents() {
-	resetComments();
-	resetURL();
-	
-	Alpine.store('courseView').menuOpen = false;
-	Alpine.store("courseView").view = 'contents';
-	Alpine.store("courseView").menuAvailable = true;
-	Alpine.store("courseView").allowNewPost = true;
-	Alpine.store("courseView").editingContent = false;
-	Alpine.store("courseView").viewingComments = false;
+function clearPosts()
+{
+	let coursePostsMount = document.getElementById("coursePostsMount");
+	coursePostsMount.innerHTML = "";
 }
 
 function loadPosts(versionID) {
@@ -118,12 +125,19 @@ function loadPosts(versionID) {
 		let newPost = document.createElement("div");
 		newPost.classList.add("text-center");
 		newPost.classList.add("post-card");
-		let h3 = document.createElement("h3");
-		h3.innerText = `New Post`;
-		newPost.appendChild(h3);
+
+		// plus icon
 		let plusIcon = document.createElement("div");
+		plusIcon.style = "margin-top:50%;"
 		plusIcon.innerHTML = `<i class="fa-solid fa-plus"></i>`;
 		newPost.appendChild(plusIcon);
+		
+		// title
+		let h3 = document.createElement("h3");
+		h3.style = "margin-top:auto;";
+		h3.innerText = `New Post`;
+		newPost.appendChild(h3);
+
 		newPost.addEventListener("click", function(event) {
 			console.log("TODO create a new posts view");
 		});
@@ -145,16 +159,67 @@ function loadPosts(versionID) {
 				title = title + " " + nodes[nodeIndex].innerText;
 			}
 
+			let hasCoverMedia = false;
+
 			let images = elements.querySelectorAll("img");
 			if (images.length !== 0)
 			{
 				let image = images[0];
-				image.style = "width: 100%;";
-				post.appendChild(image);
+				image.style = "width:100%;";
+
+				let imageContainer = document.createElement("div");
+				imageContainer.style = " border-radius:0.45rem; height:6rem; overflow-y:hidden;"
+
+				imageContainer.append(image);
+				post.appendChild(imageContainer);
+
+				hasCoverMedia = true;
+			} 
+			// no images, look for embed instead
+			else {
+				// lets check for embedded youtube video
+				let iframes = elements.querySelectorAll("iframe");
+				for (let i = 0; i < iframes.length; i++)
+				{
+					let iframe = iframes[i];
+					if (iframe.getAttribute("src") !== "")
+					{
+						console.log("post has iframe.")
+						console.log(iframe.getAttribute("src"));
+
+						// edit styles
+						iframe.style = "width:100%; height:6rem; border-radius:0.45rem; padding:0; margin:0; overflow:hidden;";
+						let src = iframe.getAttribute("src");
+						src += "?modestbranding=1";
+						iframe.setAttribute("src", src);
+
+						post.appendChild(iframe);
+
+						hasCoverMedia = true;
+
+						break; // exit loop
+					}
+				}
 			}
 
 			let h4 = document.createElement("h4");
-			h4.innerText = title;
+			// align to bottom
+			h4.style = "margin-top: auto; margin-bottom:0.5rem;"; // parent is flexbox
+			h4.setAttribute("class", "pad-05");
+
+			let maxTitleLength = 50;
+			if (hasCoverMedia === false) // no cover media
+			{
+				maxTitleLength = 100;
+			}
+
+			// trim title if it is too large
+			if (title.length > maxTitleLength)
+			{
+				h4.innerText = title.slice(0, maxTitleLength - 3).trim() + "...";
+			} else {
+				h4.innerText = title;
+			}
 			post.appendChild(h4);
 
 			post.addEventListener("click", function(event) {
@@ -244,6 +309,8 @@ function updatePost() {
 }
 
 function loadPost(postID) {
+	clearPosts();
+
 	fetch("/api/posts/"+postID, {
 		method: "GET",
 	})

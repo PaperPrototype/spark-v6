@@ -4,7 +4,7 @@ module main
 go 1.17
 
 require (
-	github.com/PaperPrototype/goldmark-embed v0.0.0-20220428193505-60236e09045b
+	github.com/PaperPrototype/goldmark-embed v0.0.0-20220504173457-3e5148e3bccc
 	github.com/alecthomas/chroma v0.10.0
 	github.com/gin-gonic/gin v1.7.7
 	github.com/google/go-github v17.0.0+incompatible

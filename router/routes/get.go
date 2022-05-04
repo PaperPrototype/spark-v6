@@ -591,6 +591,16 @@ func getNameMedia(c *gin.Context) {
 		return
 	}
 
+	/* TODO?
+	maybe not necessary since course versions can't be viewed unless the course is free (or the user has paid)
+	and getting access to the image links without access to the course would be difficult
+	*/
+	// check if course release is free
+	// if paid
+	//	 check if student has access to course
+	// else
+	// 	 free so anyone can view it?
+
 	// if it is a github based version
 	if version.HasGithubVersion() {
 		githubVersion, err2 := version.GetGithubVersion()

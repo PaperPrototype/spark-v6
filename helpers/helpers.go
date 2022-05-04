@@ -139,6 +139,7 @@ func GetGithubClientSecret() string {
 	return env
 }
 
+// only lowercase usernames are allowed
 const AllowedUsernameCharacters string = "abcdefghijklmnopqrstuvwxyz1234567890-_"
 
 func IsAllowedUsername(username string) bool {
@@ -174,11 +175,13 @@ func replaceToAllowed(char byte) string {
 }
 
 // get usernames after an @ out of markdown and return them
+// also automatically lowercases usernames
 func GetUserMentions(textWithMentions string) []string {
 	usernames := []string{}
 	for i, c := range textWithMentions {
 		if c == '@' {
-			usernames = append(usernames, getUntilSpace(i+1, textWithMentions))
+			// lowercase username
+			usernames = append(usernames, strings.ToLower(getUntilSpace(i+1, textWithMentions)))
 		}
 	}
 
