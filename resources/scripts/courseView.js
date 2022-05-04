@@ -104,7 +104,7 @@ function loadPosts(versionID) {
 	let coursePostsMount = document.getElementById("coursePostsMount");
 	coursePostsMount.innerHTML = "";
 
-	fetch("/api/version/"+ versionID +"/posts/portfolio", {
+	fetch("/api/version/"+ versionID +"/posts", {
 		method: "GET",
 	})
 	.then(function(resp) {

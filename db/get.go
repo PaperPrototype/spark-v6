@@ -148,6 +148,23 @@ func GetReleasePosts(releaseID uint64, courseID uint64) ([]Post, error) {
 	return posts, err
 }
 
+func GetReleasePostsOrderByLikes(releaseID uint64, courseID uint64) ([]Post, error) {
+	postIDs := gormDB.Model(&PostToCourse{}).Select("post_id").Where("release_id = ?", releaseID)
+
+	posts := []Post{}
+	err := gormDB.Model(&Post{}).Where("id IN (?)", postIDs).Preload("User").Order("likes_count DESC").Order("created_at DESC").Find(&posts).Error
+
+	for i := range posts {
+		buf, err := markdown.Convert([]byte(posts[i].Markdown))
+		if err != nil {
+			return posts, err
+		}
+		posts[i].Markdown = buf.String()
+	}
+
+	return posts, err
+}
+
 func GetPostPreloadUser(postID string) (*Post, error) {
 	post := Post{}
 	err := gormDB.Model(&Post{}).Where("id = ?", postID).Preload("User").First(&post).Error

@@ -48,7 +48,7 @@ func getSectionPlaintext(c *gin.Context) {
 	c.JSON(http.StatusOK, section)
 }
 
-func getVersionPortfolioPosts(c *gin.Context) {
+func getVersionPosts(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
 
 	version, err := db.GetVersion(versionID)
@@ -71,12 +71,27 @@ func getVersionPortfolioPosts(c *gin.Context) {
 	)
 }
 
-func getVersionProposalPosts(c *gin.Context) {
-	// TODO
-}
+func getVersionShowcasePosts(c *gin.Context) {
+	versionID := c.Params.ByName("versionID")
 
-func getVersionProjects(c *gin.Context) {
-	// TODO
+	version, err := db.GetVersion(versionID)
+	if err != nil {
+		log.Println("api ERROR getting version for api/getVersionPosts:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	releasePosts, err1 := db.GetReleasePostsOrderByLikes(version.ReleaseID, version.CourseID)
+	if err1 != nil {
+		log.Println("api ERROR getting posts for api/getVersionPosts:", err1)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		releasePosts,
+	)
 }
 
 func getPost(c *gin.Context) {

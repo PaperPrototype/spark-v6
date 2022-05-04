@@ -254,16 +254,25 @@ type Content struct {
 
 /* SOCIAL */
 type Post struct {
-	ID        uint64    `gorm:"primaryKey"`
-	CreatedAt time.Time // special param name gorm automaically sets time
-	UpdatedAt time.Time // special param name gorm automaically sets time
-	UserID    uint64    `gorm:"not null"`
-	Markdown  string
+	ID         uint64    `gorm:"primaryKey"`
+	CreatedAt  time.Time // special param name gorm automaically sets time
+	UpdatedAt  time.Time // special param name gorm automaically sets time
+	UserID     uint64    `gorm:"not null"`
+	Markdown   string
+	LikesCount uint64 // cache of the number of likes in a post
+	// updated by a hook when we add or remove a like, the like runs a db query to update this posts likes count
 
 	User User
 
+	// delete the likes when we delete the post
+	Likes []Like `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	// delete the comments when we delete the post
 	Comments []Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+type Like struct {
+	UserID uint64
+	PostID uint64
 }
 
 // post comments

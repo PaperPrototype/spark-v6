@@ -3,6 +3,8 @@
 <div id="versionID" hidden>{{ .Version.ID }}</div>
 
 <script src="/resources/scripts/course.js" defer></script>
+<link href="/resources/css/markdown.css" rel="stylesheet">
+
 <style>
 	.selected {
 		font-weight: 600 !important;
@@ -18,8 +20,7 @@
 </style>
 
 <div x-data style="display:flex;" class="pad-sides-5">
-	<!-- TODO final projects -->
-	<div @click="$store.course.tab = 'projects'" @click.once="loadProjects()" class="course-tab-item" :class="$store.course.tab === 'projects' ? 'selected' : '' ">
+	<div @click="$store.course.tab = 'showcase'" @click.once="loadShowcasePosts()" class="course-tab-item" :class="$store.course.tab === 'showcase' ? 'selected' : '' ">
 		Student Work
 	</div>
 	<div @click="$store.course.tab = 'course'" class="course-tab-item" :class="$store.course.tab === 'course' ? 'selected' : '' ">
@@ -160,8 +161,8 @@
 			<button class="pad-05 bd bd-none hoverable-bg-code" @click="loadMoreReviews()">Load more</button>
 		</div>
 	</div>
-	<div x-show="$store.course.tab === 'projects'">
-		<h2>"Final Projects" coming soon.</h2>
+	<div x-show="$store.course.tab === 'showcase'">
+		<div id="studentWorkMount"></div>
 	</div>
 </div>
 

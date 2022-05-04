@@ -10,8 +10,9 @@ document.addEventListener("alpine:init", function(event) {
 });
 
 document.addEventListener("DOMContentLoaded", function(event) {
-	let versionID = document.getElementById("versionID").innerText;
 
+	// load sections of course
+	let versionID = document.getElementById("versionID").innerText;
 	console.log("loading sections...");
 	fetch("/api/github/version/" + versionID +"/tree", {
 		method: "GET",
@@ -90,7 +91,7 @@ function loadReviews() {
 			let markdown = document.createElement("div");
 			review.append(markdown);
 
-			markdown.innerHTML = json.Reviews[i].Post.Markdown.slice(0, 500) + "...";
+			markdown.innerHTML = json.Reviews[i].Post.Markdown;
 			reviewsMount.append(review);
 		}
 	})
@@ -178,6 +179,51 @@ function postReview() {
 		SendMessage("Successfully posted review");
 		loadReviews(); // reload inital reviews to show the new review
 		Alpine.store("course").allowNewReview = false;
+	})
+	.catch(function(err) {
+		console.error(err);
+	});
+}
+
+function loadShowcasePosts() {
+	console.log("loading student work...");
+
+	let versionID = document.getElementById("versionID").innerText;
+
+	let studentWorkMount = document.getElementById("studentWorkMount");
+	studentWorkMount.innerHTML = "";
+
+	// only loads up to 20 review/posts at once
+	fetch(`/api/version/` + versionID + `/posts/showcase`, {
+		method: "GET",
+	})
+	.then(function(resp) {
+		if (!resp.ok) {
+			SendMessage("Error loading reviews");
+			throw new Error("Response for course reviews was not ok!");
+		}
+
+		return resp.json();
+	})
+	.then(function(json) {
+		for (let i = 0; i < json.length; i++)
+		{
+			let post = document.createElement("div");
+			post.setAttribute("class", "pad-05 bd thin-light");
+			post.setAttribute("style", "margin-bottom:1rem;");
+
+			let topbar = document.createElement("div");
+			topbar.innerHTML = `by <a href="/` + json[i].User.Username + `">@` + json[i].User.Username + `</a>`;
+			topbar.setAttribute("style", "padding-bottom:0.5rem; display:flex;");
+			post.append(topbar);
+
+			let markdown = document.createElement("div");
+			markdown.setAttribute("markdown", "");
+			post.append(markdown);
+
+			markdown.innerHTML = json[i].Markdown;
+			studentWorkMount.append(post);
+		}
 	})
 	.catch(function(err) {
 		console.error(err);

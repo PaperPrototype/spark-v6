@@ -1,0 +1,10 @@
+/* when screen width is larger than 900px */
+@media only screen and (min-width:900px) {
+	[markdown] img {
+		max-width: 65%;
+	}
+
+	[markdown] iframe {
+		width: 65%;
+	}
+}

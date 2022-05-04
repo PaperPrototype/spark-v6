@@ -9,9 +9,8 @@ import (
 
 func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/courses", getCourses)
-	group.GET("/version/:versionID/posts/portfolio", getVersionPortfolioPosts) // portfolio proof of work posts
-	group.GET("/version/:versionID/posts/proposal", getVersionProposalPosts)   // proposal posts for final project
-	group.GET("/version/:versionID/projects", getVersionProjects)              // course final projects
+	group.GET("/version/:versionID/posts", getVersionPosts)                  // portfolio showcase posts
+	group.GET("/version/:versionID/posts/showcase", getVersionShowcasePosts) // top rated student work
 	group.GET("/version/:versionID/reviews", getCourseReviews)
 	group.POST("/version/:versionID/reviews/new", middlewares.MustBeLoggedIn, postNewReview)
 	group.POST("/version/:versionID/posts/:postID/comment", middlewares.MustBeLoggedIn, postPostComment) // creates notification linked to course release

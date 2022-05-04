@@ -1,0 +1,66 @@
+/* course lecture styling */
+[markdown] > pre > code > span {
+	font-family: 'Red Hat Mono', monospace !important;
+}
+
+[markdown] > pre > code > span > span {
+	font-family: 'Red Hat Mono', monospace !important;
+}
+
+[markdown] > pre > code > span > span > span {
+	font-family: 'Red Hat Mono', monospace !important;
+}
+
+[markdown] > pre > code > span > span > span > span {
+	font-family: 'Red Hat Mono', monospace !important;
+}
+
+[markdown] > pre {
+	padding: 0.5rem;
+	color: var(--c-white);
+	background-color: var(--c-black) !important;
+	font-family: 'Red Hat Mono', monospace !important;
+	overflow-x: scroll;
+	border-radius: 0.5rem;
+	display: block;
+}
+
+[markdown] > pre > code {
+	width: max-content;
+	display: block !important;
+	padding-right: 1rem !important;
+	font-family: 'Red Hat Mono', monospace !important;
+}
+
+[markdown] > pre > * {
+	color: var(--c-white);
+	font-family: 'Red Hat Mono', monospace !important;
+}
+
+[markdown] > p > code {
+	color: var(--c-code);
+	font-family: 'Red Hat Mono', monospace !important;
+}
+
+[markdown] > p {
+	width: 100%;
+	word-wrap: break-word;
+}
+
+[markdown] img {
+	max-width: 100%;
+	display: table;
+	border-radius: 0.5rem;
+}
+
+[markdown] h1, [markdown] h2, [markdown] h3, [markdown] h4, [markdown] h5, [markdown] h6 {
+	color: var(--c-bold);
+}
+
+[markdown] iframe {
+	display: table;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 9;
+	border-radius: 0.5rem;
+}
