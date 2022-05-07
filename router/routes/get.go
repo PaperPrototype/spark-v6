@@ -20,7 +20,7 @@ import (
 )
 
 var metaDefault = Meta{
-	Title: "Sparker - Coding Courses",
+	Title: "Sparker - Awesome Coding Courses",
 	Desc:  "It's time to ditch degree's and switch to portfolio's.",
 }
 
