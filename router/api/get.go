@@ -160,6 +160,17 @@ func getCourseReviews(c *gin.Context) {
 		return
 	}
 
+	// convert markdown
+	for i := range reviews {
+		convertedMarkdown, err4 := markdown.Convert([]byte(reviews[i].Post.Markdown))
+		if err4 != nil {
+			log.Println("api/get ERROR converting markdown in getCourseReviews:", err4)
+			continue // skip to next post
+		}
+
+		reviews[i].Post.Markdown = convertedMarkdown.String()
+	}
+
 	c.JSON(
 		http.StatusOK,
 		struct {

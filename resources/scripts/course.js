@@ -81,19 +81,7 @@ function loadReviews() {
 
 		for (let i = 0; i < json.Reviews.length; i++)
 		{
-			let review = document.createElement("div");
-			review.setAttribute("class", "pad-05 bd thin-light");
-			review.setAttribute("style", "margin-bottom:1rem;");
-
-			let topbar = document.createElement("div");
-			topbar.innerHTML = `by <a href="/` + json.Reviews[i].User.Username + `">@` + json.Reviews[i].User.Username + `</a> <div style="margin-left:auto;">` + json.Reviews[i].Rating + ` stars</div>`;
-			topbar.setAttribute("style", "padding-bottom:0.5rem; display:flex;");
-			review.append(topbar);
-
-			let markdown = document.createElement("div");
-			review.append(markdown);
-
-			markdown.innerHTML = json.Reviews[i].Post.Markdown;
+			let review = createReviewHTML(json.Reviews[i]);
 			reviewsMount.append(review);
 		}
 	})
@@ -125,19 +113,7 @@ function loadMoreReviews() {
 	.then(function(json) {
 		for (let i = 0; i < json.Reviews.length; i++)
 		{
-			let review = document.createElement("div");
-			review.setAttribute("class", "pad-05 bd thin-light");
-			review.setAttribute("style", "margin-bottom:1rem;");
-
-			let topbar = document.createElement("div");
-			topbar.innerHTML = `by <a href="/` + json.Reviews[i].User.Username + `">@` + json.Reviews[i].User.Username + `</a>`;
-			topbar.setAttribute("style", "padding-bottom:0.5rem;");
-			review.append(topbar);
-
-			let markdown = document.createElement("div");
-			review.append(markdown);
-
-			markdown.innerHTML = json.Reviews[i].Post.Markdown.slice(0, 500) + "...";
+			let review = createReviewHTML(json.Reviews[i]);
 			reviewsMount.append(review);
 		}
 
@@ -146,6 +122,27 @@ function loadMoreReviews() {
 	.catch(function(err) {
 		console.error(err);
 	});
+}
+
+function createReviewHTML(reviewJson) {
+	let review = document.createElement("div");
+	review.setAttribute("x-data", "");
+	review.setAttribute("x-on:click", "loadPost(" + reviewJson.Post.ID + ")");
+	review.setAttribute("class", "pad-05 bd thin-light");
+	review.setAttribute("style", "margin-bottom:1rem;");
+
+	let topbar = document.createElement("div");
+	topbar.innerHTML = `by <a href="/` + reviewJson.User.Username + `">@` + reviewJson.User.Username + `</a>`;
+	topbar.setAttribute("style", "padding-bottom:0.5rem;");
+	review.append(topbar);
+
+	let markdown = document.createElement("div");
+	review.append(markdown);
+
+	markdown.innerHTML = reviewJson.Post.Markdown;
+	markdown.innerText = markdown.innerText;
+
+	return review;
 }
 
 function postReview() {
