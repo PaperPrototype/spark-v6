@@ -29,9 +29,13 @@ func Setup() {
 	})
 
 	router.SetFuncMap(template.FuncMap{
-		// a sictionary util that can be used to pass input to templates
-		// much like gin.H{}
-		// gotten from
+		// a dictionary util that can be used to pass multiple inputs to a template
+		// syntax:
+		/*
+
+			dict "key" .Value "key" .Value
+
+		*/
 		"dict": func(values ...interface{}) (map[string]interface{}, error) {
 			if len(values)%2 != 0 {
 				return nil, errors.New("invalid dict call")

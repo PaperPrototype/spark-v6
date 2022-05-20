@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func courseVersionNewPost(c *gin.Context) {
+func postNewPost(c *gin.Context) {
 	if !auth.IsLoggedInValid(c) {
 		log.Println("api LOG not logged in valid")
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -26,7 +26,45 @@ func courseVersionNewPost(c *gin.Context) {
 		return
 	}
 
-	versionID := c.Params.ByName("versionID")
+	markdown := c.PostForm("markdown")
+
+	// prevent from posting empty posts
+	if strings.Trim(markdown, " ") == "" {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	post := db.Post{
+		UserID:   user.ID,
+		Markdown: markdown,
+	}
+	err2 := db.CreatePost(&post)
+	if err2 != nil {
+		log.Println("api ERROR creating post:", err2)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	log.Println("posted new post:", post)
+	log.Println("markdown is:", markdown)
+
+	versionID := c.Query("version_id")
+
+	// set the user in the post
+	post.User = *user
+
+	// reply with the post's markdown
+	defer c.JSON(
+		http.StatusOK,
+		post,
+	)
+
+	if versionID == "" {
+		// no version_id so return
+		return
+	}
+
+	log.Println("version_id is present")
+
 	version, err := db.GetVersion(versionID)
 	if err != nil {
 		log.Println("api ERROR getting version:", err)
@@ -80,25 +118,6 @@ func courseVersionNewPost(c *gin.Context) {
 		}
 	}
 
-	markdown := c.PostForm("markdown")
-
-	// prevent from posting empty posts
-	if strings.Trim(markdown, " ") == "" {
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	post := db.Post{
-		UserID:   user.ID,
-		Markdown: markdown,
-	}
-	err2 := db.CreatePost(&post)
-	if err2 != nil {
-		log.Println("api ERROR creating post:", err2)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
 	postToCourse := db.PostToCourse{
 		PostID:    post.ID,
 		ReleaseID: version.ReleaseID,
@@ -110,9 +129,6 @@ func courseVersionNewPost(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-
-	log.Println("posted new post:", post)
-	log.Println("markdown is:", markdown)
 }
 
 func postUpdatePost(c *gin.Context) {

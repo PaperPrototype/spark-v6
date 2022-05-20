@@ -40,24 +40,6 @@
 				json: [],
 			});
 		} else {
-			// not using github
-			Alpine.store("sections", {
-				sections: [
-					// use templating to store info about sections
-					{{ range .Version.GetSectionsLogError }}
-						{{ .ID }},
-					{{ end }}
-				],
-				current: {{ .Section.ID }},
-			});
-
-			loadUploadSection({{ .Section.ID }});
-
-			{{ if eq .ChannelID "" }}
-				// close menu
-				Alpine.store("courseView").menuOpen = false;
-			{{ end }}
-			// prevent loadig github based sections with fetch
 			return
 		}
 
@@ -155,8 +137,10 @@
 	}
 </script>
 
+<!-- next section and previous section buttons -->
 <script defer>
 	document.addEventListener("alpine:init", function(event) {
+
 		let courseNext = document.getElementById("courseNext");
 		courseNext.addEventListener("click", function() {
 			let sections = Alpine.store("sections").sections;
@@ -192,6 +176,8 @@
 			let courseName = document.getElementById("courseName");
 
 			loadSection(nextSectionID);
+
+			Alpine.store("courseView").allowNewPost = true;
 
 			// close menu
 			Alpine.store("courseView").menuOpen = false;
@@ -232,6 +218,8 @@
 			let courseName = document.getElementById("courseName");
 
 			loadSection(previousSectionID); 
+			
+			Alpine.store("courseView").allowNewPost = true;
 
 			// close menu
 			Alpine.store("courseView").menuOpen = false;

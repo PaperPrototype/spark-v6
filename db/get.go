@@ -191,7 +191,7 @@ func GetAllRelease(releaseID interface{}) (*Release, error) {
 
 func GetPost(postID string) (*Post, error) {
 	post := Post{}
-	err := gormDB.Model(&Post{}).Where("id = ?", postID).First(&post).Error
+	err := gormDB.Model(&Post{}).Preload("User").Where("id = ?", postID).First(&post).Error
 	return &post, err
 }
 

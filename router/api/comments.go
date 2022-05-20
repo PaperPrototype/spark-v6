@@ -1,26 +1,24 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"main/db"
 	"main/helpers"
 	"main/router/auth"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
+// create a new comment on a post
 func postPostComment(c *gin.Context) {
-	versionID := c.Params.ByName("versionID")
 	postID := c.Params.ByName("postID")
 	markdown := c.PostForm("markdown")
 
-	postIDNum, err := strconv.ParseUint(postID, 10, 64)
+	post, err := db.GetPost(postID)
 	if err != nil {
-		log.Println("api/post ERROR parsing uint in postPostComment:", err)
+		log.Println("api/post ERROR getting post from db in postPostComment:", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -35,7 +33,7 @@ func postPostComment(c *gin.Context) {
 	// create the comment
 	comment := db.Comment{
 		UserID:   user.ID,
-		PostID:   postIDNum,
+		PostID:   post.ID,
 		Markdown: markdown,
 	}
 	err2 := db.CreateComment(&comment)
@@ -45,23 +43,9 @@ func postPostComment(c *gin.Context) {
 		return
 	}
 
-	version, err3 := db.GetVersion(versionID)
-	if err3 != nil {
-		log.Println("api/comments ERROR getting version in postPostComment:", err3)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	course, err5 := db.GetCoursePreloadUser(version.CourseID)
-	if err5 != nil {
-		log.Println("api/comments ERROR getting version course in postPostComment:", err5)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
 	usernames := helpers.GetUserMentions(markdown)
 	log.Println("usernames to notify:", usernames)
-	err6 := db.NotifyUsers(usernames, "@"+user.Username+" mentioned you in a post's comments in "+course.Title, "/"+course.User.Username+"/"+course.Name+"/view/"+fmt.Sprint(version.ID)+"?post_id="+postID)
+	err6 := db.NotifyUsers(usernames, "@"+user.Username+" mentioned you in a post's comments", "/"+post.User.Username+"?post_id="+postID)
 	if err6 != nil {
 		log.Println("api/comments ERROR notifying users in postPostComment:", err6)
 	}

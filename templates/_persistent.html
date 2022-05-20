@@ -1,6 +1,8 @@
 <!-- Persistent stuff like the top nav bar menu or chat box that should always be available 
 TODO add DM's (Direct Messages) to top nav bar -->
 
+<div id="userID" hidden>{{ .User.ID }}</div>
+
 <ul class="nav nav-row pad-sides-5 bg-overlay" id="topNav" style="z-index: -1; border-bottom:0.08rem solid var(--c-light);">
 	{{ if not .LoggedIn }}
 		<img href="/" class="nav-logo" style="height:2.2rem; display: inline-block; position: relative;">
@@ -54,25 +56,6 @@ TODO add DM's (Direct Messages) to top nav bar -->
 	</li>
 </ul>
 
-<!-- notifications dropdown -->
-{{ if .LoggedIn }}
-	<script src="/resources/scripts/notify.js" defer></script>
-	<div 
-	@click.outside="$store.notify.show = false" 
-	x-data x-cloak 
-	x-show="$store.notify.show" 
-	style="z-index:100; position:absolute; top:3.85rem; right:0; left:0; bottom:0; padding-top:0rem; padding-bottom:0rem;"
-	class="bg-overlay pad-sides-5">
-		<div id="navNotifications">
-			loading...
-		</div>
-		<!--
-		<p>
-			<a href="/home/notifications">see all</a>
-		</p>-->
-	</div>
-{{ end }}
-
 <style>
 	[nav] table, [nav] td { 
 		border-collapse: collapse; 
@@ -94,12 +77,12 @@ TODO add DM's (Direct Messages) to top nav bar -->
 				{{ if .LoggedIn }}
 					<tr class="hoverable bd" href="/courses">
 						<td class="pad-05-lefty"><i class="fa-solid fa-code"></i></td>
-						<td class="pad-05"> Courses</td>
+						<td class="pad-05">Courses</td>
 					</tr>
 					{{ if .User.Verified }}
 						<tr class="hoverable bd" href="/new">
 							<td class="pad-05"><i class="fa-solid fa-plus"></i></td>
-							<td class="pad-05"> Course</td>
+							<td class="pad-05">Course</td>
 						</tr>
 					{{ end }}
 					<tr class="hoverable bd" href="/home">
@@ -133,8 +116,25 @@ TODO add DM's (Direct Messages) to top nav bar -->
 	</div>
 </div>
 
-<div class="bg-overlay" id="messagesMount" style="background-color:transparent; position:fixed; bottom:1rem; right:1rem; padding-left:1rem; padding-right:1rem; width:75%;">
+<!-- notifications dropdown -->
+{{ if .LoggedIn }}
+	<script src="/resources/scripts/notify.js" defer></script>
+	<div 
+	@click.outside="$store.notify.show = false" 
+	x-data x-cloak 
+	x-show="$store.notify.show" 
+	style="z-index:100; position:absolute; top:3.85rem; right:0; left:0; height:100%; padding-top:0rem; padding-bottom:0rem;"
+	class="bg-overlay pad-sides-5">
+		<div id="navNotifications">
+			loading...
+		</div>
+	</div>
+{{ end }}
+
+<div class="bg-overlay" id="messagesMount" style="z-index:1000; background-color:transparent; position:fixed; bottom:1rem; right:1rem; padding-left:1rem; padding-right:1rem; width:75%;">
 	{{ range .Messages }} 
 		<h4 hideOnClick class="bd bg-code" style="box-shadow:0rem 0rem 0.5rem var(--c-shadow); padding: 1rem; display: flex;">{{ . }} <i style="margin-left:auto;" class="fa-solid fa-xmark"></i></h4>
 	{{ end }}
 </div>
+
+{{ template "post.html" . }}

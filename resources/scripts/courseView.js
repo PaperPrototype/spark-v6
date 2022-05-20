@@ -7,10 +7,6 @@ let usingGithub = false;
 // offset from the top of the screen
 let ogTopOffset;
 
-// form for sending comments on a post
-let postCommentsForm;
-
-let abortCommentsController = new AbortController();
 let abortMessagesController = new AbortController();
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -24,9 +20,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	window.onscroll = function(){
 		menuFollowScroll();
 	}
-
-	postCommentsForm = document.getElementById("postCommentsForm");
-	postCommentsForm.addEventListener("submit", sendComment, false)
 });
 
 // toggle nav menu
@@ -90,12 +83,6 @@ function viewPosts() {
 	Alpine.store("courseView").viewingComments = false;
 }
 
-function clearPosts()
-{
-	let coursePostsMount = document.getElementById("coursePostsMount");
-	coursePostsMount.innerHTML = "";
-}
-
 function loadPosts(versionID) {
 	console.log("loading posts...");
 
@@ -125,6 +112,8 @@ function loadPosts(versionID) {
 		let newPost = document.createElement("div");
 		newPost.classList.add("text-center");
 		newPost.classList.add("post-card");
+		newPost.setAttribute("x-data", "");
+		newPost.setAttribute("x-on:click", "newPostView({ version_id:" + versionID + " })");
 
 		// plus icon
 		let plusIcon = document.createElement("div");
@@ -137,10 +126,6 @@ function loadPosts(versionID) {
 		h3.style = "margin-top:auto;";
 		h3.innerText = `New Post`;
 		newPost.appendChild(h3);
-
-		newPost.addEventListener("click", function(event) {
-			console.log("TODO create a new posts view");
-		});
 
 		posts.appendChild(newPost);
 
@@ -308,72 +293,6 @@ function updatePost() {
 	});
 }
 
-function loadPost(postID) {
-	clearPosts();
-
-	fetch("/api/posts/"+postID, {
-		method: "GET",
-	})
-	.then(function(resp) {
-		if (!resp.ok) {
-			throw new Error("Response for loadPost was not ok");
-		}
-
-		return resp.json();
-	})
-	.then(function(json) {
-		let postMount = document.getElementById("postMount");
-		let postMountUser = document.getElementById("postMountUser");
-
-		// set title of post
-		let elements = document.createElement("div");
-		elements.innerHTML = json.Markdown;
-		let nodes = elements.querySelectorAll("*");
-		let title = "";
-		for (let nodeIndex = 0; nodeIndex < 1; nodeIndex++) {
-			title = title + " " + nodes[nodeIndex].innerText;
-		}
-		let postsTitle = document.getElementById("postsTitle");
-		postsTitle.innerText = title;
-
-		// if save for if user decides to edit the post
-		Alpine.store("courseView").postID = json.ID;
-
-		Alpine.store("courseView").editingPost = false;
-		Alpine.store("courseView").viewingPost = true;
-
-		postMount.innerHTML = json.Markdown;
-		postMountUser.innerText = "@" + json.User.Username;
-
-		Alpine.store("courseView").postID = postID;
-
-		// reset this so that when we click a different post the loadCommentsLongPolling function will know to
-		// load initial comments and not comments after a specific date
-		Alpine.store("courseView").newestCommentDate = "";
-
-		resetComments();
-
-		loadPostComments(postID);
-
-		// convert any elems with a link to open in new page if they have external
-		convertHrefs(postMount);
-
-		// get current course URL
-		let courseURL = document.getElementById("courseURL").innerText;
-
-		if (Alpine.store("sections").current === "") {
-			// change location of window
-			window.history.replaceState("", "", courseURL + "?post_id=" + postID);
-		} else {
-			// change location of window
-			window.history.replaceState("", "", courseURL + "/" + Alpine.store("sections").current + "?post_id=" + postID);
-		}
-	})
-	.catch(function(err) {
-		console.error(err);
-	});
-}
-
 function menuFollowScroll() {
 	// if top offset is greater than window's Y-scroll offset
 	// if scrolled past topbar
@@ -415,124 +334,6 @@ function loadSection(id) {
 	} else {
 		loadUploadSection(id);
 	}
-}
-
-function sendComment(event) {
-	if (event) {
-		event.preventDefault();
-	}
-
-	let postCommentsSend = document.getElementById("postCommentsSend");
-	let postID = Alpine.store("courseView").postID;
-
-	if (postCommentsSend.value === "") {
-		SendMessage("Can't send an empty message");
-		return
-	}
-
-	let formData = new FormData();
-	formData.append("markdown", postCommentsSend.value);
-
-	let versionID = document.getElementById("versionID").innerText;
-
-	fetch("/api/version/" + versionID + "/posts/" + postID + "/comment", {
-		method: "POST",
-		body: formData,
-	})
-	.then(function(resp) {
-		if (!resp.ok) {
-			throw new Error("Response was not ok");
-		}
-
-		postCommentsSend.value = "";
-	})
-	.catch(function(err) {
-		SendMessage("Error sending message")
-		console.error(err);
-	});
-}
-
-// abort any previous polling requests in for comments
-function resetComments() {
-	abortCommentsController.abort();
-	abortCommentsController = new AbortController();
-}
-
-// long polling taken from here
-// https://javascript.info/long-polling
-async function loadPostComments(postID) {
-	resetComments();
-	
-	if (Alpine.store("courseView").viewingPost === false) {
-		// stop long polling
-		return
-	}
-
-	console.log("loading comments...");
-
-	let lastCommentDate = Alpine.store("courseView").newestCommentDate;
-
-	let resp;
-	try {
-		resp = await fetch("/api/posts/"+postID+"/comments?newest="+lastCommentDate, {
-			method: "GET",
-			signal: abortCommentsController.signal,
-		});
-	} catch (err) {
-		if (err.name === "AbortError") {
-			console.log("fetch comments was aborted...");
-			return
-		}
-
-		console.log("error getting comments...:", err);
-
-		// wait 3 seconds
-		await new Promise(resolve => setTimeout(resolve, 3000));
-
-		// then long poll comments again
-		await loadPostComments(postID);
-
-		return
-	}
-
-	let postCommentsMount = document.getElementById("postCommentsMount")
-
-	// if first time loading, then clear inner html
-	if (lastCommentDate === "") {
-		postCommentsMount.innerHTML = "";
-	}
-
-	let json = await resp.json();
-
-	let lastComment;
-	for (let i = 0; i < json.length; i++) {
-		let comment = document.createElement("div");
-		comment.innerHTML =
-		`<div class="c-bold" style="margin-top:0.5rem; font-weight:600;" href="/` + json[i].User.Username + `" external> @` + json[i].User.Username  + ` <i class="fa-solid fa-arrow-up-right-from-square"></i></div>` +
-		`<p>` + json[i].Markdown + `</p>`;
-		comment.style = "border-top:0.08rem solid var(--c-light); margin-left:1rem; margin-right:1rem;";
-
-		postCommentsMount.append(comment);
-
-		if (i === json.length - 1) {
-			Alpine.store("courseView").newestCommentDate = json[i].CreatedAt;
-
-			// set last comment
-			lastComment = comment;
-		}
-	}
-
-	// if there is a last comment
-	if (lastComment !== undefined) {
-		lastComment.scrollIntoView();
-
-		// make username links work
-		convertHrefs(postCommentsMount);
-	}
-
-	// wait 1 seconds
-	await new Promise(resolve => setTimeout(resolve, 1000));
-	await loadPostComments(postID);
 }
 
 async function sendMessage() {
@@ -663,22 +464,6 @@ async function loadChannelMessages(channelID) {
 	// wait 1 second
 	await new Promise(resolve => setTimeout(resolve, 1000));
 	await loadChannelMessages(channelID);
-}
-
-function fixImageLinks(markdown) {
-	// FIX IMAGE LINKS
-	let images = markdown.querySelectorAll("img")
-	let versionID = document.getElementById("versionID").innerText;
-	for (let i = 0; i < images.length; i++) {
-		let src = images[i].getAttribute("src")
-
-		if (src.includes("/Assets/") || src.includes("/assets/")) {
-			// get filename and strip away /Assets/
-			let name = src.slice(8, src.length);
-			let newSrc = "/media/"+versionID+"/name/"+name;
-			images[i].setAttribute("src", newSrc);
-		}
-	}
 }
 
 function resetURL() {

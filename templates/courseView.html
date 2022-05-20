@@ -22,15 +22,8 @@
 			// whether the dropdown menu is showing the chat or the posts
 			menu: 'sections', // 'sections' or 'chat'
 
-			// posts
-			oldestPost: "",
-			postID: 0,
-			viewingPost: false,
-			viewingComments: false,
+			// allow new showcase post
 			allowNewPost: true,
-			editingPost: false,
-			newestCommentDate: "",
-			comments: [],
 
 			// course
 			editingContent: false,
@@ -50,7 +43,6 @@
 
 <script defer src="/resources/scripts/courseView.js"></script>
 <script defer src="/resources/scripts/courseViewGithub.js"></script>
-<script defer src="/resources/scripts/courseViewUpload.js"></script>
 
 <!-- inline templated script -->
 {{ template "courseView_initDataFirstSection.html" . }}
@@ -58,7 +50,8 @@
 {{ if ne .PostID "" }}
 	<script defer>
 		document.addEventListener("alpine:init", function(event) {
-			viewPosts(); loadPost({{ .PostID }});
+			viewPosts();
+			loadPosts({{ .Version.ID }});
 
 			// loading the chat channel
 			loadChannel({{ .Channel.ID }}, '{{ .Channel.Name }}');
@@ -72,7 +65,7 @@
 
 			{{ if .ChannelID }}
 				console.log("channel id provided, loading chat view")
-				// if the page was loaded wit a channel_id query then this is a notification so load channel
+				// if the page was loaded with a channel_id query then this is a notification so load channel
 				toggleChat();
 				loadChannel({{ .Channel.ID }}, '{{ .Channel.Name }}');
 			{{ else }}
@@ -190,61 +183,7 @@
 	<div id="courseMain" class="bg-overlay">
 		<!-- posts by students -->
 		<div x-cloak x-show="$store.courseView.view === 'posts'" class="bg-overlay pad-top-2rem pad-bot-2rem">
-			<div x-show="$store.courseView.viewingPost" class="pad-sides-5" style="width: 100%;">
-				<div class="bg-overlay bd">
-					<div style="display:flex;">
-						<div style="padding: 0.5rem;">
-							by <span id="postMountUser"></span>
-						</div>
-						<!-- edit buttons-->
-						<div x-show="$store.courseView.editingPost === false" class="hoverable bd" id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
-							<i class="fa-solid fa-pen-to-square"></i>
-						</div>
-						<div x-show="$store.courseView.editingPost === true" class="hoverable bd" @click="$store.courseView.editingPost = false;" style="margin-left:auto; padding: 0.5rem;">
-							<i style="margin-left:auto;" class="fa-solid fa-xmark"></i>
-						</div>
-					</div>
-					<!-- update post -->
-					<div x-show="$store.courseView.editingPost">
-						<textarea class="bd pad-05" id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
-						<div>
-							<button class="bd bd-none pad-05 hoverable-bg-code" @click="updatePost()" style="width:100%;">Update</button>
-						</div>
-					</div>
-					<!-- post -->
-					<div x-show="!$store.courseView.editingPost" style="padding: 0.5rem; width: 100%;" class="bd thin-light">
-						<div markdown id="postMount" x-show="!$store.courseView.viewingComments">
-						</div>
-						<!-- post comments -->
-						<div x-show="$store.courseView.viewingComments">
-							<div style="height:25rem; overflow-y:scroll;">
-								<div style="display:flex; justify-content:flex-end; flex-direction:column;">
-									<p style="margin-left:1rem; margin-right:1rem;">
-										This is the beginning of the comments.
-									</p>
-									<div id="postCommentsMount"></div>
-								</div>
-							</div>
-						</div>
-						<div style="display:flex;" class="bg-overlay">
-							<div x-show="$store.courseView.viewingComments" style="width:100%; margin-right:0.5rem;">
-								<form id="postCommentsForm">
-									<!-- comment input -->
-									{{ if .LoggedIn }}
-										<input id="postCommentsSend" class="bd thin-light pad-05 bg" placeholder="comment..." style="width:100%;">
-									{{ else }}
-										<div class="pad-05 thin-top"><a href="/login">login</a> to comment</div>
-									{{ end }}
-								</form>
-							</div>
-							<div @click="$store.courseView.viewingComments = ! $store.courseView.viewingComments" style="margin-left:auto;">
-								<i :class="$store.courseView.viewingComments ? 'fa-arrow-turn-up' : 'fa-comments' " class="fa-solid hoverable pad-05 bd"></i>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- when not viewing a specific post, show all posts -->
+			<!-- show all posts -->
 			<div x-show="!$store.courseView.viewingPost" id="coursePostsMount">
 				<!-- insert posts with js -->
 			</div>

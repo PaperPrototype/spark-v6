@@ -13,25 +13,25 @@ func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/version/:versionID/posts/showcase", getVersionShowcasePosts) // top rated student work
 	group.GET("/version/:versionID/reviews", getCourseReviews)
 	group.POST("/version/:versionID/reviews/new", middlewares.MustBeLoggedIn, postNewReview)
-	group.POST("/version/:versionID/posts/:postID/comment", middlewares.MustBeLoggedIn, postPostComment) // creates notification linked to course release
 	group.POST("/version/:versionID/channel/:channelID/message", middlewares.MustBeLoggedIn, postChannelSendMessage)
 	group.GET("/channels/:channelID", getChannelMessages)
 
+	// posts
+	group.POST("/posts/new", postNewPost)
 	group.GET("/posts/:postID", getPost)
 	group.GET("/posts/:postID/comments", getPostComments) // utilizes long polling
+	group.POST("/posts/:postID/comment", middlewares.MustBeLoggedIn, postPostComment)
 	group.GET("/posts/:postID/plaintext", getPostPlaintext)
 	group.POST("/posts/:postID/update", postUpdatePost)
 
 	// notifications
 	group.GET("/notifications/newest", middlewares.MustBeLoggedIn, getNewNotifications)
 	group.POST("/notifications/done", middlewares.MustBeLoggedIn, postDoneNotification) // set notification as read
-	group.GET("/notifications", middlewares.MustBeLoggedIn)                             // get all notifications in pages
 
 	// getting an UPLOAD based course
 	group.GET("/section/:sectionID", getSection)
 	group.GET("/section/:sectionID/plaintext", mustBeCourseAuthor, getSectionPlaintext)
 	group.POST("/section/:sectionID/content/:contentID/edit", postEditSectionContent)
-	group.POST("/version/:versionID/posts/new", courseVersionNewPost)
 
 	// getting a GITHUB based course
 	// for public viewing and paying customers

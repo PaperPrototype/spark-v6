@@ -55,9 +55,7 @@ func AddRoutes(router *gin.Engine) {
 	// TODO pass as url params instead of through routes
 	router.GET("/:username/:course/view/:versionID/sha/:sha", MustHaveAccessToCourseRelease) // view a github versions content
 	router.GET("/:username/:course/view/:versionID/posts")                                   // view posts
-	router.GET("/:username/:course/view/:versionID/post/:postID")                            // view specific post
 	router.GET("/:username/:course/view/:versionID/posts/user/:username")                    // view posts by a specific user
-	router.GET("/:username/:course/view/:versionID/chat")                                    // view the live chatroom
 
 	// course media assets (zip, png, gif)
 	router.GET("/media/:versionID/name/:mediaName", getNameMedia)

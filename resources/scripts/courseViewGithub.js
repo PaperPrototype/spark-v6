@@ -96,6 +96,7 @@ function loadGithubSection(tree_sha) {
 		let headersWithID = markdown.querySelectorAll("[id]")
 		for (let i = 0; i < headersWithID.length; i++) {
 			headersWithID[i].style = "cursor:pointer;"
+
 			headersWithID[i].addEventListener("click", function(event) {
 				let id = this.getAttribute("id")
 
@@ -112,7 +113,7 @@ function loadGithubSection(tree_sha) {
 		markdown.setAttribute("markdown", "");
 
 		convertHrefs(markdown);
-		
+
 		content.append(markdown);
 
 		// get the anchor tag
@@ -124,7 +125,7 @@ function loadGithubSection(tree_sha) {
 		let courseURL = document.getElementById("courseURL").innerText;
 
 		// if there is not an anchor tag
-		if (headerID === null || headerID === undefined) {
+		if (headerID === null || headerID === 'undefined') {
 			console.log("headerID was undefined or null");
 
 			window.scroll(0, 0);

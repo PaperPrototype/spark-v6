@@ -541,6 +541,8 @@ func getCourseVersionSection(c *gin.Context) {
 func getUser(c *gin.Context) {
 	username := c.Params.ByName("username")
 
+	postID := c.Query("post_id")
+
 	if username == "" {
 		msg.SendMessage(c, "Can't find that user!")
 		notFound(c)
@@ -569,6 +571,7 @@ func getUser(c *gin.Context) {
 		http.StatusOK,
 		"user.html",
 		gin.H{
+			"PostID":          postID,
 			"Messages":        msg.GetMessages(c),
 			"User":            auth.GetLoggedInUserLogError(c),
 			"ProfileUser":     profileUser,

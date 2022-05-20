@@ -1,0 +1,11 @@
+.media-100 img {
+	width: 100%;
+	border-radius: 0.5rem;
+}
+
+.media-100 iframe {
+	width: 100%;
+	border-radius: 0.5rem;
+	height: auto;
+	aspect-ratio: 16 / 9;
+}

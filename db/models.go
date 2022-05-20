@@ -44,11 +44,6 @@ func migrate() {
 		&PostToCourse{},
 		&PostToCourseReview{},
 	)
-
-	// get rid of old outdated tables
-	gormDB.Migrator().DropTable(&PostToRelease{})
-	gormDB.Migrator().DropTable("media")
-	gormDB.Migrator().DropTable("media_chunks")
 }
 
 type AttemptBuyRelease struct {
@@ -254,13 +249,14 @@ type Content struct {
 
 /* SOCIAL */
 type Post struct {
-	ID         uint64    `gorm:"primaryKey"`
-	CreatedAt  time.Time // special param name gorm automaically sets time
-	UpdatedAt  time.Time // special param name gorm automaically sets time
-	UserID     uint64    `gorm:"not null"`
-	Markdown   string
+	ID        uint64    `gorm:"primaryKey"`
+	CreatedAt time.Time // special param name gorm automaically sets time
+	UpdatedAt time.Time // special param name gorm automaically sets time
+	UserID    uint64    `gorm:"not null"`
+	Markdown  string
+
+	// each Like has a db hook that runs a db query to update its posts likes count
 	LikesCount uint64 // cache of the number of likes in a post
-	// updated by a hook when we add or remove a like, the like runs a db query to update this posts likes count
 
 	User User
 
@@ -311,11 +307,6 @@ type Message struct {
 }
 
 /* RELATIONS */
-type PostToRelease struct {
-	PostID    uint64 `gorm:"not null"`
-	ReleaseID uint64 `gorm:"not null"`
-}
-
 // relate posts to a course release and section
 type PostToCourse struct {
 	PostID    uint64 `gorm:"not null"`

@@ -14,12 +14,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	// load sections of course
 	let versionID = document.getElementById("versionID").innerText;
 	console.log("loading sections...");
+
 	fetch("/api/github/version/" + versionID +"/tree", {
 		method: "GET",
 	})
 	.then(function(resp) {
 		if (!resp.ok) {
-			throw new Error("Response was not ok!");
+			SendMessage("failed to load sections.");
+			throw "error loading sections.";
 		}
 
 		return resp.json();
@@ -208,24 +210,55 @@ function loadShowcasePosts() {
 	.then(function(json) {
 		for (let i = 0; i < json.length; i++)
 		{
+			// temporary element to hold post html so it can be queried
+			let markdown = document.createElement("div");
+			markdown.innerHTML = json[i].Markdown;
+
+			let media = getFirstMedia(markdown);
+			if (media === null)
+			{
+				console.log("Post with ID " + json[i].ID + " had no media, so it will not be added to showcase posts.")
+				continue; // skip to next
+			}
+
+			let seeFullPost = document.createElement("div");
+			seeFullPost.innerHTML = `<a class="text-center" style="cursor:pointer; padding-top:0.5rem; display:block;" x-on:click="loadPost(` + json[i].ID + `)">see full post</a>`; 
+
+			let innerPostElem = document.createElement("div");
+			innerPostElem.setAttribute("class", "media-100")
+			innerPostElem.append(media);
+			innerPostElem.append(seeFullPost)
+
 			let post = document.createElement("div");
 			post.setAttribute("class", "pad-05 bd thin-light");
 			post.setAttribute("style", "margin-bottom:1rem;");
+			post.setAttribute("x-data", "");
+			post.setAttribute("x-on:click", "loadPost(" + json[i].ID + ")")
 
 			let topbar = document.createElement("div");
 			topbar.innerHTML = `by <a href="/` + json[i].User.Username + `">@` + json[i].User.Username + `</a>`;
 			topbar.setAttribute("style", "padding-bottom:0.5rem; display:flex;");
 			post.append(topbar);
+			post.append(innerPostElem);
 
-			let markdown = document.createElement("div");
-			markdown.setAttribute("markdown", "");
-			post.append(markdown);
-
-			markdown.innerHTML = json[i].Markdown;
 			studentWorkMount.append(post);
 		}
 	})
 	.catch(function(err) {
 		console.error(err);
 	});
+}
+
+// searches paretnElement and returns null if no media was found
+function getFirstMedia(parentElement) {
+	let media = null;
+
+	let medias = parentElement.querySelectorAll("iframe, img")
+
+	if (medias.length !== 0)
+	{
+		media = medias[0];
+	}
+
+	return media;
 }
