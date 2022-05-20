@@ -11,17 +11,21 @@
 	{{ if .ProfileCourses }}
 		<div class="course-cards">
 			{{ range .ProfileCourses }}
-				<div class="course-card-wrapper">
-					<div class="course-card" href="/{{ $.User.Username }}/{{ .Name }}">
-						<div class="course-card-img-wrapper">
-							<img class="course-card-img" style="background-image:url(/resources/images/homepage.png);">
-						</div>
-						<div class="course-card-content">
-							<h3 class="c-bold course-card-title">{{ .Title }}</h3>
+				<div>
+					<div class="course-card-wrapper">
+						<div class="course-card hoverable" href="/{{ .User.Username }}/{{ .Name }}">
+							<div class="course-card-img-wrapper">
+								<img class="course-card-img" src="{{ .Release.ImageURL }}">
+							</div>
+							<div class="course-card-content">
+								<h3 class="c-bold course-card-title">{{ .Title }}</h3>
+								<div class="course-card-subtitle">{{ .Subtitle }}</div>
+							</div>
 						</div>
 					</div>
-					<p><a href="/:course/view/:versionID/posts/user/:username">{{ .User.Username }}'s posts</a></p>
-					<p>by <a href="/{{ $.User.Username }}">@{{ $.User.Username }}</a></p>
+					<p class="course-card-footer">
+						by <a href="/{{ .User.Username }}">@{{ .User.Username }}</a>
+					</p>
 				</div>
 			{{ end }}
 		</div>
@@ -32,16 +36,21 @@
 	{{ if .AuthoredCourses }}
 		<div class="course-cards">
 			{{ range .AuthoredCourses }}
-				<div class="course-card-wrapper">
-					<div class="course-card" href="/{{ $.User.Username }}/{{ .Name }}">
-						<div class="course-card-img-wrapper">
-							<img class="course-card-img" style="background-image:url(/resources/images/homepage.png);">
-						</div>
-						<div class="course-card-content">
-							<h3 class="c-bold course-card-title">{{ .Title }}</h3>
+				<div>
+					<div class="course-card-wrapper">
+						<div class="course-card hoverable" href="/{{ .User.Username }}/{{ .Name }}">
+							<div class="course-card-img-wrapper">
+								<img class="course-card-img" src="{{ .Release.ImageURL }}">
+							</div>
+							<div class="course-card-content">
+								<h3 class="c-bold course-card-title">{{ .Title }}</h3>
+								<div class="course-card-subtitle">{{ .Subtitle }}</div>
+							</div>
 						</div>
 					</div>
-					<p><a href="/:course/view/:versionID/posts/user/:username">{{ $.User.Username }}'s posts</a></p>
+					<p class="course-card-footer">
+						by <a href="/{{ .User.Username }}">@{{ .User.Username }}</a>
+					</p>
 				</div>
 			{{ end }}
 		</div>

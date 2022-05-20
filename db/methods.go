@@ -8,13 +8,13 @@ import (
 
 func (user *User) GetPublicAuthoredCourses() ([]Course, error) {
 	courses := []Course{}
-	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("public = ?", true).Preload("User").Find(&courses).Error
+	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("public = ?", true).Preload("Release", orderByNewestCourseRelease).Preload("User").Find(&courses).Error
 	return courses, err
 }
 
 func (user *User) GetPublicAndPrivateAuthoredCourses() ([]Course, error) {
 	courses := []Course{}
-	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Find(&courses).Error
+	err := gormDB.Model(&Course{}).Preload("User").Where("user_id = ?", user.ID).Preload("Release", orderByNewestCourseRelease).Find(&courses).Error
 	return courses, err
 }
 
@@ -166,7 +166,7 @@ func (user *User) GetPublicPurchasedCourses() ([]Course, error) {
 
 	courses := []Course{}
 
-	err := gormDB.Model(&Course{}).Where("id IN (?)", courseIDs).Where("public = ?", true).Preload("User").Find(&courses).Error
+	err := gormDB.Model(&Course{}).Where("id IN (?)", courseIDs).Where("public = ?", true).Preload("Release", orderByNewestCourseRelease).Preload("User").Find(&courses).Error
 	return courses, err
 }
 
@@ -178,7 +178,7 @@ func (user *User) GetPublicAndPrivatePurchasedCourses() ([]Course, error) {
 
 	courses := []Course{}
 
-	err := gormDB.Model(&Course{}).Where("id IN (?)", courseIDs).Find(&courses).Error
+	err := gormDB.Model(&Course{}).Preload("User").Where("id IN (?)", courseIDs).Preload("Release", orderByNewestCourseRelease).Find(&courses).Error
 	return courses, err
 }
 

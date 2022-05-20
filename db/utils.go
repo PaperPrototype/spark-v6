@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func UserCourseNameAvailable(username string, name string) (bool, error) {
@@ -279,4 +280,8 @@ func CountUserReviewsLogError(userID uint64, courseID uint64) int64 {
 		log.Println("db/utils ERROR counting PostToCourseReviews in CountUserReviewsLogError:", err)
 	}
 	return count
+}
+
+func orderByNewestCourseRelease(db *gorm.DB) *gorm.DB {
+	return db.Order("created_at DESC")
 }

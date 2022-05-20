@@ -1,7 +1,6 @@
 package db
 
 import (
-	"log"
 	"main/markdown"
 	"time"
 )
@@ -242,16 +241,9 @@ func GetAuthorPublicAndPrivateCourses(userID uint64) ([]Course, error) {
 
 func GetAllPublicCoursesPreload() ([]Course, error) {
 	courses := []Course{}
-	err := gormDB.Model(&Course{}).Preload("User").Where("public = ?", true).Find(&courses).Error
-	for i, course := range courses {
-		release := Release{}
-		err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Order("created_at DESC").First(&release).Error
-		if err != nil {
-			log.Println("db/get ERROR getting release for course in GetAllPublicCoursesPreload:", err)
-			// ignore error since the course probable doesn't have any releases
-		}
-		courses[i].Release = release
-	}
+
+	err := gormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Where("public = ?", true).Find(&courses).Error
+
 	return courses, err
 }
 
