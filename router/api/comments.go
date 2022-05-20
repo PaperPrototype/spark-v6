@@ -49,8 +49,6 @@ func postPostComment(c *gin.Context) {
 	if err6 != nil {
 		log.Println("api/comments ERROR notifying users in postPostComment:", err6)
 	}
-
-	c.Status(http.StatusOK)
 }
 
 func getPostComments(c *gin.Context) {

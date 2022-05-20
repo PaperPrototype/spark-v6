@@ -25,12 +25,12 @@
 
 				{{ if .LoggedIn }}
 					<!-- go back to viewing post -->
-					<div x-show="$store.post.state === 'edit'" style="margin-left:auto; padding-left:0.8rem; padding-right:0.8rem;" @click="openPostView()" class="hoverable pad-05 bd">
+					<div x-show="$store.post.state === 'edit'" style="margin-left:auto; padding-left:0.8rem; padding-right:0.8rem;" @click="openPostView();" class="hoverable pad-05 bd">
 						<i class="fa-solid fa-xmark"></i>
 					</div>
 
 					<!-- edit post -->
-					<div x-show="$store.post.state === 'view'" style="margin-left:auto;" @click="editPostView()" class="hoverable pad-05 bd">
+					<div x-show="$store.post.state === 'view'" style="margin-left:auto;" @click="editPostView(); loadPostPlaintext();" class="hoverable pad-05 bd">
 						<i class="fa-solid fa-pen-to-square"></i>
 					</div>
 				{{ end }}
@@ -42,9 +42,9 @@
 
 			<!-- post editing and creating -->
 			<div x-show="$store.post.state !== 'view'">
-				<textarea id="postRawMarkdown" style="min-height:30rem; width:100%;" class="bd thin-light pad-05"></textarea>
+				<textarea id="postRawMarkdown" style="min-height:30rem; width:100%;" class="bd thin-light pad-05" placeholder="My new post..."></textarea>
 				<div>
-					<button x-show="$store.post.state === 'edit'" class="pad-05 bd thin-light hoverable-bg-code" style="width:100%;">
+					<button @click="postUpdatePost()" x-show="$store.post.state === 'edit'" class="pad-05 bd thin-light hoverable-bg-code" style="width:100%;">
 						Save
 					</button>
 					<button @click="postNewPost()" x-show="$store.post.state === 'new'" class="pad-05 bd thin-light hoverable-bg-code" style="width:100%;">

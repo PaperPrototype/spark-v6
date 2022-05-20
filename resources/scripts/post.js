@@ -32,6 +32,12 @@ async function postNewPost() {
 
 	let postRawMarkdown = document.getElementById("postRawMarkdown").value;
 	
+	if (postRawMarkdown.value === "")
+	{
+		SendMessage("Can't make an empty post!");
+		return;
+	}
+
 	var esc = encodeURIComponent; // esc now can be used in place of the encodeURIComponent function
 	var query = Object.keys(params)
 		.map(function(k) {return esc(k) + '=' + esc(params[k]);})
@@ -71,6 +77,8 @@ function newPostView(params={}) {
 	Alpine.store('post').state = 'new';
 
 	Alpine.store("post").params = params;
+
+	document.getElementById("postRawMarkdown").value = "";
 }
 
 function editPostView() {
@@ -122,6 +130,70 @@ function loadPost(postID) {
 	.catch(function(err) {
 		console.error(err);
 	});
+}
+
+// load the plaintext markdown of a post into the editing textarea
+function loadPostPlaintext() {
+	let postID = Alpine.store("post").postID;
+
+	let postRawMarkdown = document.getElementById("postRawMarkdown");
+
+	postRawMarkdown.value = "Loading...";
+
+	fetch("/api/posts/"+postID +"/plaintext", {
+		method: "GET",
+	})
+	.then(function(resp) {
+		if (!resp.ok) {
+			SendMessage("Error getting post plaintext");
+			return
+		}
+
+		return resp.json();
+	})
+	.then(function(json) {
+		console.log("post plaintext json is:" + json);
+
+		postRawMarkdown.value = json.Markdown;
+	})
+	.catch(function(err) {
+		console.error(err);
+	})
+}
+
+// update a post
+function postUpdatePost() {
+	let postID = Alpine.store("post").postID;
+
+	let postRawMarkdown = document.getElementById("postRawMarkdown");
+
+	if (postRawMarkdown.value === "")
+	{
+		SendMessage("Can't make an empty post!");
+		return;
+	}
+
+	let formData = new FormData();
+	formData.append("markdown", postRawMarkdown.value);
+
+	fetch("/api/posts/" + postID + "/update", {
+		method: "POST",
+		body: formData,
+	})
+	.then(function(resp) {
+		if (!resp.ok) {
+			SendMessage("Error updateing post.")
+			return;
+		}
+
+		SendMessage("Successfully updated post.")
+
+		// load post again
+		loadPost(postID);
+	})
+	.catch(function(err) {
+		console.error(err);
+	})
 }
 
 function closePostView() {
