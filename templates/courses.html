@@ -11,10 +11,10 @@
 	<div>
 		<form method="get" action="/courses">
 			<div>
-				<input class="form-input bd bg" name="query" placeholder="Search..." value="{{ .Search }}">
+				<input class="form-input bd bg" name="search" id="search" placeholder="Search..." value="{{ .Search }}">
 				<button class="bg-code bd bd-none pad-05" style="padding-left:1rem; padding-right:1rem;" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
 			</div>
-			<!-- hide this until it is needed -->
+			<!-- hide this until it is needed 
 			<div class="select" style="display: none;">
 				<select name="sort">
 					{{ if .Sort }}
@@ -25,10 +25,11 @@
 					<option value="Option 2">reviews</option>
 					<option value="Option 3">newest</option>
 
-					<!-- to allow an outline on focus -->
+					-- to allow an outline on focus --
 					<span class="focus"></span>
 				</select>
 			</div>
+			-->
 		</form>
 	</div>
 </div>

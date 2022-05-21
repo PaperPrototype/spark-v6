@@ -2,6 +2,7 @@ package db
 
 import (
 	"main/markdown"
+	"strings"
 	"time"
 )
 
@@ -243,6 +244,16 @@ func GetAllPublicCoursesPreload() ([]Course, error) {
 	courses := []Course{}
 
 	err := gormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Where("public = ?", true).Find(&courses).Error
+
+	return courses, err
+}
+
+func GetAllPublicCoursesPreloadAndSearch(search string) ([]Course, error) {
+	courses := []Course{}
+
+	search = strings.ToLower(search)
+
+	err := gormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Where("public = ?", true).Where("lower(title) LIKE ?", "%"+search+"%").Or("lower(subtitle) LIKE ?", "%"+search+"%").Find(&courses).Error
 
 	return courses, err
 }

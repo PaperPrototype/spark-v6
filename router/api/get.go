@@ -11,7 +11,17 @@ import (
 )
 
 func getCourses(c *gin.Context) {
-	courses, err := db.GetAllPublicCoursesPreload()
+	search := c.Query("search")
+
+	var courses []db.Course
+	var err error
+
+	if search == "" {
+		courses, err = db.GetAllPublicCoursesPreload()
+	} else {
+		log.Println("applying search...")
+		courses, err = db.GetAllPublicCoursesPreloadAndSearch(search)
+	}
 
 	if err != nil {
 		log.Println("api ERROR getting course for api/getCourses:", err)

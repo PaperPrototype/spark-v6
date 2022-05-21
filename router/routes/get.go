@@ -110,7 +110,7 @@ func getCourse(c *gin.Context) {
 }
 
 func getCourses(c *gin.Context) {
-	search, _ := c.GetQuery("query")
+	search, _ := c.GetQuery("search")
 	sort, _ := c.GetQuery("sort")
 
 	c.HTML(

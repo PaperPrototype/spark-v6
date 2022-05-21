@@ -1,5 +1,7 @@
 async function loadCourses() {
-	await fetch("/api/courses", {
+	let search = document.getElementById("search").value;
+
+	await fetch("/api/courses?search="+search, {
 		method: "GET"
 	})
 	.then(function(resp) {
