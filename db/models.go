@@ -47,12 +47,12 @@ func migrate() {
 }
 
 type AttemptBuyRelease struct {
-	StripeSessionID       string `gorm:"primaryKey"`
-	StripePaymentIntentID string
-	ReleaseID             uint64
-	UserID                uint64
-	AmountPaying          uint64
-	ExpiresAt             time.Time
+	StripeSessionID string `gorm:"primaryKey"`
+	StripePaymentID string
+	ReleaseID       uint64
+	UserID          uint64
+	AmountPaying    uint64
+	ExpiresAt       time.Time
 }
 
 type Purchase struct {
@@ -63,7 +63,7 @@ type Purchase struct {
 	StripeSessionID string
 
 	// id of successful payment
-	StripePaymentIntentID string
+	StripePaymentID string
 
 	CreatedAt  time.Time `gorm:"not null"`
 	AmountPaid uint64    `gorm:"default:0"` // amount the student paid for the course

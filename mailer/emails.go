@@ -33,10 +33,10 @@ func SendVerification(userID uint64) error {
 		return err3
 	}
 	htmlContent := buildEmail(
-		"Verify your account",
+		"Welcome to sparker!",
 		"This email and link is to verify your new account with Sparker.",
 		helpers.GetHost()+"/login/verify/"+verify.VerifyUUID,
-		"If you did not sign up for an account on Sparker.com you can safely ignore this email.",
+		"If you did not sign up for an account on sparker3d.com you can safely ignore this email.",
 	)
 
 	from := mail.NewEmail("Sparker", "info@sparker3d.com")

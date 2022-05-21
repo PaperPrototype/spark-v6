@@ -163,12 +163,12 @@ func postBuyRelease(c *gin.Context) {
 	}
 
 	buyRelease := db.AttemptBuyRelease{
-		StripeSessionID:       resultSession.ID,
-		StripePaymentIntentID: resultSession.PaymentIntent.ID,
-		ReleaseID:             release.ID,
-		UserID:                user.ID,
-		AmountPaying:          release.Price,
-		ExpiresAt:             time.Now().Add(24 * time.Hour),
+		StripeSessionID: resultSession.ID,
+		StripePaymentID: resultSession.PaymentIntent.ID,
+		ReleaseID:       release.ID,
+		UserID:          user.ID,
+		AmountPaying:    release.Price,
+		ExpiresAt:       time.Now().Add(24 * time.Hour),
 	}
 	err4 := db.CreateBuyRelease(&buyRelease)
 	if err4 != nil {
@@ -237,15 +237,15 @@ func getBuySuccess(c *gin.Context) {
 	authorsCut := buyRelease.AmountPaying - ourCut
 
 	purchase := db.Purchase{
-		UserID:                user.ID,
-		VersionID:             version.ID,
-		ReleaseID:             buyRelease.ReleaseID,
-		StripeSessionID:       buyRelease.StripeSessionID,
-		StripePaymentIntentID: buyRelease.StripePaymentIntentID,
-		CourseID:              version.CourseID,
-		CreatedAt:             time.Now(),
-		AmountPaid:            buyRelease.AmountPaying,
-		AuthorsCut:            authorsCut,
+		UserID:          user.ID,
+		VersionID:       version.ID,
+		ReleaseID:       buyRelease.ReleaseID,
+		StripeSessionID: buyRelease.StripeSessionID,
+		StripePaymentID: buyRelease.StripePaymentID,
+		CourseID:        version.CourseID,
+		CreatedAt:       time.Now(),
+		AmountPaid:      buyRelease.AmountPaying,
+		AuthorsCut:      authorsCut,
 	}
 	err2 := db.CreatePurchase(&purchase)
 	if err2 != nil {
