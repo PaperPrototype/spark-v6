@@ -44,6 +44,8 @@ func AddRoutes(router *gin.Engine) {
 	router.POST("/:username/:course/settings/version/new", mustBeCourseEditor, postNewVersion)
 	router.POST("/:username/:course/settings/version/new/github", mustBeCourseEditor, postNewGithubVersion)
 	router.POST("/:username/:course/settings/version/delete", mustBeCourseEditor, postDeleteVersion)
+	router.POST("/:username/:course/settings/prerequisites/new", mustBeCourseEditor, postSettingsNewPrerequisite)
+	router.POST("/:username/:course/settings/prerequisites/remove", mustBeCourseEditor, postSettingsRemovePrerequisite)
 
 	// create a channel
 	router.POST("/:username/:course/channel/new", mustBeCourseEditor, postNewChannel)

@@ -88,22 +88,22 @@ function editPostView() {
 	Alpine.store('post').state = 'edit';
 }
 
-function openPostView(postID) {
-	Alpine.store("post").postID = postID;
-
+function openPostView() {
 	Alpine.store('post').state = 'view';
-
-	console.log("loading post with ID of " + postID + "...")
 
 	Alpine.store("post").visible = true;
 
 	const params = new URLSearchParams(window.location.search)
-	params.set("post_id", postID);
+	params.set("post_id", Alpine.store("post").postID);
 	window.history.replaceState(null, "", window.location.pathname + "?" + params.toString());
 }
 
 function loadPost(postID) {
-	openPostView(postID);
+	console.log("loading post with ID of " + postID + "...")
+
+	Alpine.store("post").postID = postID;
+
+	openPostView();
 
 	setPostToLoading();
 
@@ -146,7 +146,7 @@ function loadPostPlaintext() {
 	.then(function(resp) {
 		if (!resp.ok) {
 			SendMessage("Error getting post plaintext");
-			return
+			throw "error getting resp";
 		}
 
 		return resp.json();

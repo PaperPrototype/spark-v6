@@ -84,3 +84,7 @@ func CreateMessage(message *Message) error {
 func CreateReview(review *PostToCourseReview) error {
 	return gormDB.Create(&review).Error
 }
+
+func CreatePrerequisite(preq *Prerequisite) error {
+	return gormDB.Create(preq).Error
+}

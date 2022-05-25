@@ -1,6 +1,6 @@
 {{ template "_header.html" . }}
 
-<div hidden id="courseID" value="{{ .Course.ID }}"></div>
+<div hidden id="courseBaseURL">/{{ .Course.User.Username }}/{{ .Course.Name }}</div>
 
 <div class="pad-sides-5 pad-top-5rem pad-bot-2rem text-center">
 	<h1><i class="fa-solid fa-arrow-left-long pad-05 bd hoverable-bg-overlay" href="/{{ .Course.User.Username }}/{{ .Course.Name }}"></i>{{ .Course.Title }} Setting's</h1>
@@ -10,7 +10,11 @@
 		</p>
 	{{ end }}
 </div>
-<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
+
+<img src="{{ .Course.GetNewestPublicCourseReleaseLogError.ImageURL }}" style="position:fixed; z-index: -1; top:0; right:0; left:0; opacity:0.25; filter:blur(0.1rem);">
+
+<!-- Main settings -->
+<div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay thin-top">
 	<h2>Display</h2>
 	<form action="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings/display" method="post">
 		<input hidden="{{ .Course.ID }}" name="courseID" value="{{ .Course.ID }}">
@@ -18,21 +22,21 @@
 		<div style="margin-bottom: 2rem;">
 			<input
 			name="title"
-			style="width:100%; background-color: var(--c-bg-overlay); color: var(--c-text); border: 0.1rem solid var(--c-light); font-size: 2rem;"
+			style="width:100%; background-color: var(--c-bg-overlay); color: var(--c-text); border: 0.1rem solid var(--c-light); font-size: 2rem; border-radius: 0.5rem;"
 			value="{{ .Course.Title }}">
 		</div>
-		<label>Name</label>
+		<label>URL Name</label>
 		<div style="margin-bottom: 2rem;">
 			<input
 			name="name"
-			style="width:100%; background-color: var(--c-bg-overlay); color: var(--c-text); border: 0.1rem solid var(--c-light); font-size: 1rem; padding: 0.2rem;"
+			style="width:100%; background-color: var(--c-bg-overlay); color: var(--c-text); border: 0.1rem solid var(--c-light); font-size: 1rem; padding: 0.2rem; border-radius: 0.5rem;"
 			value="{{ .Course.Name }}">
 		</div>
 		<label>Subtitle</label>
 		<div style="margin-bottom: 2rem;">
 			<textarea
 			name="desc"
-			style="width:100%; background-color: var(--c-bg-overlay); color: var(--c-text); border: 0.1rem solid var(--c-light); font-size: 1rem; padding: 0.2rem; height:10rem;"
+			style="width:100%; background-color: var(--c-bg-overlay); color: var(--c-text); border: 0.1rem solid var(--c-light); font-size: 1rem; padding: 0.2rem; height:10rem; border-radius: 0.5rem;"
 			value="{{ .Course.Subtitle }}">{{ .Course.Subtitle }}</textarea>
 		</div>
 		<label>Public</label>
@@ -56,10 +60,14 @@
 		</div>
 	</form>
 </div>
+
+<!-- purchases -->
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<h2>Purchases</h2>
 	<a href="/settings/teaching">See purchases</a>
 </div>
+
+<!-- course releases -->
 <div class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
 	{{ if .Releases }}
 		<h2>Releases</h2>
@@ -76,9 +84,10 @@
 							</h4>
 							<form style="margin-left:auto;" action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/delete" method="get">
 								<input hidden name="releaseID" value="{{ .ID }}">
-								<button type="submit" class="bd-none bd bg pad-05">Delete</button>
+								<button type="submit" class="hoverable-bg-code bd-none bd pad-05">Delete</button>
 							</form>
 						</div>
+						<!-- display settings -->
 						<div x-show="open">
 							<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/release/edit" method="post">
 								<input hidden name="releaseID" value="{{ .ID }}">
@@ -327,24 +336,63 @@
 		<h2>Releases</h2>
 		<p>No releases yet!</p>
 	{{ end }}
-	<div class="thin-grey" style="margin-bottom: 2rem; margin-top: 1rem; padding: 1rem; border-radius: 0.5rem;">
-		<h3 style="margin-top: 0.5rem;">New Release</h3>
-		<form action="/{{ $.Course.User.Username }}/{{ .Course.Name }}/settings/release/new" method="post">
-			<label>Price USD</label>
-			<div style="margin-bottom: 1rem;">
-				<input min="0" max="10" step="1" name="price" class="form-input" type="number" value="0">
+	<div x-data="{ open: false }">
+		<h3 class="text-center hoverable-bg-code pad-05 bd" style="margin-top: 0.5rem;" @click="open = !open">
+			New Release
+			<i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i>
+		</h3>
+		<div x-show="open" class="thin-grey" style="margin-bottom: 2rem; margin-top: 1rem; padding: 1rem; border-radius: 0.5rem;">
+			<form action="/{{ $.Course.User.Username }}/{{ .Course.Name }}/settings/release/new" method="post">
+				<label>Price USD</label>
+				<div style="margin-bottom: 1rem;">
+					<input min="0" max="10" step="1" name="price" class="form-input" type="number" value="0">
+				</div>
+				<label>Number of Portfolio Posts</label>
+				<div>
+					<input name="postsNeededNum" class="form-input" type="number" step="1" max="100" min="1" value="2">
+					<p class="c-grey">Number of posts a student must write to complete the course. About 1 post per 3 sections, or 1 post per each project/challenge section.</p>
+				</div>
+				<label>Markdown Description</label>
+				<div style="margin-bottom: 1rem;">
+					<textarea name="desc" placeholder="Description" class="form-input" style="min-width: 100%; max-width: 100%; margin-bottom: 0.5rem; height:10rem;"></textarea>
+				</div>
+				<button class="form-btn" type="submit" style="width: 100%;">New Release</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- course hierarchy -->
+<script src="/resources/scripts/courseSettingsHierarchy.js" defer></script>
+<div class="pad-sides-5 pad-top-2rem pad-bot-5rem bg-overlay">
+	<div class="thin-grey bd" style="padding:1rem;">
+		<h2>Add Prerequisite</h2>
+		<!-- search field to add new pre-requisite courses-->
+		<div>
+			<form id="hierarchySearchForm">
+				<input id="hierarchySearchInput" class="pad-05 bg-overlay thin-light bd" placeholder="search...">
+				<button type="submit" class="pad-05 hoverable-bg-code thin-light bd">Search</button>
+			</form>
+			<div id="hierarchySearchCourses">
 			</div>
-			<label>Number of Portfolio Posts</label>
+		</div>
+	
+		<h2>Prerequisite Courses</h2>
+		{{ if .Prerequisites }}
 			<div>
-				<input name="postsNeededNum" class="form-input" type="number" step="1" max="100" min="1" value="2">
-				<p class="c-grey">Number of posts a student must write to complete the course. About 1 post per 3 sections, or 1 post per each project/challenge section.</p>
+				{{ range .Prerequisites }}
+					<div class="pad-05 thin-light bd" style="margin-top:1rem; display:flex; flex-direction: row;">
+						<div class="pad-05" href="/{{ .PrerequisiteCourse.User.Username }}/{{ .PrerequisiteCourse.Name }}" external>{{ .PrerequisiteCourse.Title }} <i class="fa-solid fa-up-right-from-square"></i></div>
+						<form action="/{{ $.Course.User.Username }}/{{ $.Course.Name }}/settings/prerequisites/remove" method="post" style="margin-left:auto;">
+							<input name="preqID" value="{{ .ID }}" hidden>
+							<button class="pad-05 hoverable-bg-code bd bd-none">remove</button>
+						</form>
+					</div>
+				{{ end }}
 			</div>
-			<label>Markdown Description</label>
-			<div style="margin-bottom: 1rem;">
-				<textarea name="desc" placeholder="Description" class="form-input" style="min-width: 100%; max-width: 100%; margin-bottom: 0.5rem; height:10rem;"></textarea>
-			</div>
-			<button class="form-btn" type="submit" style="width: 100%;">New Release</button>
-		</form>
+		{{ else }}
+			<div>No prerequisite courses</div>
+		{{ end }}
 	</div>
 </div>
 

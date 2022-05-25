@@ -6,6 +6,7 @@
 <script src="/resources/scripts/courseUtils.js" defer></script>
 <link href="/resources/css/markdown.css" rel="stylesheet">
 <link href="/resources/css/course.css" rel="stylesheet">
+<link href="/resources/css/courses.css" rel="stylesheet">
 
 <img src="{{ .Release.ImageURL }}" style="position:fixed; z-index: -1; top:0; right:0; left:0; opacity:0.25; filter:blur(0.1rem);">
 
@@ -34,21 +35,47 @@
 		Reviews
 	</div>
 </div>
-<div x-data class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
+<div x-data class="pad-top-2rem pad-bot-2rem bg-overlay">
 	<div x-show="$store.course.tab === 'course'">
 		{{ if .Release }}
-			<div class="pad-bot-2rem">
+			<div class="pad-bot-2rem pad-sides-5">
 				{{ .Release.Markdown }}
 			</div>
-			<div class="pad-bot-2rem">
-				<h1>Sections</h1>
+			<div class="pad-bot-2rem pad-sides-5">
+				<h1>Content</h1>
 				<div id="courseSections">
 					{{ range .Version.GetSectionsLogError }}
 						<div class="pad-05">{{ .Name }}</div>
 					{{ end }}
 				</div>
 			</div>
-			<div x-data="{ open: true }">
+			{{ if .Prerequisites }}
+				<div>
+					<h1 class="pad-sides-5" style="margin-bottom:0;">Prerequisite Courses</h1>
+					<div class="course-cards">
+						{{ range .Prerequisites }}
+							<div>
+								<div class="course-card-wrapper">
+									<div class="course-card hoverable" href="/{{ .PrerequisiteCourse.User.Username }}/{{ .PrerequisiteCourse.Name }}">
+										<div class="course-card-img-wrapper">
+											<img class="course-card-img" src="{{ .PrerequisiteCourse.Release.ImageURL }}">
+										</div>
+										<div class="course-card-content">
+											<h3 class="c-bold course-card-title">{{ .PrerequisiteCourse.Title }}</h3>
+											<div class="course-card-subtitle">{{ .PrerequisiteCourse.Subtitle }}</div>
+										</div>
+									</div>
+								</div>
+								<p class="course-card-footer">
+									by <a href="/{{ .PrerequisiteCourse.User.Username }}">@{{ .PrerequisiteCourse.User.Username }}</a>
+								</p>
+							</div>
+						{{ end }}
+					</div>
+				</div>
+			{{ end }}
+			<!-- releases list -->
+			<div x-data="{ open: true }" class="pad-sides-5">
 				<h5 @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
 				<div x-show="open">
 					{{ range .Course.GetPublicCourseReleasesLogError }}
@@ -76,62 +103,7 @@
 			</div>
 		{{ end }}
 	</div>
-	<div x-show="$store.course.tab === 'reviews'">
-		<!-- view an individual review -->
-		<div x-show="$store.course.viewingReview" style="width: 100%;">
-			<div class="bg-overlay bd">
-				<div style="display:flex;">
-					<div style="padding: 0.5rem;">
-						by <span id="postMountUser"></span>
-					</div>
-					<!-- edit buttons-->
-					<div x-show="$store.course.editingReview === false" class="hoverable bd" id="viewEditPostButton" @click="viewEditPost()" style="margin-left:auto; padding: 0.5rem;">
-						<i class="fa-solid fa-pen-to-square"></i>
-					</div>
-					<div x-show="$store.course.editingReview === true" class="hoverable bd" @click="$store.course.editingReview = false;" style="margin-left:auto; padding: 0.5rem;">
-						<i style="margin-left:auto;" class="fa-solid fa-xmark"></i>
-					</div>
-				</div>
-				<!-- update post -->
-				<div x-show="$store.course.editingReview">
-					<textarea class="bd" id="editPostTextInput" style="max-width:100%; min-width:100%; height:10rem;"></textarea>
-					<div>
-						<button class="bd bd-none pad-05 hoverable-bg-code" @click="updatePost()" style="width:100%;">Update</button>
-					</div>
-				</div>
-				<!-- post -->
-				<div x-show="!$store.course.editingReview" style="padding: 0.5rem; width: 100%;" class="bd thin-light">
-					<div markdown id="postMount" x-show="!$store.course.viewingComments">
-					</div>
-					<!-- post comments -->
-					<div x-show="$store.course.viewingComments">
-						<div style="height:25rem; overflow-y:scroll;">
-							<div style="display:flex; justify-content:flex-end; flex-direction:column;">
-								<p style="margin-left:1rem; margin-right:1rem;">
-									This is the beginning of the comments.
-								</p>
-								<div id="postCommentsMount"></div>
-							</div>
-						</div>
-					</div>
-					<div style="display:flex;" class="bg-overlay">
-						<div x-show="$store.course.viewingComments" style="width:100%; margin-right:0.5rem;">
-							<form id="postCommentsForm">
-								<!-- comment input -->
-								{{ if .LoggedIn }}
-									<input id="postCommentsSend" class="bd thin-light pad-05 bg" placeholder="comment..." style="width:100%;">
-								{{ else }}
-									<div class="pad-05 thin-top"><a href="/login">login</a> to comment</div>
-								{{ end }}
-							</form>
-						</div>
-						<div @click="$store.course.viewingComments = ! $store.course.viewingComments" style="margin-left:auto;">
-							<i :class="$store.course.viewingComments ? 'fa-arrow-turn-up' : 'fa-comments' " class="fa-solid hoverable pad-05 bd"></i>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+	<div x-show="$store.course.tab === 'reviews'" class="pad-sides-5">
 		<div>
 			<h3><inline id="reviewsCount">Loading</inline> Reviews</h3>
 		</div>
@@ -165,7 +137,7 @@
 			<button class="pad-05 bd bd-none hoverable-bg-code" @click="loadMoreReviews()">Load more</button>
 		</div>
 	</div>
-	<div x-show="$store.course.tab === 'showcase'">
+	<div x-show="$store.course.tab === 'showcase'" class="pad-sides-5">
 		<div id="studentWorkMount"></div>
 	</div>
 </div>

@@ -132,8 +132,10 @@ function createReviewHTML(reviewJson) {
 	review.setAttribute("style", "margin-bottom:1rem;");
 
 	let topbar = document.createElement("div");
-	topbar.innerHTML = `by <a href="/` + reviewJson.User.Username + `">@` + reviewJson.User.Username + `</a>`;
-	topbar.setAttribute("style", "padding-bottom:0.5rem;");
+	topbar.innerHTML = 
+	`by <a href="/` + reviewJson.User.Username + `">@` + reviewJson.User.Username + `</a>` +
+	`<div style="margin-left:auto;">` + reviewJson.Rating + ` stars</div>`;
+	topbar.setAttribute("style", "padding-bottom:0.5rem; display:flex; flex-direction:row;");
 	review.append(topbar);
 
 	let markdown = document.createElement("div");

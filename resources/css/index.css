@@ -249,15 +249,18 @@
 .form-input {
 	border: 0.08rem solid var(--c-light);
 	padding: 0.5rem;
+	border-radius: 0.5rem;
 }
 
 .form-btn {
+	background-color: var(--c-code-darker);
 	border: 0.08rem solid var(--c-light);
 	padding: 0.5rem;
+	border-radius: 0.5rem;
 }
 
 .form-btn:hover {
-	background-color: var(--c-grey);
+	background-color: var(--c-code);
 }
 
 .text-center {

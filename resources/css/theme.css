@@ -4,7 +4,7 @@
 	--c-white: rgb(255, 255, 255);
 	--c-light: rgb(212, 212, 212);
 	--c-grey: rgb(126, 126, 126);
-	--c-bg: rgb(229, 229, 229);
+	--c-bg: rgb(240, 240, 240);
 	--c-text: rgb(34, 34, 34);
 	--c-bold: rgb(0, 0, 0); /* for text that needs to stand out */
 	--c-code: rgb(255, 33, 133);
@@ -21,10 +21,10 @@
 @media (prefers-color-scheme: dark) {
 	.theme {
 		--c-black: rgb(0, 0, 0);
-		--c-bg-overlay: rgb(44, 46, 51);
+		--c-bg-overlay: rgb(36, 37, 38);
 		--c-light: rgb(66, 66, 66);
 		--c-grey: rgb(109, 111, 119);
-		--c-bg: rgb(20, 20, 20);
+		--c-bg: rgb(0, 0, 0);
 		--c-text: rgb(228, 228, 228);
 		--c-bold: rgb(255, 255, 255); /* for text that needs to stand out */
 		--c-shadow: rgb(0, 0, 0);
@@ -45,7 +45,7 @@
 /* manually set to dark mode */
 .theme-gamer {
 	--c-black: rgb(0, 0, 0);
-	--c-bg-overlay: rgb(18, 16, 24);
+	--c-bg-overlay: rgb(21, 19, 30);
 	--c-light: rgb(231, 59, 83); /* rgb(66, 66, 66); */
 	--c-grey: rgb(109, 111, 119);
 	--c-bg: rgb(9, 8, 13);

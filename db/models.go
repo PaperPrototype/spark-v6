@@ -24,7 +24,7 @@ func migrate() {
 		&Message{},
 
 		// hierarchy
-		CourseToNextCourse{},
+		Prerequisite{},
 
 		// github based courses
 		&GithubRelease{},
@@ -149,9 +149,10 @@ type Course struct {
 	User    User
 	Release Release // can be preloaded with the newest release
 
-	Channels []Channel `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // channels for the courses chat
-	Releases []Release `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // course releases
-	Versions []Version `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // course versions (have a parent release)
+	Channels      []Channel      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // channels for the courses chat
+	Releases      []Release      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // course releases
+	Versions      []Version      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // course versions (have a parent release)
+	Prerequisites []Prerequisite `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE; "` // prerequisites for this course
 }
 
 type Coupon struct {
@@ -179,7 +180,7 @@ type Release struct {
 	CreatedAt      time.Time `gorm:"default:now(); not null"`
 	ImageURL       string    `gorm:"default:'';"`
 
-	GithubRelease GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // githbu repo info
+	GithubRelease GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // github repo info
 
 	Versions  []Version  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
@@ -190,12 +191,6 @@ type GithubRelease struct {
 	RepoID    int64  `gorm:"not null"`
 	RepoName  string `gorm:"default:woops;"`
 	Branch    string `gorm:"default:main; not null"`
-}
-
-// points to a parent course
-type Hierarchy struct {
-	ReleaseID    uint64
-	NextCourseID uint64
 }
 
 type Version struct {
@@ -314,10 +309,13 @@ type PostToCourse struct {
 	ReleaseID uint64 `gorm:"not null"`
 }
 
-// hierarchy for next courses and pre-requisite courses
-type CourseToNextCourse struct {
-	CourseID     uint64 `gorm:"not null"`
-	NextCourseID uint64 `gorm:"not null"`
+// points to a parent course
+type Prerequisite struct {
+	ID                   uint64 `gorm:"primaryKey"`
+	CourseID             uint64
+	PrerequisiteCourseID uint64
+
+	PrerequisiteCourse Course `gorm:"foreignkey:PrerequisiteCourseID;"`
 }
 
 // reviews on courses

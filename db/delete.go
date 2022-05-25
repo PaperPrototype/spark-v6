@@ -74,3 +74,7 @@ func DeleteReleaseVersions(releaseID string) error {
 func DeleteExpiredVerify() error {
 	return gormDB.Delete(&Verify{}, "expires_at < ?", time.Now()).Error
 }
+
+func DeletePrerequisite(preqID interface{}) error {
+	return gormDB.Delete(&Prerequisite{}, "id = ?", preqID).Error
+}

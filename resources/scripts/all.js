@@ -3,12 +3,17 @@ function convertHrefs(element) {
 
 	for (let i = 0; i < hrefs.length; i++) {
 		hrefs[i].addEventListener("click", function(event) {
+			if (event) {
+				event.preventDefault();
+			}
+
 			if (this.hasAttribute("external")) {
 				// open link in new window
 				window.open(this.getAttribute("href"), '_blank')
-				console.log("clicked");
+				console.log("opeing link in new tab");
 				return
 			}
+
 			window.location = this.getAttribute("href");
 			console.log("clicked");
 		});

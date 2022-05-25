@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"log"
 	"main/markdown"
+
+	"gorm.io/gorm"
 )
 
 func (user *User) GetPublicAuthoredCourses() ([]Course, error) {
@@ -33,10 +35,24 @@ func (course *Course) GetAllCourseReleasesLogError() []Release {
 	releases := []Release{}
 	err := gormDB.Model(&Release{}).Where("course_id = ?", course.ID).Order("num DESC").Find(&releases).Error
 	if err != nil {
-		log.Println("db/methods ERROR getting course releases:", err)
+		log.Println("db/methods ERROR getting course releases in GetAllCourseReleasesLogError:", err)
 	}
 
 	return releases
+}
+
+func (course *Course) GetAllPrerequisitesLogError() []Prerequisite {
+	prerequisites := []Prerequisite{}
+	err := gormDB.Model(&Prerequisite{}).Where("course_id = ?", course.ID).Preload("PrerequisiteCourse", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("User").Preload("Release", func(db *gorm.DB) *gorm.DB {
+			return db.Order("num DESC")
+		})
+	}).Find(&prerequisites).Error
+	if err != nil {
+		log.Println("db/methods ERROR getting course prerequisites in GetAllPrerequisitesLogError:", err)
+	}
+
+	return prerequisites
 }
 
 func (course *Course) GetNewestPublicCourseReleaseNumLogError() uint16 {
