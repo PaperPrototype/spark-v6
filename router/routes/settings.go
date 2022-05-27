@@ -50,7 +50,7 @@ func getSettingsTeaching(c *gin.Context) {
 		gin.H{
 			"Courses":          courses,
 			"StripeConnection": stripeConnection,
-			"ChargesEnabled":   stripeConnection.ChargesEnabledLogError(),
+			"PayoutsEnabled":   stripeConnection.PayoutsEnabledLogError(),
 			"Menu":             "Teaching",
 			"User":             user,
 			"Messages":         msg.GetMessages(c),
@@ -241,10 +241,6 @@ func getStripeRefresh(c *gin.Context) {
 }
 
 func getStripeConnectFinished(c *gin.Context) {
-	// TODO test if user successfully connected in stripe (check the state of the details_submitted parameter)
-	// see https://stripe.com/docs/connect/express-accounts#return_url
-	// code example https://stripe.com/docs/api/accounts/retrieve
-
 	user, err := auth.GetLoggedInUser(c)
 	if err != nil {
 		log.Println("routes/payments ERROR getting user in getPayoutsConnectFinished:", err)
@@ -269,7 +265,7 @@ func getStripeConnectFinished(c *gin.Context) {
 	}
 
 	if !submitted {
-		msg.SendMessage(c, "Finish filling out account details by clicking 'Connect account' again. Make sure to use the same email.")
+		msg.SendMessage(c, "Finish filling out account details by clicking 'Update Stripe Info'. Make sure to use the same email.")
 		c.Redirect(http.StatusFound, "/settings/courses")
 		return
 	}

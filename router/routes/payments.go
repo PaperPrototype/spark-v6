@@ -34,7 +34,6 @@ then for payouts modify code a little to have a TransferData (aka transfer funds
 const PaymentExpiresAfter time.Duration = (24 * time.Hour) + (time.Minute * 5)
 
 func warnUserStripeConnectionProblem(author *db.User, messageProblem string) {
-
 	err10 := db.NotifyUsers([]string{author.Username}, `<i class="fa-solid fa-triangle-exclamation"></i> IMPORTANT: `+messageProblem, "/settings/teaching")
 	if err10 != nil {
 		log.Println("routes/payments ERROR sending notification to user @"+author.Username+" in postBuyRelease:", err10)
@@ -86,9 +85,9 @@ func postBuyRelease(c *gin.Context) {
 	}
 
 	if !author.HasStripeConnection() {
-		msg.SendMessage(c, "The author of this course cannot accept payments at this time. We'll gift you the course for free :)")
+		msg.SendMessage(c, "An error has occured! The author of this course cannot accept payments at this time. We apologize. We are gifting you the course for free :)")
 
-		warnUserStripeConnectionProblem(author, "It appears someone tried to purchase a course from you, but you don't have a stripe connection! We had to gift the course for free since you could not accept payments at this time.")
+		warnUserStripeConnectionProblem(author, "It appears someone tried to purchase a course from you, but you don't have stripe setup (the online payments service we use). We had to gift the course for free since you could not accept the payment.")
 
 		purchase := db.Purchase{
 			VersionID:  release.GetNewestVersionLogError().ID,
@@ -144,12 +143,12 @@ func postBuyRelease(c *gin.Context) {
 		return
 	}
 
-	chargesEnabled, err9 := stripeConnection.ChargesEnabled()
+	payoutsEnabled, err9 := stripeConnection.PayoutsEnabled()
 	if err9 != nil {
 		log.Println("toures/payments ERROR getting stripe connection postBuyRelease:", err8)
 		msg.SendMessage(c, "There was an error. But we'll gift you the course for free :)")
 
-		warnUserStripeConnectionProblem(author, "There was an error getting your stripe connection! Your stripe info may need updated! We had to gift the course for free since you could not accept the payment.")
+		warnUserStripeConnectionProblem(author, "There was an error checking if yu can accept payouts! Your stripe info may need updated! We had to gift the course for free since you could not accept the payment.")
 
 		purchase := db.Purchase{
 			VersionID:  release.GetNewestVersionLogError().ID,
@@ -172,7 +171,7 @@ func postBuyRelease(c *gin.Context) {
 	}
 
 	// allow payment attempt to go through, but send a warning message!
-	if !chargesEnabled {
+	if !payoutsEnabled {
 		// msg.SendMessage(c, "The author of this course cannot accept payments at this time. We'll gift you the course for free :)")
 
 		warnUserStripeConnectionProblem(author, "Your stripe info needs updated. We had to gift one of your courses for free since your stripe account could not accept payments at this time.")
@@ -205,10 +204,10 @@ func postBuyRelease(c *gin.Context) {
 	params := &stripe.CheckoutSessionParams{
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Name:        stripe.String(course.Title),
+				Name:        stripe.String(course.Title + " v" + fmt.Sprint(release.Num)),
 				Amount:      stripe.Int64(int64(release.Price)),
 				Currency:    stripe.String(string(stripe.CurrencyUSD)),
-				Description: stripe.String("Buying " + course.Name + " v" + fmt.Sprint(release.Num)),
+				Description: stripe.String(course.Subtitle),
 				Quantity:    stripe.Int64(1),
 			},
 		},

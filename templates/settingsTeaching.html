@@ -24,21 +24,21 @@
 						<button href="/settings/stripe/login" external class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;">
 							Stripe Dashboard <i class="fa-solid fa-up-right-from-square"></i>
 						</button>
-						<p class="c-grey">View all your payments and net revenue.</p>
+						<p class="c-grey">View all your payments live in a dashboard built by stripe.</p>
 					</p>
-					{{ if .StripeConnection.ChargesEnabledLogError }}
+					{{ if .StripeConnection.DetailsSubmittedLogError }}
 						<p>
 							<button href="/settings/stripe/connect" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;">
 								Update Stripe Info <i class="fa-solid fa-up-right-from-square"></i>
 							</button>
-							<p class="c-grey">Use this to update your stripe info if you need to.</p>
+							<p class="c-grey">Stripe connected and all required details have been submitted <i class="fa-solid fa-check"></i>. Use this to update your stripe info if you need to.</p>
 						</p>
 					{{ else }}
 						<p>
 							<button href="/settings/stripe/connect" class="bd" style="padding:0.5rem; background-color:var(--c-code); width:max-content; border:none; color:white;">
-								<i class="fa-solid fa-triangle-exclamation"></i> Update your Stripe Info <i class="fa-solid fa-up-right-from-square"></i>
+								<i class="fa-solid fa-triangle-exclamation"></i> Finish submitting stripe info <i class="fa-solid fa-up-right-from-square"></i>
 							</button>
-							<p>Oh no! You need to update your stripe info before you can accept any more payments!</p>
+							<p>Oh no! You need to finish filling in your stripe info before you can accept any payments!</p>
 						</p>
 					{{ end }}
 				{{ else }}

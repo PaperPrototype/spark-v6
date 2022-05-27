@@ -1,12 +1,11 @@
 TODO before going live:
-Stripe API key needs to be switched to the live key.
-Remove the "this site is in test mode" message in course_header.html
-Reset db. There is test data in it and, it will give us a clean slate.
-Set GIN_MODE to "release" in heroku environment variables
+- Stripe API key needs to be switched to the live key.
+- Remove the "this site is in test mode" message in course_header.html
+- Reset db. There is test data in it and, it will give us a clean slate.
+- Set GIN_MODE to "release" in heroku environment variables
+- Detect if user has completed onbaording their stripe account https://stripe.com/docs/connect/express-accounts#handle-users-not-completed-onboarding check the details_submitted parameter
 
 Features in order of importance:
-- Course reviews
-- Notifications
 - Final Projects? 
 	- NO?: instead just stick with portfolio posts, and encourage students to team up with another student.
 		- will have to use the DM's (Direct Messaging) to communicate, which could be annoying.
@@ -25,7 +24,3 @@ Features in order of importance:
 				- posts will be able to have tags regardless.
 				- at first just have tags.
 				- then we can add groups?
-
-
-DONE:
-Free courses don't require a stripe connection. User's don't have to sign up for stripe to publish a course, instead they must have a stripe connection only if they want to charge money for a course.

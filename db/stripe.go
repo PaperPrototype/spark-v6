@@ -11,11 +11,13 @@ import (
 	"github.com/stripe/stripe-go/v72/account"
 )
 
+// if the account has finished onboarding
 func (stripeConnection *StripeConnection) DetailsSubmitted() (bool, error) {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
 	return connectedAccount.DetailsSubmitted, err
 }
 
+// if the account has finished onboarding
 func (stripeConnection *StripeConnection) DetailsSubmittedLogError() bool {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
 	if err != nil {
@@ -24,20 +26,20 @@ func (stripeConnection *StripeConnection) DetailsSubmittedLogError() bool {
 	return connectedAccount.DetailsSubmitted
 }
 
-// if the account can accept payments
-func (stripeConnection *StripeConnection) ChargesEnabled() (bool, error) {
+// if the account can create charges
+func (stripeConnection *StripeConnection) PayoutsEnabled() (bool, error) {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
-	return connectedAccount.ChargesEnabled, err
+	return connectedAccount.PayoutsEnabled, err
 }
 
-// if the account can accept payments
-func (stripeConnection *StripeConnection) ChargesEnabledLogError() bool {
+// if the account can create charges
+func (stripeConnection *StripeConnection) PayoutsEnabledLogError() bool {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
 	if err != nil {
-		log.Println("db/stripe.go ERROR getting ChargesEnabled param:", err)
+		log.Println("db/stripe.go ERROR getting PayoutsEnabled param:", err)
 		return false // probably not and they should update their stripe info!
 	}
-	return connectedAccount.ChargesEnabled
+	return connectedAccount.PayoutsEnabled
 }
 
 // TODO
