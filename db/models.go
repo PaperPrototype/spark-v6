@@ -52,12 +52,12 @@ type AttemptBuyRelease struct {
 	ReleaseID       uint64
 	UserID          uint64
 	AmountPaying    uint64
-	ExpiresAt       time.Time
+	ExpiresAt       time.Time // WE DON'T DELETE the buy release if it is expired. It just gets filtered out
 }
 
 type Purchase struct {
 	ID     uint64 `gorm:"primaryKey"`
-	UserID uint64 `gorm:"not null"`
+	UserID uint64 `gorm:"not null"` // the student buying the course
 
 	// id of the successful payment session
 	StripeSessionID string

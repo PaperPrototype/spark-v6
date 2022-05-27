@@ -5,6 +5,7 @@ import (
 	"log"
 	"main/db"
 	"main/helpers"
+	"main/mailer"
 	"main/msg"
 	"main/payments"
 	"math"
@@ -29,6 +30,18 @@ then here for confirming payments:
 then for payouts modify code a little to have a TransferData (aka transfer funds to ceonnected account):
 	- https://stripe.com/docs/connect/collect-then-transfer-guide
 */
+
+const PaymentExpiresAfter time.Duration = (24 * time.Hour) + (time.Minute * 5)
+
+func warnUserStripeConnectionProblem(author *db.User, messageProblem string) {
+
+	err10 := db.NotifyUsers([]string{author.Username}, `<i class="fa-solid fa-triangle-exclamation"></i> IMPORTANT: `+messageProblem, "/settings/teaching")
+	if err10 != nil {
+		log.Println("routes/payments ERROR sending notification to user @"+author.Username+" in postBuyRelease:", err10)
+	}
+
+	mailer.SendStripePaymentProblemEmail(author.ID, messageProblem)
+}
 
 func postBuyRelease(c *gin.Context) {
 	username := c.Params.ByName("username")
@@ -75,6 +88,8 @@ func postBuyRelease(c *gin.Context) {
 	if !author.HasStripeConnection() {
 		msg.SendMessage(c, "The author of this course cannot accept payments at this time. We'll gift you the course for free :)")
 
+		warnUserStripeConnectionProblem(author, "It appears someone tried to purchase a course from you, but you don't have a stripe connection! We had to gift the course for free since you could not accept payments at this time.")
+
 		purchase := db.Purchase{
 			VersionID:  release.GetNewestVersionLogError().ID,
 			UserID:     user.ID,
@@ -107,17 +122,18 @@ func postBuyRelease(c *gin.Context) {
 		log.Println("toures/payments ERROR getting stripe connection postBuyRelease:", err8)
 		msg.SendMessage(c, "There was an error. But we'll gift you the course for free :)")
 
+		warnUserStripeConnectionProblem(author, "There was an error getting your stripe connection! Your stripe info may need updated! We had to gift the course for free since you could not accept the payment.")
+
 		purchase := db.Purchase{
 			VersionID:  release.GetNewestVersionLogError().ID,
 			UserID:     user.ID,
 			ReleaseID:  release.ID,
 			CourseID:   release.CourseID,
-			Desc:       payments.DescStripeConnectionNotSetup,
+			Desc:       payments.DescStripeConnectionNotSetupError,
 			AmountPaid: 0,
 			AuthorsCut: 0,
 			CreatedAt:  time.Now(),
 		}
-
 		err7 := db.CreatePurchase(&purchase)
 		if err7 != nil {
 			log.Println("routes/payments ERROR creating purchase:", err7)
@@ -126,6 +142,60 @@ func postBuyRelease(c *gin.Context) {
 
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/"+fmt.Sprint(release.Num))
 		return
+	}
+
+	chargesEnabled, err9 := stripeConnection.ChargesEnabled()
+	if err9 != nil {
+		log.Println("toures/payments ERROR getting stripe connection postBuyRelease:", err8)
+		msg.SendMessage(c, "There was an error. But we'll gift you the course for free :)")
+
+		warnUserStripeConnectionProblem(author, "There was an error getting your stripe connection! Your stripe info may need updated! We had to gift the course for free since you could not accept the payment.")
+
+		purchase := db.Purchase{
+			VersionID:  release.GetNewestVersionLogError().ID,
+			UserID:     user.ID,
+			ReleaseID:  release.ID,
+			CourseID:   release.CourseID,
+			Desc:       payments.DescStripeChargesNotEnabledError,
+			AmountPaid: 0,
+			AuthorsCut: 0,
+			CreatedAt:  time.Now(),
+		}
+		err7 := db.CreatePurchase(&purchase)
+		if err7 != nil {
+			log.Println("routes/payments ERROR creating purchase:", err7)
+			msg.SendMessage(c, "Error gifting course.")
+		}
+
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/"+fmt.Sprint(release.Num))
+		return
+	}
+
+	// allow payment attempt to go through, but send a warning message!
+	if !chargesEnabled {
+		// msg.SendMessage(c, "The author of this course cannot accept payments at this time. We'll gift you the course for free :)")
+
+		warnUserStripeConnectionProblem(author, "Your stripe info needs updated. We had to gift one of your courses for free since your stripe account could not accept payments at this time.")
+
+		// purchase := db.Purchase{
+		// 	VersionID:  release.GetNewestVersionLogError().ID,
+		// 	UserID:     user.ID,
+		// 	ReleaseID:  release.ID,
+		// 	CourseID:   release.CourseID,
+		// 	Desc:       payments.DescStripeChargesNotEnabled,
+		// 	AmountPaid: 0,
+		// 	AuthorsCut: 0,
+		// 	CreatedAt:  time.Now(),
+		// }
+
+		// err7 := db.CreatePurchase(&purchase)
+		// if err7 != nil {
+		// 	log.Println("routes/payments ERROR creating purchase:", err7)
+		// 	msg.SendMessage(c, "Error gifting course.")
+		// }
+
+		// c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/"+fmt.Sprint(release.Num))
+		// return
 	}
 
 	// release.Price * PercentageShare
@@ -168,7 +238,7 @@ func postBuyRelease(c *gin.Context) {
 		ReleaseID:       release.ID,
 		UserID:          user.ID,
 		AmountPaying:    release.Price,
-		ExpiresAt:       time.Now().Add(24 * time.Hour),
+		ExpiresAt:       time.Now().Add(PaymentExpiresAfter),
 	}
 	err4 := db.CreateBuyRelease(&buyRelease)
 	if err4 != nil {
@@ -269,6 +339,15 @@ func getBuySuccess(c *gin.Context) {
 func getBuyCancel(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
+
+	// delete buyRelease if user cancels payment
+	stripeSessionID := c.Query("session_id")
+	if stripeSessionID != "" {
+		err := db.DeleteBuyRelease(stripeSessionID)
+		if err != nil {
+			log.Println("routes/payments.go ERROR failed to delete buyRelease (may have timed out and auto deleted):", err)
+		}
+	}
 
 	log.Println("Payment canceled!")
 	msg.SendMessage(c, "Payment canceled")

@@ -11,8 +11,17 @@ document.addEventListener("alpine:init", function(event) {
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
-	// load sections of course
 	let versionID = document.getElementById("versionID").innerText;
+
+	// if there is a versionID
+	// then load that versions sections
+	if (versionID !== "") {
+		loadCourseSections(versionID);
+	}
+});
+
+function loadCourseSections(versionID) {
+	// load sections of course
 	console.log("loading sections...");
 
 	fetch("/api/github/version/" + versionID +"/tree", {
@@ -48,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	.catch(function(err) {
 		console.error(err);
 	});
-});
+}
 
 function loadReviews() {
 	console.log("loading reviews...");

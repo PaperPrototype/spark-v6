@@ -22,8 +22,10 @@ func Setup() {
 	// recovery middleware recovers from any panics and writes a 500 if there was one.
 	router.Use(gin.Recovery())
 
-	router.RemoveExtraSlash = true
+	router.RemoveExtraSlash = false
 	router.RedirectTrailingSlash = true
+
+	// automatically redirect lost routes to /lost
 	router.NoRoute(func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/lost")
 	})

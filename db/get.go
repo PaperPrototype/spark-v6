@@ -219,14 +219,6 @@ func GetNewestReleaseVersion(releaseID uint64) (*Version, error) {
 	return &version, err
 }
 
-func GetPurchases(courseID uint64) ([]Purchase, error) {
-	releaseIDs := gormDB.Model(&Release{}).Select("id").Where("course_id = ?", courseID)
-
-	purchases := []Purchase{}
-	err := gormDB.Model(&Purchase{}).Where("release_id IN (?)", releaseIDs).Find(&purchases).Error
-	return purchases, err
-}
-
 func GetAuthorPublicCourses(userID uint64) ([]Course, error) {
 	courses := []Course{}
 	err := gormDB.Model(&Course{}).Where("user_id = ?", userID).Where("public = ?", true).Find(&courses).Error

@@ -19,29 +19,34 @@ func (stripeConnection *StripeConnection) DetailsSubmitted() (bool, error) {
 func (stripeConnection *StripeConnection) DetailsSubmittedLogError() bool {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
 	if err != nil {
-		log.Println("db/methods_stripe_payments ERROR getting DetailsSubmitted param:", err)
+		log.Println("db/stripe.go ERROR getting DetailsSubmitted param:", err)
 	}
 	return connectedAccount.DetailsSubmitted
 }
 
+// if the account can accept payments
 func (stripeConnection *StripeConnection) ChargesEnabled() (bool, error) {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
 	return connectedAccount.ChargesEnabled, err
 }
 
+// if the account can accept payments
 func (stripeConnection *StripeConnection) ChargesEnabledLogError() bool {
 	connectedAccount, err := account.GetByID(stripeConnection.StripeAccountID, nil)
 	if err != nil {
-		log.Println("db/methods_stripe_payments ERROR getting ChargesEnabled param:", err)
+		log.Println("db/stripe.go ERROR getting ChargesEnabled param:", err)
+		return false // probably not and they should update their stripe info!
 	}
 	return connectedAccount.ChargesEnabled
 }
 
+// TODO
+// using paging to load up to 20 purchases at a time
 func (course *Course) GetPurchasesLogError() []Purchase {
 	purchases := []Purchase{}
-	err := gormDB.Model(&Purchase{}).Where("course_id = ?", course.ID).Find(&purchases).Error
+	err := gormDB.Model(&Purchase{}).Where("course_id = ?", course.ID).Preload("User").Order("created_at DESC").Limit(20).Find(&purchases).Error
 	if err != nil {
-		log.Println("db/methods ERROR getting purchases from GetPurchasesLogError:", err)
+		log.Println("db/stripe.go ERROR getting purchases from GetPurchasesLogError:", err)
 	}
 
 	return purchases
@@ -53,7 +58,7 @@ func (user *User) HasStripeConnection() bool {
 
 	// if err then not valid
 	if err != nil {
-		log.Println("db/stripe ERROR getting stripe connection:", err)
+		log.Println("db/stripe.go ERROR getting stripe connection:", err)
 		return false
 	}
 

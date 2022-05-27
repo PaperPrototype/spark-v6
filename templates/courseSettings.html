@@ -64,7 +64,10 @@
 <!-- purchases -->
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem bg-overlay">
 	<h2>Purchases</h2>
-	<a href="/settings/teaching">See purchases</a>
+	<a href="/settings/teaching">Settings > Teaching</a>
+	{{ if not .User.HasStripeConnection }}
+		<p class="c-grey"><i class="fa-solid fa-triangle-exclamation"></i> You must connect your account to stripe before you can charge money for a course.</p>
+	{{ end }}
 </div>
 
 <!-- course releases -->

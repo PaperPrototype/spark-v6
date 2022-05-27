@@ -2,10 +2,12 @@ Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure yo
 
 ## More important
 - support multiple languages other than an `english.md` file
-- chat
-- projects (final projects and proposals system)
 - course hierarchy 
 	- search page can have a hierarchy
+- payments infrastucture
+	- stripe dashbaord for express accounts
+	- warning email and notification
+	- update stripe info button
 
 ## Chore Todo's (stuff that can be done later)
 - users home page (in `/home`) course links should take user to exact version they are working on

@@ -11,6 +11,38 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
+func SendStripePaymentProblemEmail(userID uint64, messageProblem string) error {
+	user, err1 := db.GetUser(userID)
+	if err1 != nil {
+		log.Println("mailer ERROR getting user:", err1)
+		return err1
+	}
+
+	htmlContent := buildEmail(
+		"Sparker - There was an error with a payment or your stripe account.",
+		messageProblem,
+		helpers.GetHost()+"/settings/teaching/",
+		"If you did not sign up for an account on sparker3d.com contact us by replying to this email.",
+	)
+
+	from := mail.NewEmail("Sparker", "info@sparker3d.com")
+
+	to := mail.NewEmail("You", user.Email)
+
+	subject := "Verify your Sparker account"
+	message := mail.NewSingleEmail(from, subject, to, helpers.GetHost()+"/settings/teaching/", htmlContent)
+	response, err := client.Send(message)
+	if err != nil {
+		log.Println("mailer/emails ERROR sending verification email", err)
+		return err
+	} else {
+		log.Println("mailer/emails success!")
+		fmt.Println(response.StatusCode)
+	}
+
+	return nil
+}
+
 // in minutes
 const MinUntilVerifyExpires time.Duration = 10
 

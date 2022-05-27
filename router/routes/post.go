@@ -270,9 +270,7 @@ func postCourseSettingsDisplay(c *gin.Context) {
 	// if public and there are releases
 	if public != "" && releasesCount != 0 {
 		publicBool = true
-	}
-
-	if releasesCount == 0 {
+	} else {
 		msg.SendMessage(c, "You must have at least 1 public release before you can make a course public.")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 
@@ -329,9 +327,9 @@ func postNewRelease(c *gin.Context) {
 		return
 	}
 
-	if !course.User.HasStripeConnection() {
+	if !course.User.HasStripeConnection() && correctPriceNum > 0 {
+		msg.SendMessage(c, "You must connect your account to stripe before you can charge money for a course!")
 		correctPriceNum = 0
-		msg.SendMessage(c, "You must connect your account to stripe to charge money for a course!")
 	}
 
 	postsNeededNum, err5 := strconv.ParseUint(postsNeeded, 10, 16)
@@ -363,7 +361,6 @@ func postNewRelease(c *gin.Context) {
 		return
 	}
 
-	msg.SendMessage(c, "Successfully created release!")
 	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 }
 
@@ -525,36 +522,43 @@ func postEditRelease(c *gin.Context) {
 	correctPriceNum := priceNumIncorrect * 100
 
 	if correctPriceNum > payments.MaxCoursePrice {
-		msg.SendMessage(c, "THe max price of a course is $10 USD")
+		msg.SendMessage(c, "The max price of a course is $10 USD")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 		return
 	}
 
-	if !course.User.HasStripeConnection() {
-		correctPriceNum = 0
-		msg.SendMessage(c, "You must connect your account to stripe to charge money for a course!")
+	var public bool = false
+	if publicStr != "" {
+		public = true
 	}
 
-	var public bool = false
-	if publicStr != "" && release.HasVersions() {
-		public = true
+	if !release.HasVersions() && public {
+		msg.SendMessage(c, "Release must have uploads before you can make it public.")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
+	}
+
+	if !course.User.HasStripeConnection() && correctPriceNum > 0 {
+		msg.SendMessage(c, "You must connect your account to stripe before you can charge money for a course!")
+		err := db.UpdateRelease(releaseID, desc, 0, public, uint16(postsNeededNum), imageURL)
+		if err != nil {
+			log.Println("routes ERROR updating release:", err)
+			msg.SendMessage(c, "Error updating release.")
+			c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+			return
+		}
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
+		return
 	}
 
 	err := db.UpdateRelease(releaseID, desc, correctPriceNum, public, uint16(postsNeededNum), imageURL)
 	if err != nil {
 		log.Println("routes ERROR updating release:", err)
 		msg.SendMessage(c, "Error updating release.")
-		c.Redirect(http.StatusFound, "/")
-		return
-	}
-
-	if !release.HasVersions() {
-		msg.SendMessage(c, "Release must have uploads before you can make it public.")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 		return
 	}
 
-	msg.SendMessage(c, "Successfully updated.")
 	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
 }
 

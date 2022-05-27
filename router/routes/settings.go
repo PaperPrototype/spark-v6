@@ -12,6 +12,7 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
+	"github.com/stripe/stripe-go/v72/loginlink"
 )
 
 func getSettings(c *gin.Context) {
@@ -38,16 +39,23 @@ func getSettingsTeaching(c *gin.Context) {
 		log.Println("routes/settings ERROR getting AuthorCourses in getSettingsCourses:", err)
 	}
 
+	stripeConnection, err1 := db.GetStripeConnection(user.ID)
+	if err1 != nil {
+		log.Println("routes/settings ERROR getting stripeConnection in getSettingsCourses:", err1)
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"settingsTeaching.html",
 		gin.H{
-			"Courses":  courses,
-			"Menu":     "Teaching",
-			"User":     user,
-			"Messages": msg.GetMessages(c),
-			"LoggedIn": auth.IsLoggedInValid(c),
-			"Meta":     metaDefault,
+			"Courses":          courses,
+			"StripeConnection": stripeConnection,
+			"ChargesEnabled":   stripeConnection.ChargesEnabledLogError(),
+			"Menu":             "Teaching",
+			"User":             user,
+			"Messages":         msg.GetMessages(c),
+			"LoggedIn":         auth.IsLoggedInValid(c),
+			"Meta":             metaDefault,
 		},
 	)
 }
@@ -83,7 +91,7 @@ func getStripeConnect(c *gin.Context) {
 	if err != nil {
 		log.Println("routes/payments ERROR creating connected stripe account:", err)
 		msg.SendMessage(c, "Error creating connected account.")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/teaching")
 		return
 	}
 
@@ -96,7 +104,7 @@ func getStripeConnect(c *gin.Context) {
 	if err3 != nil {
 		log.Println("routes/payments ERROR creating stripeConnection in db:", err3)
 		msg.SendMessage(c, "Error connecting accouint to stripe.")
-		c.Redirect(http.StatusFound, "/settings/courses")
+		c.Redirect(http.StatusFound, "/settings/teaching")
 		return
 	}
 
@@ -135,11 +143,42 @@ func getStripeConnect(c *gin.Context) {
 	if err1 != nil {
 		log.Println("routes/payments ERROR creating connected account link:", err1)
 		msg.SendMessage(c, "Error creating connected account link.")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/teaching")
 		return
 	}
 
 	c.Redirect(http.StatusSeeOther, accountLink.URL)
+}
+
+func getStripeLogin(c *gin.Context) {
+	user, err := auth.GetLoggedInUser(c)
+	if err != nil {
+		log.Println("routes/payments ERROR getting user in getStripeLogin:", err)
+		msg.SendMessage(c, "Error getting user")
+		c.Redirect(http.StatusFound, "/settings/teaching")
+		return
+	}
+
+	stripeConnection, err1 := db.GetStripeConnection(user.ID)
+	if err1 != nil {
+		log.Println("routes/settings.go ERROR getting stripe connection in getStripeLogin:", err1)
+		msg.SendMessage(c, "You need to connect to stripe before you can login to your stripe dashboard")
+		c.Redirect(http.StatusFound, "/settings/teaching")
+		return
+	}
+
+	params := &stripe.LoginLinkParams{
+		Account: stripe.String(stripeConnection.StripeAccountID),
+	}
+	link, err2 := loginlink.New(params)
+	if err2 != nil {
+		log.Println("routes/settings.go ERROR getting stripe login link in getStripeLogin:", err2)
+		msg.SendMessage(c, "An error occurred while generating a login link.")
+		c.Redirect(http.StatusFound, "/settings/teaching")
+		return
+	}
+
+	c.Redirect(http.StatusSeeOther, link.URL)
 }
 
 func getStripeRefresh(c *gin.Context) {
@@ -147,7 +186,7 @@ func getStripeRefresh(c *gin.Context) {
 	if err != nil {
 		log.Println("routes/payments ERROR getting user for getPayoutsRefresh:", err)
 		msg.SendMessage(c, "Error getting user")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/teaching")
 		return
 	}
 
@@ -155,7 +194,7 @@ func getStripeRefresh(c *gin.Context) {
 	if err2 != nil {
 		log.Println("routes/payments ERROR getting stripe connection for getPayoutsRefresh:", err2)
 		msg.SendMessage(c, "Error getting stripe connection")
-		c.Redirect(http.StatusFound, "/settings/payouts")
+		c.Redirect(http.StatusFound, "/settings/teaching")
 		return
 	}
 
