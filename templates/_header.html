@@ -24,7 +24,15 @@
 
 		<meta name="title" content="{{ .Meta.Title }}">
 		<meta name="description" content="{{ .Meta.Desc }}">
-		
+		<meta name="image" content="{{ .Meta.ImageURL }}">
+
+		<meta property="og:title" content="{{ .Meta.Title }}">
+		<meta property="og:type" content="{{ .Meta.Type }}" />
+		<meta property="og:description" content="{{ .Meta.Desc }}">
+		<meta property="og:image" content="{{ .Meta.ImageURL }}">
+		<meta property="og:url" content="{{ .Meta.URL }}">
+		<meta name="twitter:card" content="summary_large_image">
+				
 		<!-- load all Font Awesome styles -->
 		<link href="/resources/fontawesome-free-6.1.0/css/all.css" rel="stylesheet">
 

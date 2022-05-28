@@ -103,8 +103,9 @@ func getCourse(c *gin.Context) {
 			"User":          auth.GetLoggedInUserLogError(c),
 			"LoggedIn":      auth.IsLoggedInValid(c),
 			"Meta": Meta{
-				Title: "Sparker - " + course.Title,
-				Desc:  course.Subtitle,
+				Title:    "Sparker - " + course.Title,
+				Desc:     course.Subtitle,
+				ImageURL: release.ImageURL,
 			},
 		},
 	)
@@ -443,8 +444,9 @@ func getCourseRelease(c *gin.Context) {
 			"User":          auth.GetLoggedInUserLogError(c),
 			"LoggedIn":      auth.IsLoggedInValid(c),
 			"Meta": Meta{
-				Title: "Sparker - " + course.Title,
-				Desc:  course.Subtitle,
+				Title:    "Sparker - " + course.Title,
+				Desc:     course.Subtitle,
+				ImageURL: release.ImageURL,
 			},
 		},
 	)
