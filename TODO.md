@@ -1,5 +1,20 @@
 Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure you finish those first before we go live!
 
+- user profile
+	- add users showcase posts per course
+	- add review posts section
+	- allow user to have their own blog posts
+- Likes on showcase posts
+- Final Projects?
+	- NO?: instead just stick with portfolio posts, and encourage students to team up with another student.
+		- will have to use the DM's (Direct Messaging) to communicate, which could be annoying.
+		- allow users to add tags to their posts? and posts can be foudn by tag organization?
+			- cons:
+				- when showcasing a final project how will we display posts from that project?
+				- posts will be able to have tags regardless.
+				- at first just have tags.
+				- then we can add the posts group/playlist system?
+
 ## More important
 - support multiple languages other than an `english.md` file
 - course hierarchy 
@@ -10,8 +25,10 @@ Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure yo
 	- update stripe info button
 
 ## Chore Todo's (stuff that can be done later)
+- if user owns release, and new release comes out, they get a discount since they own the old release
+	- release.UpgradeDiscount
 - users home page (in `/home`) course links should take user to exact version they are working on
-	- if user updates version they are seeing then create "user_current_version"
+	- if user updates version they are seeing then create "user_current_version"?
 
 - generate 5% off coupon when users land on 404 not found page
 - course hierarchy system.
