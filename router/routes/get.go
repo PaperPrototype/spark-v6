@@ -362,8 +362,9 @@ func getCourseVersion(c *gin.Context) {
 			"User":       auth.GetLoggedInUserLogError(c),
 			"LoggedIn":   auth.IsLoggedInValid(c),
 			"Meta": Meta{
-				Title: "View - " + course.Title,
-				Desc:  course.Subtitle,
+				Title:    "View - " + course.Title,
+				Desc:     course.Subtitle,
+				ImageURL: release.ImageURL,
 			},
 			"Progress": progress,
 		},
@@ -535,8 +536,9 @@ func getCourseVersionSection(c *gin.Context) {
 			"User":       auth.GetLoggedInUserLogError(c),
 			"LoggedIn":   auth.IsLoggedInValid(c),
 			"Meta": Meta{
-				Title: "View - " + course.Title,
-				Desc:  course.Subtitle,
+				Title:    "View - " + course.Title,
+				Desc:     course.Subtitle,
+				ImageURL: release.ImageURL,
 			},
 			"Progress": progress,
 		},

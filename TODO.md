@@ -19,12 +19,13 @@ Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure yo
 - support multiple languages other than an `english.md` file
 - course hierarchy 
 	- search page can have a hierarchy
-- payments infrastucture
-	- stripe dashbaord for express accounts
-	- warning email and notification
-	- update stripe info button
 
 ## Chore Todo's (stuff that can be done later)
+Use admin interface to manage an "official" courses relational table
+	- OfficialCourses
+		- (course_id)
+	- If your course is official we only take 15% otherwise we take 20% percent?
+
 - if user owns release, and new release comes out, they get a discount since they own the old release
 	- release.UpgradeDiscount
 - users home page (in `/home`) course links should take user to exact version they are working on
@@ -32,7 +33,7 @@ Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure yo
 
 - generate 5% off coupon when users land on 404 not found page
 - course hierarchy system.
-	- if Course.Level <= 1 it has to be free.
+	- if Course.Level = 0 it has to be free.
 - in case if user forgets to claim purchase use the stripe webhook to verify and claim purchase for the user
 	- much more robust
 	- user may close page and/or close the browser and lose their payment, but using webhooks solves this
@@ -57,8 +58,3 @@ Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure yo
 	- dark
 	- light
 	- auto
-
-Use admin interface to manage an "official" courses relational table
-	- OfficialCourses
-		- (course_id)
-	- If your course is official we only take 15% otherwise we take 25% percent
