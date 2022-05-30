@@ -1,14 +1,14 @@
 {{ if .Release }}
 	{{ if eq .Release.Price 0 }}
 		<button
-		style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+		style="margin-top:2rem; font-weight: 600; font-size: 1rem; color:white;
 		padding-left:2rem; padding-right:2rem;" 
 		href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
 		class="form-btn bd">(Free) Open Course</button>
 	{{ else }}
 		{{ if .Purchased }}
 			<button
-			style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+			style="margin-top:2rem; font-weight: 600; font-size: 1rem; color:white;
 			padding-left:2rem; padding-right:2rem;"
 			class="form-btn bd" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }}">
 				(Purchased) Open course
@@ -19,14 +19,14 @@
 				<!-- if the user owns the course -->
 				{{ if eq .Course.UserID .User.ID }}
 					<button
-					style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+					style="margin-top:2rem; font-weight: 600; font-size: 1rem; color:white;
 					padding-left:2rem; padding-right:2rem;" 
 					href="/{{ .Course.User.Username }}/{{ .Course.Name }}/view/{{ .Release.GetNewestVersionLogError.ID }} " 
 					class="form-btn bd">(Author) Open Course</button>
 				{{ else }}
 					<form action="/{{ .Course.User.Username }}/{{ .Course.Name }}/buy/{{ .Release.ID }}" method="post">
 						<button type="submit"
-						style="margin-top:2rem; background-color:var(--c-code); font-weight: 600; font-size: 1rem; color:white;
+						style="margin-top:2rem; font-weight: 600; font-size: 1rem; color:white;
 						padding-left:2rem; padding-right:2rem;"
 						class="form-btn bd">Buy Course ${{ .Release.GetPriceUSD }} (USD)</button>
 					</form>
