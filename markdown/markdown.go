@@ -22,6 +22,7 @@ var markdowner goldmark.Markdown = goldmark.New(
 			highlighting.WithStyle("native"),
 			highlighting.WithFormatOptions(
 				html.WithLineNumbers(false),
+				html.TabWidth(4),
 			),
 		),
 		extension.NewLinkify(
