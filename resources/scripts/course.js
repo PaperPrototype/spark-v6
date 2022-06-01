@@ -10,7 +10,6 @@ document.addEventListener("alpine:init", function(event) {
 });
 
 document.addEventListener("DOMContentLoaded", function(event) {
-
 	let versionID = document.getElementById("versionID").innerText;
 
 	// if there is a versionID

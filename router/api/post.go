@@ -241,7 +241,7 @@ func postNewReview(c *gin.Context) {
 	user := auth.GetLoggedInUserLogError(c)
 
 	numberOfReviews := db.CountUserReviewsLogError(user.ID, version.CourseID)
-	if numberOfReviews > 1 {
+	if numberOfReviews >= 1 {
 		// user can only post 1 review per course
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
