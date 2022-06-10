@@ -1,4 +1,4 @@
-async function loadCourses() {
+async function loadSearchCourses() {
 	let search = document.getElementById("search").value;
     
 	await fetch("/api/courses?search="+search, {
@@ -15,8 +15,8 @@ async function loadCourses() {
 	.then(function(json) {
 		console.log("courses:", json);
 
-		let cards = document.getElementById("cards");
-		cards.innerHTML = "";
+		let cards = document.getElementById("courses");
+        cards.classList.add("course-cards");
 
 		if (json.length === 0) {
 			cards.innerText = "No courses found.";
@@ -96,15 +96,18 @@ window.onscroll = function(){
     // console.log("scroll: " + (window.scrollY + window.innerHeight));
     // console.log("height: " + document.body.clientHeight);
 
-    let scrollAmount = (window.scrollY + window.innerHeight);
-    let height = document.body.clientHeight;
-
-    console.log("load more content");
-    if  (scrollAmount >= (height - 100)){
-        loadMoreLevelCourses().then(function() {
-            console.log("finished getting courses");
-            convertHrefs(document);
-        });
+    // if not searching then load hierarchy
+    if (!Alpine.store("courses").isSearching) {
+        let scrollAmount = (window.scrollY + window.innerHeight);
+        let height = document.body.clientHeight;
+    
+        console.log("load more content");
+        if  (scrollAmount >= (height - 100)){
+            loadMoreLevelCourses().then(function() {
+                console.log("finished getting courses");
+                convertHrefs(document);
+            });
+        }
     }
 }
 
@@ -112,14 +115,24 @@ document.addEventListener("alpine:init", async function(event) {
     Alpine.store("courses", {
         level: 0,
         done: false,
+        isSearching: false,
     })
 
     resetCourses();
 
-    await loadMoreLevelCourses().then(function() {
-		convertHrefs(document);
-	});
-    await loadMoreLevelCourses().then(function() {
-		convertHrefs(document);
-	});
+	let search = document.getElementById("search").value;
+    
+    if (search !== "") {
+        Alpine.store("courses").isSearching = true;
+
+        loadSearchCourses();
+    } else {
+        // not searching
+        await loadMoreLevelCourses().then(function() {
+            convertHrefs(document);
+        });
+        await loadMoreLevelCourses().then(function() {
+            convertHrefs(document);
+        });
+    }
 })
