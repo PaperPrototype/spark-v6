@@ -6,10 +6,13 @@
 
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
 	<p>by <a href="/{{ .Course.User.Username }}">@{{ .Course.User.Username }}</a></p>
-	<h1 style="margin-bottom:0;" class="c-bold">{{ .Course.Title }}</h1>
-	{{ if .Release }}
-		<div style="margin-bottom:3rem;">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</div>
-	{{ end }}
+	<div style="display:flex; flex-direction:row; flex-wrap:wrap;">
+		<h1 style="margin-bottom:0;" class="c-bold">{{ .Course.Title }}</h1>
+		{{ if .Release }}
+			<h4 style="margin-bottom:3rem;">v{{ .Release.Num }}.{{ .Release.GetNewestVersionLogError.Num }}.{{ .Release.GetNewestVersionLogError.Patch }}</h4>
+		{{ end }}
+	</div>
+	
 	<!-- allow line breaks in the pre tag -->
 	<pre style="
 	overflow-x: auto;

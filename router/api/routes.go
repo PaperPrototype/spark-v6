@@ -9,6 +9,7 @@ import (
 
 func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/courses", getCourses)
+	group.GET("/level/:level", getLevelCourses)
 	group.GET("/version/:versionID/posts", getVersionPosts)                  // portfolio showcase posts
 	group.GET("/version/:versionID/posts/showcase", getVersionShowcasePosts) // top rated student work
 	group.GET("/version/:versionID/reviews", getCourseReviews)

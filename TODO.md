@@ -16,6 +16,8 @@ Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure yo
 				- then we can add the posts group/playlist system?
 
 ## More important
+- likes for showcase posts
+    - so that the `GetReleasePostsOrderByLikes` functi0on in db/get.go will actually be able to order posts by their liking
 - support multiple languages other than an `english.md` file
 - course hierarchy 
 	- search page can have a hierarchy

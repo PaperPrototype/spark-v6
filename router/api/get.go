@@ -6,10 +6,27 @@ import (
 	"main/markdown"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
+// get courses at a level in the course hierarchy
+func getLevelCourses(c *gin.Context) {
+	level := c.Params.ByName("level")
+
+	courses, err := db.GetCoursesAtLevelPreload(level)
+	if err != nil {
+		log.Println("api/get.go ERROR getting courses at level in getLevels:", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, courses)
+}
+
+// get all courses
+// you can filter/search courses by adding a `search` url param
 func getCourses(c *gin.Context) {
 	search := c.Query("search")
 
@@ -20,7 +37,8 @@ func getCourses(c *gin.Context) {
 		courses, err = db.GetAllPublicCoursesPreload()
 	} else {
 		log.Println("applying search...")
-		courses, err = db.GetAllPublicCoursesPreloadAndSearch(search)
+		search = strings.ToLower(search)
+		courses, err = db.GetAllPublicCoursesPreloadAndSearchOrderAsc(search)
 	}
 
 	if err != nil {

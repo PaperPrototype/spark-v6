@@ -24,11 +24,13 @@
 
 .hoverable:hover {
 	background-color: var(--c-light);
+    cursor: pointer;
 }
 
 .hoverable-bg-code {
 	background-color: var(--c-code-darker);
 	color:var(--c-white) !important;
+    cursor: pointer;
 }
 .hoverable-bg-code:hover {
 	background-color: var(--c-code);

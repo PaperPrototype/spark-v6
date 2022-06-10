@@ -240,12 +240,15 @@ func GetAllPublicCoursesPreload() ([]Course, error) {
 	return courses, err
 }
 
-func GetAllPublicCoursesPreloadAndSearch(search string) ([]Course, error) {
+// search courses by their title
+// orders courses by their level ASC (lower level come comes first)
+func GetAllPublicCoursesPreloadAndSearchOrderAsc(search string) ([]Course, error) {
 	courses := []Course{}
 
 	search = strings.ToLower(search)
 
-	err := gormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Where("public = ?", true).Where("lower(title) LIKE ?", "%"+search+"%").Or("lower(subtitle) LIKE ?", "%"+search+"%").Find(&courses).Error
+	// order by level, so lower levels come first
+	err := gormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Order("level ASC").Where("public = ?", true).Where("lower(title) LIKE ?", "%"+search+"%").Find(&courses).Error
 
 	return courses, err
 }

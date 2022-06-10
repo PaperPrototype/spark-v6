@@ -124,8 +124,8 @@
 }
 
 .course-card-temp {
-	width: 12rem;
-	height: 12rem;
+	width: 20rem;
+	height: 18rem;
 	padding: 0.5rem;
 	border-radius: 0.5rem;
 	background-color: var(--c-bg-overlay);

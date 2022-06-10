@@ -141,7 +141,8 @@ type Course struct {
 	Title    string `gorm:"not null"` // a short title of the course
 	Name     string `gorm:"not null"` // the courses unique url name (eg. spark.com/username/minecraftcourse)
 	Subtitle string
-	Public   bool `gorm:"default:f"`
+	Public   bool   `gorm:"default:f"`
+	Level    uint32 `gorm:"default:0"`
 
 	UserID uint64 `gorm:"not null"`
 
