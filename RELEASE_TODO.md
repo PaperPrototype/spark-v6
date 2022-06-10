@@ -11,6 +11,7 @@ Features in order of importance:
         - upcoming courses in course.html page
         - rename "course" to "overview" in course.html page
     - DONE
-        - pre-requisite courses
-        - course level system in search page
+        - course hierarchy 
+	        - search page has levels/hierarchy
+            - pre-requisite courses in course.html page
    

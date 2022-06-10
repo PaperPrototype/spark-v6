@@ -34,6 +34,10 @@ async function loadCourses() {
 }
 
 async function loadMoreLevelCourses() {
+    if (Alpine.store("courses").done) {
+        return;
+    }
+
     let level = Alpine.store("courses").level;
 
     // increase for next call
@@ -53,6 +57,7 @@ async function loadMoreLevelCourses() {
 		console.log("level " + level + ":", json);
 
         if (json.length === 0) {
+            Alpine.store("courses").done = true;
             return;
 		}
 
@@ -105,6 +110,7 @@ window.onscroll = function(){
 document.addEventListener("alpine:init", async function(event) { 
     Alpine.store("courses", {
         level: 0,
+        done: false,
     })
 
     resetCourses();

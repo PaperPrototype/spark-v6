@@ -29,7 +29,7 @@
 		Student Work
 	</div>
 	<div @click="$store.course.tab = 'course'" class="course-tab-item" :class="$store.course.tab === 'course' ? 'selected' : '' ">
-		Course
+		Overview
 	</div>
 	<div @click="$store.course.tab = 'reviews'" @click.once="loadReviews()" class="course-tab-item" :class="$store.course.tab === 'reviews' ? 'selected' : '' ">
 		Reviews
@@ -41,15 +41,7 @@
 			<div class="pad-bot-2rem pad-sides-5" markdown>
 				{{ .Release.Markdown }}
 			</div>
-			<div class="pad-bot-2rem pad-sides-5">
-				<h1>Content</h1>
-				<div id="courseSections">
-					{{ range .Version.GetSectionsLogError }}
-						<div class="pad-05">{{ .Name }}</div>
-					{{ end }}
-				</div>
-			</div>
-			{{ if .Prerequisites }}
+            {{ if .Prerequisites }}
 				<div>
 					<h1 class="pad-sides-5" style="margin-bottom:0;">Prerequisite Courses</h1>
 					<div class="course-cards">
@@ -74,6 +66,14 @@
 					</div>
 				</div>
 			{{ end }}
+			<div class="pad-bot-2rem pad-sides-5">
+				<h1>Content</h1>
+				<div id="courseSections">
+					{{ range .Version.GetSectionsLogError }}
+						<div class="pad-05">{{ .Name }}</div>
+					{{ end }}
+				</div>
+			</div>
 			<!-- releases list -->
 			<div x-data="{ open: true }" class="pad-sides-5">
 				<h5 @click="open = ! open">Releases <i class="fa-solid" :class="open ? 'fa-caret-down' : 'fa-caret-right' "></i></h5>
