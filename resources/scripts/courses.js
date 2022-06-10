@@ -86,6 +86,7 @@ async function loadMoreLevelCourses() {
 }
 
 function resetCourses() {
+    Alpine.store("courses").done = false;
     Alpine.store("courses").level = 0;
     let courses = document.getElementById("courses");
     courses.innerHTML = "";
