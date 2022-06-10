@@ -6,7 +6,11 @@ TODO before going live:
 
 Features in order of importance:
 - Hierarchy course system
-	- pre-requisite courses
-		- DONE
-	- course level system
-		- TODO
+    - TODO (in order of importance)
+        - when searching use /api/courses endpoint (not /api/level/:level endpoint)
+        - upcoming courses in course.html page
+        - rename "course" to "overview" in course.html page
+    - DONE
+        - pre-requisite courses
+        - course level system in search page
+   
