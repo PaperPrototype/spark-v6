@@ -87,12 +87,15 @@
 
 /* image */
 .course-card-img {
-	transform: translate(-13.3%, -13.3%);
-	height:150%;
+    position: absolute;
+    margin-left: 50%;
+    transform: translate(-50%, 0%);
+	width:150%;
 	transition: 0.5s;
 }
 
 .course-card-img-wrapper {
+    position:relative;
 	background-color: black;
 	border-radius: 0.5rem;
 	overflow: hidden;
@@ -103,6 +106,7 @@
 
 	/* remove double borders */
     margin-top: -0.08rem;
+    margin-bottom: -0.08rem;
     margin-right: -0.08rem;
     margin-left: -0.08rem;
 }
@@ -113,8 +117,9 @@
 }
 
 .course-card:hover .course-card-img {
-	transform: translate(-5%, 0%);
-	height:110%;
+    margin-left: 50%;
+    transform: translate(-50%, 0%);
+	width:120%;
 }
 
 /* footer "by @someone" */
