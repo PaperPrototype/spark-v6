@@ -5,7 +5,12 @@
 </div>
 
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
-	<p>by <a href="/{{ .Course.User.Username }}">@{{ .Course.User.Username }}</a></p>
+    <div style="display:flex;">
+        {{ if .Release.GetNewestVersionLogError.Preview }}
+            <p class="c-grey bg-code bd pad-05" style="width:max-content;">Preview</p>
+        {{ end }}
+        <p class="pad-05">by <a href="/{{ .Course.User.Username }}">@{{ .Course.User.Username }}</a></p>
+    </div>
 	<div style="display:flex; flex-direction:row; flex-wrap:wrap;">
 		<h1 style="margin-bottom:0;" class="c-bold">{{ .Course.Title }}</h1>
 		{{ if .Release }}
@@ -27,5 +32,8 @@
 			<i class="fa-solid fa-gear hoverable-bg-overlay bd" style="padding:0.5rem;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
 		</div>
 	{{ end }}
-</div>
 
+    {{ if .Release.GetNewestVersionLogError.Preview }}
+        <p>The newest version of this course is still in preview so some things may not be complete.</p>
+    {{ end }}
+</div>

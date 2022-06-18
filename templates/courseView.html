@@ -113,6 +113,10 @@
 			<i class="fa-solid fa-gear hoverable bd pad-05" style="margin-left:auto;" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/settings"></i>
 		{{ end }}
 	</div>
+
+	{{ if .Version.Preview }}
+        <p class="c-grey">This version is a preview so some things may not be complete.</p>
+    {{ end }}
 </div>
 <div x-data>
 	<div class="pad-sides-5 bg-overlay course-menu thin-top" style="display: flex; padding-bottom: 0.5rem; margin-top:0; padding-top:0.5rem; margin-bottom:0; max-width:100%; height:60px;" id="courseNavTop">
