@@ -146,7 +146,7 @@ func postUpdatePost(c *gin.Context) {
 
 	postID := c.Params.ByName("postID")
 
-	post, err := db.GetPost(postID)
+	post, err := db.GetPostPreloadUser(postID)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return

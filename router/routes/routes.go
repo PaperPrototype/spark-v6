@@ -64,9 +64,7 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/media/:versionID/id/:mediaID")
 
 	// user's public profile page
-	router.GET("/:username", getUser)         // get users public profile
-	router.GET("/:username/media")            // where the user can upload and access images or gifs
-	router.GET("/:username/media/:mediaName") // where the user can upload and access images or gifs
+	router.GET("/:username", getUser) // get users public profile
 	/*
 		user setting on a cog wheel button, but don't offer settings menu as a url route
 	*/

@@ -16,7 +16,7 @@ func postPostComment(c *gin.Context) {
 	postID := c.Params.ByName("postID")
 	markdown := c.PostForm("markdown")
 
-	post, err := db.GetPost(postID)
+	post, err := db.GetPostPreloadUser(postID)
 	if err != nil {
 		log.Println("api/post ERROR getting post from db in postPostComment:", err)
 		c.AbortWithStatus(http.StatusInternalServerError)

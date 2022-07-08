@@ -90,6 +90,19 @@ func getCourse(c *gin.Context) {
 		}
 	}
 
+	postID := c.Query("post_id")
+
+	meta := Meta{
+		Title:    "Sparker - " + course.Title,
+		Desc:     course.Subtitle,
+		ImageURL: release.ImageURL,
+	}
+	// if postID provided set meta info for that post
+	if postID != "" {
+		post, _ := db.GetPostPreloadUser(postID)
+		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"course.html",
@@ -102,11 +115,7 @@ func getCourse(c *gin.Context) {
 			"Messages":      msg.GetMessages(c),
 			"User":          auth.GetLoggedInUserLogError(c),
 			"LoggedIn":      auth.IsLoggedInValid(c),
-			"Meta": Meta{
-				Title:    "Sparker - " + course.Title,
-				Desc:     course.Subtitle,
-				ImageURL: release.ImageURL,
-			},
+			"Meta":          meta,
 		},
 	)
 }
@@ -432,6 +441,19 @@ func getCourseRelease(c *gin.Context) {
 		}
 	}
 
+	postID := c.Query("post_id")
+
+	meta := Meta{
+		Title:    "Sparker - " + course.Title,
+		Desc:     course.Subtitle,
+		ImageURL: release.ImageURL,
+	}
+	// if postID provided set meta info for that post
+	if postID != "" {
+		post, _ := db.GetPostPreloadUser(postID)
+		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"course.html",
@@ -444,11 +466,7 @@ func getCourseRelease(c *gin.Context) {
 			"Messages":      msg.GetMessages(c),
 			"User":          auth.GetLoggedInUserLogError(c),
 			"LoggedIn":      auth.IsLoggedInValid(c),
-			"Meta": Meta{
-				Title:    "Sparker - " + course.Title,
-				Desc:     course.Subtitle,
-				ImageURL: release.ImageURL,
-			},
+			"Meta":          meta,
 		},
 	)
 }
@@ -574,6 +592,14 @@ func getUser(c *gin.Context) {
 		log.Println("routes ERROR getting authored courses for user:", err2)
 	}
 
+	meta := metaDefault
+	// if postID provided set meta info for that post
+	if postID != "" {
+		post, _ := db.GetPostPreloadUser(postID)
+		meta.Title = "Post by @" + post.User.Username
+		meta.Desc = post.Markdown
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"user.html",
@@ -585,7 +611,7 @@ func getUser(c *gin.Context) {
 			"ProfileCourses":  courses,
 			"AuthoredCourses": authoredCourses,
 			"LoggedIn":        auth.IsLoggedInValid(c),
-			"Meta":            metaDefault,
+			"Meta":            meta,
 		},
 	)
 }
@@ -819,6 +845,16 @@ func getHome(c *gin.Context) {
 	authoredCourses, err2 := user.GetPublicAndPrivateAuthoredCourses()
 	if err2 != nil {
 		log.Println("routes ERROR getting authored courses for user:", err2)
+	}
+
+	postID := c.Query("post_id")
+
+	meta := metaDefault
+	// if postID provided set meta info for that post
+	if postID != "" {
+		post, _ := db.GetPostPreloadUser(postID)
+		meta.Title = "Post by @" + post.User.Username
+		meta.Desc = post.Markdown
 	}
 
 	c.HTML(

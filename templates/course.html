@@ -1,5 +1,8 @@
 {{ template "course_header.html" . }}
 
+<!-- so users can view showcase posts -->
+{{ template "post.html" . }}
+
 <div id="versionID" hidden>{{ .Version.ID }}</div>
 
 <script src="/resources/scripts/course.js" defer></script>

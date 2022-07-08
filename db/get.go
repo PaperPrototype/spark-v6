@@ -189,12 +189,6 @@ func GetAllRelease(releaseID interface{}) (*Release, error) {
 	return &release, err
 }
 
-func GetPost(postID string) (*Post, error) {
-	post := Post{}
-	err := gormDB.Model(&Post{}).Preload("User").Where("id = ?", postID).First(&post).Error
-	return &post, err
-}
-
 func GetNewestPublicCourseRelease(courseID uint64) (*Release, error) {
 	release := Release{}
 	err := gormDB.Model(&Release{}).Where("course_id = ?", courseID).Where("public = ?", true).Order("num DESC").First(&release).Error
