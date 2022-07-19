@@ -48,7 +48,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 			</a>
 		</li>
 		<li>
-			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/home"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
+			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/{{ .User.Username }}"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
 		</li>
 	{{ end }}
 	<li x-data @click="$store.nav.show = ! $store.nav.show">

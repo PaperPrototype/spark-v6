@@ -3,6 +3,7 @@ package router
 import (
 	"errors"
 	"html/template"
+	"log"
 	"main/router/api"
 	"main/router/routes"
 	"net/http"
@@ -21,14 +22,15 @@ func Setup() {
 
 	// recovery middleware recovers from any panics and writes a 500 if there was one.
 	router.Use(gin.Recovery())
+	router.Use(func(c *gin.Context) {
+		if c.Request.Host == "sparkv6.herokuapp.com" {
+			log.Println("REDIRECTING to sparker3d.com")
+			c.Redirect(http.StatusMovedPermanently, "sparker3d.com"+c.Request.URL.Path)
+		}
+	})
 
 	router.RemoveExtraSlash = false
 	router.RedirectTrailingSlash = true
-
-	// automatically redirect lost routes to /lost
-	router.NoRoute(func(c *gin.Context) {
-		c.Redirect(http.StatusFound, "/lost")
-	})
 
 	router.SetFuncMap(template.FuncMap{
 		// a dictionary util that can be used to pass multiple inputs to a template

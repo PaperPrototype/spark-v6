@@ -69,9 +69,6 @@ func AddRoutes(router *gin.Engine) {
 		user setting on a cog wheel button, but don't offer settings menu as a url route
 	*/
 
-	// get users home page
-	router.GET("/home", getHome)
-
 	// auth
 	router.GET("/signup", getSignup) // make a new account
 	router.POST("/signup", postSignup)
@@ -114,9 +111,9 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/new", getNew)
 	router.POST("/new", postNew)
 
+	router.GET("/about", getAbout)
+	router.GET("/join", getJoin)
 	router.GET("/lost", getLost)
 
-	router.GET("/about", getAbout)
-
-	router.GET("/join", getJoin)
+	router.NoRoute(notFound)
 }

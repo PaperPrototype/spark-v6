@@ -262,19 +262,6 @@ func getCourseSettings(c *gin.Context) {
 	)
 }
 
-func getLost(c *gin.Context) {
-	c.HTML(
-		http.StatusNotFound,
-		"notFound.html",
-		gin.H{
-			"Messages": msg.GetMessages(c),
-			"User":     auth.GetLoggedInUserLogError(c),
-			"LoggedIn": auth.IsLoggedInValid(c),
-			"Meta":     metaDefault,
-		},
-	)
-}
-
 func getCourseVersion(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
 	username := c.Params.ByName("username")
@@ -828,53 +815,23 @@ func getAbout(c *gin.Context) {
 	)
 }
 
-func getHome(c *gin.Context) {
-	user, err := auth.GetLoggedInUser(c)
-	if err != nil {
-		log.Println("routes ERROR gettingUserWithUsername:", err)
-		msg.SendMessage(c, "You must be logged in to view that page.")
-		c.Redirect(http.StatusFound, "/courses")
-		return
-	}
-
-	courses, err1 := user.GetPublicAndPrivatePurchasedCourses()
-	if err1 != nil {
-		log.Println("routes ERROR getting courses for user:", err1)
-	}
-
-	authoredCourses, err2 := user.GetPublicAndPrivateAuthoredCourses()
-	if err2 != nil {
-		log.Println("routes ERROR getting authored courses for user:", err2)
-	}
-
-	postID := c.Query("post_id")
-
-	meta := metaDefault
-	// if postID provided set meta info for that post
-	if postID != "" {
-		post, _ := db.GetPostPreloadUser(postID)
-		meta.Title = "Post by @" + post.User.Username
-		meta.Desc = post.Markdown
-	}
-
-	c.HTML(
-		http.StatusOK,
-		"home.html",
-		gin.H{
-			"Messages":        msg.GetMessages(c),
-			"User":            user,
-			"ProfileCourses":  courses,
-			"AuthoredCourses": authoredCourses,
-			"LoggedIn":        auth.IsLoggedInValid(c),
-			"Meta":            metaDefault,
-		},
-	)
-}
-
 func getJoin(c *gin.Context) {
 	c.HTML(
 		http.StatusOK,
 		"join.html",
+		gin.H{
+			"Messages": msg.GetMessages(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
+}
+
+func getLost(c *gin.Context) {
+	c.HTML(
+		http.StatusNotFound,
+		"notFound.html",
 		gin.H{
 			"Messages": msg.GetMessages(c),
 			"User":     auth.GetLoggedInUserLogError(c),

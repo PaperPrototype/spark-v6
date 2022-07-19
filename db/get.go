@@ -171,6 +171,12 @@ func GetPostPreloadUser(postID string) (*Post, error) {
 	return &post, err
 }
 
+func GetUserPosts(userID uint64) (*Post, error) {
+	post := Post{}
+	err := gormDB.Model(&Post{}).Where("user_id = ?", userID).Preload("User").First(&post).Error
+	return &post, err
+}
+
 func GetUserWithUsername(username string) (*User, error) {
 	user := User{}
 	err := gormDB.Model(&User{}).Where("username = ?", username).First(&user).Error

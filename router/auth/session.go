@@ -12,8 +12,9 @@ func Login(c *gin.Context, sessionToken string) {
 	c.SetCookie("session", sessionToken, 0, "/", c.Request.URL.Hostname(), true, true)
 }
 
-// returns false if no session cookie
-// returns false if session cookie is invalid
+// returns false if no session cookie.
+// returns false if session cookie is invalid.
+// else returns true
 func IsLoggedInValid(c *gin.Context) bool {
 	// delete expired sessions
 	err := db.DeleteExpiredSessions()
