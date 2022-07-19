@@ -25,7 +25,7 @@ func Setup() {
 	router.Use(func(c *gin.Context) {
 		if c.Request.Host == "sparkv6.herokuapp.com" {
 			log.Println("REDIRECTING to sparker3d.com")
-			c.Redirect(http.StatusMovedPermanently, "sparker3d.com"+c.Request.URL.Path)
+			c.Redirect(http.StatusMovedPermanently, "https://sparker3d.com"+c.Request.URL.Path)
 		}
 	})
 
