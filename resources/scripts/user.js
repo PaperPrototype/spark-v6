@@ -18,6 +18,13 @@ async function loadTakenCourses() {
         return resp.json();
     })
     .then(function(json) {
+        if (json.length === 0) {
+            takenCourses.innerHTML = `<p class="pad-sides-5">None</p>`;
+            return
+        }
+
+        takenCourses.classList.add("course-cards");
+
         for (let i = 0; i < json.length; i++) {
             takenCourses.append(createCourseCard(json[i]));
         }
@@ -44,6 +51,13 @@ async function loadAuthoredCourses() {
         return resp.json();
     })
     .then(function(json) {
+        if (json.length === 0) {
+            authoredCourses.innerHTML = `<p class="pad-sides-5">None</p>`;
+            return
+        }
+
+        authoredCourses.classList.add("course-cards");
+
         for (let i = 0; i < json.length; i++) {
             authoredCourses.append(createCourseCard(json[i]));
         }
