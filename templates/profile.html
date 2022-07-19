@@ -3,8 +3,11 @@
 <!-- so users can view posts -->
 {{ template "post.html" . }}
 
-<link href="/resources/css/courses.css" rel="stylesheet">
-<script src=""></script>
+<div id="profileUsername" hidden>{{ .ProfileUser.Username }}</div>
+
+<link  href="/resources/css/courses.css" rel="stylesheet">
+<script src="/resources/scripts/courseUtils.js"></script>
+<script src="/resources/scripts/user.js"></script>
 
 <div class="pad-sides-5 pad-bot-2rem pad-top-5rem text-center">
 	<h1>{{ .ProfileUser.Name }}</h1>

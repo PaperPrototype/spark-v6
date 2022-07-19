@@ -60,19 +60,17 @@ func getUserAuthoredCourses(c *gin.Context) {
 		return
 	}
 
-	if auth.IsLoggedInValid(c) {
-		loggedInUser := auth.GetLoggedInUserLogError(c)
-		if user.ID == loggedInUser.ID {
-			courses, err1 := user.GetPublicAndPrivateAuthoredCourses()
-			if err1 != nil {
-				c.AbortWithStatus(http.StatusInternalServerError)
-				log.Println("api/user.go ERROR getting PublicAndPrivateAuthoredCourses in getUserAuthoredCourses:", err1)
-				return
-			}
-
-			c.JSON(http.StatusOK, courses)
+	loggedInUser, err2 := auth.GetLoggedInUser(c)
+	if err2 == nil && user.ID == loggedInUser.ID { // else no error... and if user matches logged in user, then...
+		courses, err1 := user.GetPublicAndPrivateAuthoredCourses()
+		if err1 != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			log.Println("api/user.go ERROR getting PublicAndPrivateAuthoredCourses in getUserAuthoredCourses:", err1)
 			return
 		}
+
+		c.JSON(http.StatusOK, courses)
+		return
 	}
 
 	courses, err1 := user.GetPublicAuthoredCourses()
@@ -82,5 +80,5 @@ func getUserAuthoredCourses(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusInternalServerError, courses)
+	c.JSON(http.StatusOK, courses)
 }

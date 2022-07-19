@@ -589,7 +589,7 @@ func getUser(c *gin.Context) {
 
 	c.HTML(
 		http.StatusOK,
-		"user.html",
+		"profile.html",
 		gin.H{
 			"PostID":          postID,
 			"Messages":        msg.GetMessages(c),

@@ -94,6 +94,19 @@
 	transition: 0.5s;
 }
 
+.course-card-img-overlay {
+    position: absolute;
+    z-index: 5;
+    top:0.5rem;
+    left:0.5rem;
+    padding: 0.25rem;
+    padding-left: 0.5rem;
+    padding-right:0.5rem;
+    border-radius: 0.5rem;
+    color: var(--c-text);
+    background-color: var(--c-code);
+}
+
 .course-card-img-wrapper {
     position:relative;
 	background-color: black;

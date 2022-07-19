@@ -62,12 +62,12 @@ func GetLoggedInUser(c *gin.Context) (*db.User, error) {
 	// delete expired sessions
 	err := db.DeleteExpiredSessions()
 	if err != nil {
-		log.Println("session ERROR deleting old session? (possilbe there is no sessions):", err)
+		log.Println("auth/session.go ERROR deleting old session? (possilbe there is no sessions):", err)
 	}
 
 	user, err := db.GetUserFromSession(GetSessionToken(c))
 	if err != nil {
-		log.Println("ERROR finding user for that session:", err)
+		log.Println("auth/session.go ERROR finding user for that session:", err)
 	}
 
 	return user, err
@@ -80,9 +80,14 @@ func GetLoggedInUserLogError(c *gin.Context) *db.User {
 		log.Println("session ERROR deleting old session? (possilbe there is no sessions):", err)
 	}
 
+	if !IsLoggedInValid(c) {
+		log.Println("auth/session.go ERROR logged in not valid")
+		return &db.User{}
+	}
+
 	user, err1 := db.GetUserFromSession(GetSessionToken(c))
 	if err1 != nil {
-		log.Println("ERROR finding user for that session:", err1)
+		log.Println("auth/session.go ERROR finding user for that session:", err1)
 	}
 
 	return user

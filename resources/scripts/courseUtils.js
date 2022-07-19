@@ -13,10 +13,16 @@ function createCourseCard(course) {
 		imageURL = "/resources/images/planet.png";
 	}
 
+    let privateHTML = ``;
+    if (course.Public === false) {
+        privateHTML = `<div class="course-card-img-overlay">private</div>`;
+    }
+
 	card.innerHTML = 
 	`<div class="course-card-wrapper">` +
 		`<div class="course-card hoverable" href="/` + course.User.Username + "/" + course.Name + `">` +
 			`<div class="course-card-img-wrapper">` +
+                privateHTML +
 				`<img class="course-card-img" src="` + imageURL + `">` + 
 			`</div>` +
 			`<div class="course-card-content">` + 
