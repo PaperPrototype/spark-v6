@@ -90,16 +90,17 @@ func getCourse(c *gin.Context) {
 		}
 	}
 
-	postID := c.Query("post_id")
-
 	meta := Meta{
 		Title:    "Sparker - " + course.Title,
 		Desc:     course.Subtitle,
 		ImageURL: release.ImageURL,
 	}
+
+	postID := c.Query("post_id")
+	post := &db.Post{}
 	// if postID provided set meta info for that post
 	if postID != "" {
-		post, _ := db.GetPostPreloadUser(postID)
+		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
 		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
 	}
 
@@ -107,6 +108,7 @@ func getCourse(c *gin.Context) {
 		http.StatusOK,
 		"course.html",
 		gin.H{
+			"Post":          post,
 			"Prerequisites": course.GetAllPrerequisitesLogError(),
 			"Version":       release.GetNewestVersionLogError(),
 			"Purchased":     purchased,
@@ -267,10 +269,6 @@ func getCourseVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	channelID := c.Query("channel_id")
-
-	postID := c.Query("post_id")
-
 	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
 	if err1 != nil {
 		log.Println("routes ERROR getting course from db:", err1)
@@ -325,6 +323,7 @@ func getCourseVersion(c *gin.Context) {
 		log.Println("routes/get ERROR getting channels in getCourseVersion:", err4)
 	}
 
+	channelID := c.Query("channel_id")
 	channel := &db.Channel{}
 	if len(channels) != 0 && channelID == "" {
 		channel = &channels[0]
@@ -341,14 +340,28 @@ func getCourseVersion(c *gin.Context) {
 		}
 	}
 
+	meta := Meta{
+		Title:    "View - " + course.Title,
+		Desc:     course.Subtitle,
+		ImageURL: release.ImageURL,
+	}
+
+	postID := c.Query("post_id")
+	post := &db.Post{}
+	// if postID provided set meta info for that post
+	if postID != "" {
+		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
+		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"Post":       post,
 			"ChannelID":  channelID, // if this is not an empty string then we load the channel since it was sent from a notification!
 			"Channel":    channel,
 			"Channels":   channels,
-			"PostID":     postID,
 			"PostsCount": postsCount,
 			"Release":    release,
 			"Course":     course,
@@ -357,12 +370,8 @@ func getCourseVersion(c *gin.Context) {
 			"Messages":   msg.GetMessages(c),
 			"User":       auth.GetLoggedInUserLogError(c),
 			"LoggedIn":   auth.IsLoggedInValid(c),
-			"Meta": Meta{
-				Title:    "View - " + course.Title,
-				Desc:     course.Subtitle,
-				ImageURL: release.ImageURL,
-			},
-			"Progress": progress,
+			"Meta":       meta,
+			"Progress":   progress,
 		},
 	)
 }
@@ -428,16 +437,17 @@ func getCourseRelease(c *gin.Context) {
 		}
 	}
 
-	postID := c.Query("post_id")
-
 	meta := Meta{
 		Title:    "Sparker - " + course.Title,
 		Desc:     course.Subtitle,
 		ImageURL: release.ImageURL,
 	}
+
+	postID := c.Query("post_id")
+	post := &db.Post{}
 	// if postID provided set meta info for that post
 	if postID != "" {
-		post, _ := db.GetPostPreloadUser(postID)
+		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
 		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
 	}
 
@@ -445,6 +455,7 @@ func getCourseRelease(c *gin.Context) {
 		http.StatusOK,
 		"course.html",
 		gin.H{
+			"Post":          post,
 			"Prerequisites": course.GetAllPrerequisitesLogError(),
 			"Version":       release.GetNewestVersionLogError(),
 			"Purchased":     purchased,
@@ -462,8 +473,6 @@ func getCourseVersionSection(c *gin.Context) {
 	versionID := c.Params.ByName("versionID")
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
-
-	postID := c.Query("post_id")
 
 	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
 	if err1 != nil {
@@ -519,15 +528,42 @@ func getCourseVersionSection(c *gin.Context) {
 		log.Println("routes/get ERROR getting channels in getCourseVersion:", err4)
 	}
 
-	channel := db.Channel{}
-	if len(channels) != 0 {
-		channel = channels[0]
+	channelID := c.Query("channel_id")
+	channel := &db.Channel{}
+	if len(channels) != 0 && channelID == "" {
+		channel = &channels[0]
+	}
+
+	if channelID != "" {
+		var err5 error
+		channel, err5 = db.GetChannel(channelID)
+		if err5 != nil {
+			log.Println("routes/get ERROR getting channel in getCourseVersion:", err5)
+			if len(channels) != 0 {
+				channel = &channels[0]
+			}
+		}
+	}
+
+	meta := Meta{
+		Title:    "View - " + course.Title,
+		Desc:     course.Subtitle,
+		ImageURL: release.ImageURL,
+	}
+
+	postID := c.Query("post_id")
+	post := &db.Post{}
+	// if postID provided set meta info for that post
+	if postID != "" {
+		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
+		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
 	}
 
 	c.HTML(
 		http.StatusOK,
 		"courseView.html",
 		gin.H{
+			"Post":       post,
 			"Channel":    channel,
 			"Channels":   channels,
 			"SHA":        c.Params.ByName("sha"),
@@ -540,20 +576,14 @@ func getCourseVersionSection(c *gin.Context) {
 			"Messages":   msg.GetMessages(c),
 			"User":       auth.GetLoggedInUserLogError(c),
 			"LoggedIn":   auth.IsLoggedInValid(c),
-			"Meta": Meta{
-				Title:    "View - " + course.Title,
-				Desc:     course.Subtitle,
-				ImageURL: release.ImageURL,
-			},
-			"Progress": progress,
+			"Meta":       meta,
+			"Progress":   progress,
 		},
 	)
 }
 
 func getUser(c *gin.Context) {
 	username := c.Params.ByName("username")
-
-	postID := c.Query("post_id")
 
 	if username == "" {
 		msg.SendMessage(c, "Can't find that user!")
@@ -579,19 +609,24 @@ func getUser(c *gin.Context) {
 		log.Println("routes ERROR getting authored courses for user:", err2)
 	}
 
-	meta := metaDefault
+	meta := Meta{
+		Title: "@" + profileUser.Username + "'s profile - Sparker",
+		Desc:  "It's time to ditch degree's and switch to portfolio's.",
+	}
+
+	postID := c.Query("post_id")
+	post := &db.Post{}
 	// if postID provided set meta info for that post
 	if postID != "" {
-		post, _ := db.GetPostPreloadUser(postID)
+		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
 		meta.Title = "Post by @" + post.User.Username
-		meta.Desc = post.Markdown
 	}
 
 	c.HTML(
 		http.StatusOK,
 		"profile.html",
 		gin.H{
-			"PostID":          postID,
+			"Post":            post,
 			"Messages":        msg.GetMessages(c),
 			"User":            auth.GetLoggedInUserLogError(c),
 			"ProfileUser":     profileUser,

@@ -292,3 +292,8 @@ func (user *User) NewNotifLogError(message, url string) {
 		log.Println("db/methods ERROR creating notif in NewNotifLogError:", err)
 	}
 }
+
+// gives back markdown casted to the template.HTML type
+func (post *Post) MarkdownTemplateHTML() template.HTML {
+	return template.HTML(post.Markdown)
+}

@@ -171,6 +171,16 @@ func GetPostPreloadUser(postID string) (*Post, error) {
 	return &post, err
 }
 
+func GetPostPreloadUserConvertMarkdown(postID string) (*Post, error) {
+	post := Post{}
+	err := gormDB.Model(&Post{}).Where("id = ?", postID).Preload("User").First(&post).Error
+
+	buf, _ := markdown.Convert([]byte(post.Markdown))
+	post.Markdown = buf.String()
+
+	return &post, err
+}
+
 func GetUserPosts(userID uint64) (*Post, error) {
 	post := Post{}
 	err := gormDB.Model(&Post{}).Where("user_id = ?", userID).Preload("User").First(&post).Error

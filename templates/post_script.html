@@ -1,19 +1,31 @@
+<script defer>
 document.addEventListener("alpine:init", function(event) {
-	Alpine.store("post", {
-		visible: false,
-		state: 'view', // 'new' 'edit'
-		commentsVisible: false,
-		postID: 0,
-		newestCommentDate: "",
-		params: {},
-	});
+    {{ if ne .Post.Markdown "" }}
+        Alpine.store("post", {
+            visible: true,
+            state: 'view', // 'new' 'edit'
+            commentsVisible: false,
+            postID: {{ .Post.ID }},
+            newestCommentDate: "",
+            params: {},
+        });
+    {{ else }}
+        Alpine.store("post", {
+            visible: false,
+            state: 'view', // 'new' 'edit'
+            commentsVisible: false,
+            postID: 0,
+            newestCommentDate: "",
+            params: {},
+        });
+    {{ end }}
 
-	const params = new URLSearchParams(window.location.search)
+	// const params = new URLSearchParams(window.location.search)
 
-	if (params.has("post_id"))
-	{
-		loadPost(params.get("post_id"));
-	}
+	// if (params.has("post_id"))
+	// {
+	// 	loadPost(params.get("post_id"));
+	// }
 });
 
 let postCommentForm;
@@ -25,6 +37,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	let postCommentForm = document.getElementById("postCommentForm");
 
 	postCommentForm.addEventListener("submit", sendPostComment, false);
+
+    {{ if ne .Post.Markdown "" }}
+        let postMarkdown = document.getElementById("postMarkdown");
+
+        let postAuthor = document.getElementById("postAuthor");
+        postAuthor.innerHTML =
+        `<div class="c-bold" style="margin-top:0.5rem; font-weight:600;" href="/` + {{ .Post.User.Username }} + `" external> @` 
+            + {{ .Post.User.Username }}  + 
+            `<i class="fa-solid fa-arrow-up-right-from-square"></i>` + 
+        `</div>`;
+
+        convertHrefs(postAuthor);
+
+        convertHrefs(postMarkdown);
+    {{ end }}
 });
 
 async function postNewPost() {
@@ -362,3 +389,4 @@ function setPostToLoading() {
 
 	postMarkdown.innerHTML = "Loading...";
 }
+</script>

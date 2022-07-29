@@ -50,7 +50,9 @@
 <!-- inline templated script -->
 {{ template "courseView_initDataFirstSection.html" . }}
 
-{{ if ne .PostID "" }}
+<!-- if the user was viewing a post then the post will be pre-loaded but we need to 
+    show the posts view of the course -->
+{{ if ne .Post.Markdown "" }}
 	<script defer>
 		document.addEventListener("alpine:init", function(event) {
 			viewPosts();

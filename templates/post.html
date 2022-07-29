@@ -1,11 +1,16 @@
 <!-- edit post, new post, read post -->
-<script src="/resources/scripts/post.js" defer></script>
+{{ template "post_script.html" . }}
 
 <!-- post uses markdown -->
 <link href="/resources/css/markdownScaleImg.css" rel="stylesheet">
 <link href="/resources/css/markdown.css" rel="stylesheet">
 
+<!-- if the post was preloaded -->
+{{ if ne .Post.Markdown "" }}
+<div x-data x-transition x-show="$store.post.visible === true" style="position:fixed; top:0; bottom:0; right:0; left:0; z-index:500; max-width: 100%;" class="bg-overlay pad-sides-5">
+{{ else }}
 <div x-data x-transition x-cloak x-show="$store.post.visible === true" style="position:fixed; top:0; bottom:0; right:0; left:0; z-index:500; max-width: 100%;" class="bg-overlay pad-sides-5">
+{{ end }}
 	<!-- top bar -->
 	<div style="display:flex; flex-direction:row; flex-wrap:nowrap; padding-top:0.5rem;">
 		<div @click="closePostView()" style="padding-left:0.8rem; padding-right:0.8rem;" class="pad-05 hoverable bd"><i class="fa-solid fa-xmark"></i></div>
@@ -38,6 +43,7 @@
 
 			<!-- post viewing -->
 			<div x-show="$store.post.state === 'view'" markdown id="postMarkdown" style="padding-bottom:2rem;">
+                {{ .Post.MarkdownTemplateHTML }}
 			</div>
 
 			<!-- post editing and creating -->
