@@ -1,3 +1,7 @@
+<!--
+    Using templating the post html is pre-filled as if the "loadPost" function was called
+    Consequently templating was needed to set vars of script as if the "loadPost" function was called
+-->
 <script defer>
 document.addEventListener("alpine:init", function(event) {
     {{ if ne .Post.Markdown "" }}
@@ -52,16 +56,50 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         convertHrefs(postMarkdown);
     {{ end }}
+
+    let postRawMarkdown = document.getElementById("postRawMarkdown");
+    postRawMarkdown.addEventListener('input', function() {
+        adjustPostTextareaHeight();
+    });
 });
+
+// used to adjust the height of the post text-area when writing or editing
+function adjustPostTextareaHeight() {
+    let textareaElement = document.getElementById("postRawMarkdown");
+
+    // the minimum height initiated through the "rows" attribute
+    let minHeight = textareaElement.scrollHeight;
+
+    // we need box-sizing: border-box, if the textarea has padding
+    chatTextarea.style.boxSizing = chatTextarea.style.mozBoxSizing = 'border-box';
+
+    // compute the height difference which is caused by border and outline
+    let outerHeight = parseInt(window.getComputedStyle(textareaElement).height, 10);
+    let diff = outerHeight - textareaElement.clientHeight;
+
+    // set the height to 0 in case of it has to be shrinked
+    textareaElement.style.height = 0;
+
+    // set the correct height
+    // el.scrollHeight is the full height of the content, not just the visible part
+    textareaElement.style.height = Math.max(minHeight, textareaElement.scrollHeight + diff) + 'px';
+}
 
 async function postNewPost() {
 	let params = Alpine.store("post").params;
 
+    let postRawTitle = document.getElementById("postRawTitle").value;
 	let postRawMarkdown = document.getElementById("postRawMarkdown").value;
 	
-	if (postRawMarkdown.value === "")
+    if (postRawTitle === "")
 	{
-		SendMessage("Can't make an empty post!");
+		SendMessage("You must provide a title for the post.");
+		return;
+	}
+
+	if (postRawMarkdown === "")
+	{
+		SendMessage("Yeah... The post needs to have something in it.");
 		return;
 	}
 
@@ -74,6 +112,7 @@ async function postNewPost() {
 
 	let formData = new FormData();
 	formData.append("markdown", postRawMarkdown);
+    formData.append("title", postRawTitle);
 
 	let response = await fetch("/api/posts/new?"+query, {
 		method: "POST",
@@ -163,6 +202,7 @@ function loadPost(postID) {
 function loadPostPlaintext() {
 	let postID = Alpine.store("post").postID;
 
+    let postRawTitle = document.getElementById("postRawTitle");
 	let postRawMarkdown = document.getElementById("postRawMarkdown");
 
 	postRawMarkdown.value = "Loading...";
@@ -181,7 +221,10 @@ function loadPostPlaintext() {
 	.then(function(json) {
 		console.log("post plaintext json is:" + json);
 
+        postRawTitle.value = json.Title;
 		postRawMarkdown.value = json.Markdown;
+
+        adjustPostTextareaHeight();
 	})
 	.catch(function(err) {
 		console.error(err);
@@ -192,15 +235,23 @@ function loadPostPlaintext() {
 function postUpdatePost() {
 	let postID = Alpine.store("post").postID;
 
+    let postRawTite = document.getElementById("postRawTitle");
 	let postRawMarkdown = document.getElementById("postRawMarkdown");
 
-	if (postRawMarkdown.value === "")
+    if (postRawTitle === "")
 	{
-		SendMessage("Can't make an empty post!");
+		SendMessage("You must provide a title for the post.");
 		return;
 	}
 
+    if (postRawMarkdown === "")
+    {
+        SendMessage("Yeah... The post needs to have something in it.");
+        return;
+    }
+
 	let formData = new FormData();
+    formData.append("title", postRawTite.value);
 	formData.append("markdown", postRawMarkdown.value);
 
 	fetch("/api/posts/" + postID + "/update", {
@@ -365,9 +416,11 @@ async function loadPostComments(postID) {
 /* HELPERS */
 // takes in a posts json (with all properties preloaded)
 function setPost(post) {
-	let postMarkdown = document.getElementById("postMarkdown");
 
+    let postTitle = document.getElementById("postTitle");
+	let postMarkdown = document.getElementById("postMarkdown");
 	let postAuthor = document.getElementById("postAuthor");
+
 	postAuthor.innerHTML =
 	`<div class="c-bold" style="margin-top:0.5rem; font-weight:600;" href="/` + post.User.Username + `" external> @` 
 		+ post.User.Username  + 
@@ -376,6 +429,7 @@ function setPost(post) {
 
 	convertHrefs(postAuthor);
 
+    postTitle.innerText = post.Title;
 	postMarkdown.innerHTML = post.Markdown;
 
 	convertHrefs(postMarkdown);

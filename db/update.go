@@ -12,8 +12,8 @@ func UpdateRelease(releaseID string, markdown string, price uint64, public bool,
 	return gormDB.Model(&Release{}).Where("id = ?", releaseID).Update("markdown", markdown).Update("price", price).Update("public", public).Update("posts_needed_num", postsNeededNum).Update("image_url", imageURL).Error
 }
 
-func UpdatePost(postID, markdown string) error {
-	return gormDB.Model(&Post{}).Where("id = ?", postID).Update("markdown", markdown).Error
+func UpdatePost(postID, title, markdown string) error {
+	return gormDB.Model(&Post{}).Where("id = ?", postID).Update("title", title).Update("markdown", markdown).Error
 }
 
 func UpdateSectionContentAndIncreasePatch(sectionID string, contentID string, contentMarkdown string, versionID string) error {

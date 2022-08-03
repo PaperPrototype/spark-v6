@@ -14,10 +14,18 @@
 	<!-- top bar -->
 	<div style="display:flex; flex-direction:row; flex-wrap:nowrap; padding-top:0.5rem;">
 		<div @click="closePostView()" style="padding-left:0.8rem; padding-right:0.8rem;" class="pad-05 hoverable bd"><i class="fa-solid fa-xmark"></i></div>
-		<div style="margin-left:auto;" x-show="$store.post.state !== 'new'">
+		<div style="margin-left:auto;" x-show="$store.post.state !== 'new' && $store.post.state !== 'edit'">
 			<div x-show="$store.post.commentsVisible === false" @click="openPostComments()" class="pad-05 hoverable bd">open comments</div>
 			<div x-show="$store.post.commentsVisible === true" @click="closePostComments()" class="pad-05 hoverable bd">close comments</div>
 		</div>
+        <div x-show="$store.post.state !== 'view'" style="margin-left:auto;">
+            <div @click="postUpdatePost()" x-show="$store.post.state === 'edit'" class="pad-05 bd bd-none hoverable-bg-code" style="width:100%;">
+                Save
+            </div>
+            <div @click="postNewPost()" x-show="$store.post.state === 'new'" class="pad-05 bd bd-none hoverable-bg-code" style="width:100%;">
+                Publish
+            </div>
+        </div>
 	</div>
 
 	<div style="position:fixed; top:3rem; bottom:0; right:5%; left:5%;">
@@ -25,8 +33,11 @@
 		<!-- post view (below are comments) -->
 		<div hidescrollbar style="overflow-y:scroll; position:absolute; top:0; bottom:0; left:0; right:0;">
 			<div style="display:flex; flex-direction:row; flex-wrap:nowrap; padding-top:0.5rem;">
-				<div id="postAuthor">
-				</div>
+                <div id="postAuthor" x-data x-show="$store.post.state === 'view'">
+                    by <nada class="c-bold" style="margin-top:0.5rem; font-weight:600;" href="/{{ .Post.User.Username }}" external>
+                        @{{ .Post.User.Username }}<i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </nada>
+                </div>
 
 				{{ if .LoggedIn }}
 					<!-- go back to viewing post -->
@@ -42,24 +53,22 @@
 			</div>
 
 			<!-- post viewing -->
-			<div x-show="$store.post.state === 'view'" markdown id="postMarkdown" style="padding-bottom:2rem;">
-                {{ .Post.MarkdownTemplateHTML }}
-			</div>
+            <div x-show="$store.post.state === 'view'" >
+                <h1 id="postTitle">{{ .Post.Title }}</h1>
+                <div markdown id="postMarkdown" style="padding-bottom:2rem;">
+                    {{ .Post.MarkdownTemplateHTML }}
+                </div>
+            </div>
 
 			<!-- post editing and creating -->
-			<div x-show="$store.post.state !== 'view'">
-				<textarea id="postRawMarkdown" style="min-height:30rem; width:100%;" class="bd thin-light pad-05" placeholder="My new post..."></textarea>
-				<div>
-					<button @click="postUpdatePost()" x-show="$store.post.state === 'edit'" class="pad-05 bd thin-light hoverable-bg-code" style="width:100%;">
-						Save
-					</button>
-					<button @click="postNewPost()" x-show="$store.post.state === 'new'" class="pad-05 bd thin-light hoverable-bg-code" style="width:100%;">
-						Create
-					</button>
-				</div>
+			<div x-show="$store.post.state !== 'view'" style="height:calc(100% - 2.1rem); overflow-y: scroll;">
+                <input id="postRawTitle" style="font-size:2rem; width:100%; margin-bottom: 0.5rem;" class="pad-none bd-none hide-focus" placeholder="Title">
+                <div style="height:max-content;">
+                    <textarea id="postRawMarkdown" style="max-width:100%; min-width: 100%; height: 100%; font-size: 1rem; line-height: 1.5rem;" class="bd-none pad-none hide-focus" placeholder="My new post..."></textarea>
+                </div>
 			</div>
 
-			<!-- comments view -->
+			<!-- view comments -->
 			<div 
 			x-transition 
 			x-show="$store.post.commentsVisible === true" 
@@ -74,8 +83,10 @@
 					</div>
 				</div>
 			</div>
-			
-			<div 
+
+            <!-- comment form -->
+			<div
+            x-transition
 			x-show="$store.post.commentsVisible" 
 			style="position:fixed; bottom:0; left:0; right:0; z-index:502; padding-bottom:1rem; padding-top:1rem;" 
 			class="bg-overlay bd pad-sides-5">

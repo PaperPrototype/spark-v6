@@ -138,14 +138,9 @@ function loadPosts(versionID) {
 			let elements = document.createElement("div");
 			elements.innerHTML = json[i].Markdown;
 
-			let nodes = elements.querySelectorAll("*");
-			let title = "";
-			for (let nodeIndex = 0; nodeIndex < 1; nodeIndex++) {
-				title = title + " " + nodes[nodeIndex].innerText;
-			}
+			let title = json[i].Title;
 
 			let hasCoverMedia = false;
-
 			let images = elements.querySelectorAll("img");
 			if (images.length !== 0)
 			{
@@ -196,6 +191,8 @@ function loadPosts(versionID) {
 			if (hasCoverMedia === false) // no cover media
 			{
 				maxTitleLength = 100;
+
+			    h4.style = "margin-top: auto; margin-bottom:0.5rem; text-align:center; justify-content:center; padding:auto;"; // parent is flexbox
 			}
 
 			// trim title if it is too large

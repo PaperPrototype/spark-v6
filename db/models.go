@@ -249,6 +249,7 @@ type Post struct {
 	CreatedAt time.Time // special param name gorm automaically sets time
 	UpdatedAt time.Time // special param name gorm automaically sets time
 	UserID    uint64    `gorm:"not null"`
+	Title     string
 	Markdown  string
 
 	// each Like has a db hook that runs a db query to update its posts likes count

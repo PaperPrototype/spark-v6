@@ -26,16 +26,18 @@ func postNewPost(c *gin.Context) {
 		return
 	}
 
+	title := c.PostForm("title")
 	markdown := c.PostForm("markdown")
 
 	// prevent from posting empty posts
-	if strings.Trim(markdown, " ") == "" {
+	if strings.Trim(markdown, " ") == "" || strings.Trim(title, " ") == "" {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
 	post := db.Post{
 		UserID:   user.ID,
+		Title:    title,
 		Markdown: markdown,
 	}
 	err2 := db.CreatePost(&post)
@@ -52,7 +54,9 @@ func postNewPost(c *gin.Context) {
 	// set the user in the post
 	post.User = *user
 
-	// reply with the post's markdown
+	// reply with the post and its user
+	// this is because the user info was needed after making a post,
+	// and it made sense to return it in the servers response
 	defer c.JSON(
 		http.StatusOK,
 		post,
@@ -157,6 +161,7 @@ func postUpdatePost(c *gin.Context) {
 		return
 	}
 
+	newTitle := c.PostForm("title")
 	newMarkdown := c.PostForm("markdown")
 
 	if strings.Trim(newMarkdown, " ") == "" {
@@ -164,7 +169,7 @@ func postUpdatePost(c *gin.Context) {
 		return
 	}
 
-	db.UpdatePost(postID, newMarkdown)
+	db.UpdatePost(postID, newTitle, newMarkdown)
 }
 
 func postEditSectionContent(c *gin.Context) {

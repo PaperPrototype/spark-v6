@@ -3,7 +3,7 @@ Below I will detail the vision for the final site and its features and user expe
 
 In one sentence: To make the most addictive learning experience ever, and the more you do it the more it benefits you (because course "progress" is measured by the amount you add to your portfolio).
 
-Imagine a courses site where each course is like a dedicated discord server. You have live chat, voice, and video. But you can also make blog posts to showcase your progress and what you are making. You get live notifications when someone mentions you.
+Imagine a courses site where each course is like a dedicated discord server. You have live chat, voice, and video. As well as posts that showcase your progress and skills and wha you are capable of. Just like wih discord live informative noifications help you find where ppl mentioned you.
 
 The best part is that you can view the chat and posts without interrupting your course. There is even an overlay DM voice and video system so you can chat directly with your best friend while working on a course together!
 

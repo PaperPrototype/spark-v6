@@ -101,7 +101,7 @@ func getCourse(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
+		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
 	}
 
 	c.HTML(
@@ -351,7 +351,7 @@ func getCourseVersion(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
+		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
 	}
 
 	c.HTML(
@@ -448,7 +448,7 @@ func getCourseRelease(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
+		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
 	}
 
 	c.HTML(
@@ -556,7 +556,7 @@ func getCourseVersionSection(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Showcase Post by @" + post.User.Username
+		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
 	}
 
 	c.HTML(
@@ -610,7 +610,7 @@ func getUser(c *gin.Context) {
 	}
 
 	meta := Meta{
-		Title: "@" + profileUser.Username + "'s profile - Sparker",
+		Title: "@" + profileUser.Username,
 		Desc:  "It's time to ditch degree's and switch to portfolio's.",
 	}
 
@@ -619,7 +619,7 @@ func getUser(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = "Post by @" + post.User.Username
+		meta.Title += " - " + post.Title
 	}
 
 	c.HTML(

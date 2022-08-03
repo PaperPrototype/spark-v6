@@ -69,6 +69,10 @@
 	padding: 0.5rem;
 }
 
+.pad-none {
+    padding:0;
+}
+
 .mar-05 {
 	margin:0.5rem;
 }
