@@ -34,7 +34,7 @@
 </script>
 <div style="height:100%" x-data="{ channelsSelect: false }">
 	<div style="display:flex;">
-		<p @click="channelsSelect = ! channelsSelect" class="pad-05 bd hoverable" style="max-width:50%; display:block;">
+		<p @click="channelsSelect = ! channelsSelect" class="pad-05 bd hoverable thin-light" style="max-width:50%; display:block;">
 			<inline id="channelTitle"></inline>
 			<i class="fa-solid fa-caret-down" style="margin-left:0.5rem;"></i>
 		</p>
@@ -43,7 +43,7 @@
 		{{ if eq .User.ID .Course.User.ID }}
 			<div x-data="{ open: false }" style="width:50%; margin-left:auto;">
 				<div x-show="open === false">
-					<p @click="open = true;" class="pad-05 bd bg" style="display:flex;">
+					<p @click="open = true;" class="pad-05 bd bg hoverable thin-light" style="display:flex;">
 						new channel
 						<i style="margin-left:auto;" class="fa-solid fa-plus"></i>
 					</p>
@@ -64,7 +64,7 @@
 			<div>
 				<div x-show="channelsSelect" style="padding-top:0.5rem;">
 					{{ range .Channels }}
-						<p @click="loadChannel({{ .ID }}, '{{ .Name }}'); channelsSelect = false;" class="pad-05 bd bg" style="margin:0.5rem; margin-top:0;">{{ .Name }}</p>
+						<p @click="loadChannel({{ .ID }}, '{{ .Name }}'); channelsSelect = false;" class="pad-05 bd hoverable thin-light" style="margin:0.5rem; margin-top:0;">{{ .Name }}</p>
 					{{ end }}
 				</div>
 				<!-- messages -->

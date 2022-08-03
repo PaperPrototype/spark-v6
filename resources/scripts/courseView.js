@@ -380,6 +380,10 @@ function loadChannel(channelID, channelName) {
 	resetMessages();
 
 	let channelTitle = document.getElementById("channelTitle");
+    if (channelName === "") {
+        channelName = "None";
+    }
+
 	channelTitle.innerText = channelName;
 
 	// new channel loaded, clear the old comments and set this as new channel
