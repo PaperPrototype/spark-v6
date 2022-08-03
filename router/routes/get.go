@@ -101,7 +101,7 @@ func getCourse(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
+		meta.Title = course.Title + " - @" + post.User.Username + " " + post.Title
 	}
 
 	c.HTML(
@@ -351,7 +351,7 @@ func getCourseVersion(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
+		meta.Title = "View - " + course.Title + " - @" + post.User.Username + " " + post.Title
 	}
 
 	c.HTML(
@@ -448,7 +448,7 @@ func getCourseRelease(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
+		meta.Title = course.Title + " - @" + post.User.Username + " " + post.Title
 	}
 
 	c.HTML(
@@ -556,7 +556,7 @@ func getCourseVersionSection(c *gin.Context) {
 	// if postID provided set meta info for that post
 	if postID != "" {
 		post, _ = db.GetPostPreloadUserConvertMarkdown(postID)
-		meta.Title = course.Title + " - Post by @" + post.User.Username + " - " + post.Title
+		meta.Title = "View - " + course.Title + " - @" + post.User.Username + " " + post.Title
 	}
 
 	c.HTML(
