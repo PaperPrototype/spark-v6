@@ -87,6 +87,13 @@ type Purchase struct {
 	User User // don't add tag for cascading on delete cause it will delete the user when trying to delete the purchase
 }
 
+type OwnsCourse struct {
+	ID       uint64
+	UserID   uint64
+	Progress int
+	PostsCount
+}
+
 type User struct {
 	ID       uint64 `gorm:"primaryKey"`
 	Username string `gorm:"unique"` // unique identifer used in the url
