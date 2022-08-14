@@ -88,10 +88,10 @@ type Purchase struct {
 }
 
 type OwnsCourse struct {
-	ID       uint64
-	UserID   uint64
-	Progress int
-	PostsCount
+	ID         uint64
+	UserID     uint64
+	Progress   float32
+	PostsCount uint32
 }
 
 type User struct {
