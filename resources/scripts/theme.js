@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	setToSavedTheme(); // inital page load
 
 	let toggle = document.getElementById("themeToggle");
+
+    if (toggle == null) {
+        // if footer was not included in page
+        return;
+    }
+    
 	toggle.addEventListener("click", function() {
 		toggleTheme();
 	});
@@ -68,11 +74,16 @@ function setToSavedTheme() {
 	let theme = document.getElementById("theme");
 	let themeText = document.getElementById("themeToggleText");
 
+    if (themeText == null) {
+        // if footer was not included in page
+        return;
+    }
+
 	let savedTheme = localStorage.getItem("sparker/theme");
 
 	// default leave as is
 	// otherwise 
-	if (savedTheme !== null) {
+	if (savedTheme !== "" && savedTheme !== null) {
 		if (savedTheme === "auto") {
 			// set to auto
 			theme.classList.remove("theme-gamer");
