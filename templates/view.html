@@ -48,7 +48,7 @@
             <!-- arrow left -->
             <span style="width:1.6rem; margin-right:0.5rem;"
             class="hoverable bd">
-                <i x-show="$store.view.state === 'course'" style="padding-top:0.6rem; padding-left:0.5rem;" class="fa-solid fa-angle-left"></i>
+                <i x-transition x-show="$store.view.state === 'course'" style="padding-top:0.6rem; padding-left:0.5rem;" class="fa-solid fa-angle-left"></i>
             </span>
 
             <!-- course / menu -->
@@ -80,7 +80,7 @@
             <!-- arrow right -->
             <span style="width:1.6rem; margin-left:0.5rem;"
             class="hoverable bd">
-                <i x-show="$store.view.state === 'course'" style="padding-top:0.6rem; padding-left:0.5rem;" class="fa-solid fa-angle-right"></i>
+                <i x-transition x-show="$store.view.state === 'course'" style="padding-top:0.6rem; padding-left:0.5rem;" class="fa-solid fa-angle-right"></i>
             </span>
         </div>
     </div>
