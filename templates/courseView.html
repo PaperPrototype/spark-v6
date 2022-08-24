@@ -86,7 +86,6 @@
 
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
 	<h1 style="margin-bottom:0;" class="c-bold">
-		<!-- if course is paid -->
 		<i class="fa-solid fa-arrow-left-long pad-05 bd hoverable-bg-overlay" href="/{{ .Course.User.Username }}/{{ .Course.Name }}/{{ .Release.Num }}"></i>
 		{{ .Course.Title }}
 		<span style="color:var(--c-text); margin-top:2.3rem; font-size:1rem;">v{{ .Release.Num }}.{{ .Version.Num }}.{{ .Version.Patch }}</span>
@@ -230,7 +229,6 @@
 				</tr>
 			</table>
 		</div>
-
 	</div>
 </div>
 {{ template "_footer.html" . }}

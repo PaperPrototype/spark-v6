@@ -18,13 +18,15 @@ func migrate() {
 		&Course{},
 		&Release{},
 		&Version{},
-		&Section{},
-		&Content{},
+		// &Section{},
+		// &Content{},
+
+		// chat
 		&Channel{},
 		&Message{},
 
 		// hierarchy
-		Prerequisite{},
+		&Prerequisite{},
 
 		// github based courses
 		&GithubRelease{},
@@ -33,6 +35,10 @@ func migrate() {
 		// purchases
 		&Purchase{},
 		&AttemptBuyRelease{},
+
+		// course ownership and progress
+		&Ownership{},
+		&FinishedSection{},
 
 		// third party apps
 		&StripeConnection{},
@@ -46,6 +52,7 @@ func migrate() {
 	)
 }
 
+// temporary payment attempt
 type AttemptBuyRelease struct {
 	StripeSessionID string `gorm:"primaryKey"`
 	StripePaymentID string
@@ -55,6 +62,7 @@ type AttemptBuyRelease struct {
 	ExpiresAt       time.Time // WE DON'T DELETE the buy release if it is expired. It just gets filtered out
 }
 
+// the user has purchased the course
 type Purchase struct {
 	ID     uint64 `gorm:"primaryKey"`
 	UserID uint64 `gorm:"not null"` // the student buying the course
@@ -87,11 +95,64 @@ type Purchase struct {
 	User User // don't add tag for cascading on delete cause it will delete the user when trying to delete the purchase
 }
 
-type OwnsCourse struct {
-	ID         uint64
-	UserID     uint64
-	Progress   float32
-	PostsCount uint32
+// course ownership and access to a course
+// also caches course progress
+type Ownership struct {
+	ID        uint64
+	UserID    uint64
+	CourseID  uint64
+	ReleaseID uint64
+	VersionID uint64
+
+	CreatedAt time.Time
+
+	Completed   bool
+	CompletedAt time.Time
+	Progress    float32
+	PostsCount  uint32
+
+	Course  Course
+	Release Release
+}
+
+// existence of this signifies the
+// user has completed this section
+type FinishedSection struct {
+	VersionID uint64
+	SectionID string
+}
+
+// claimable coupon
+type Coupon struct {
+	ID           uint64
+	OwnsCourseID uint64
+	CourseID     uint64
+	ReleaseID    uint64
+	Public       bool // visible as a sale on course page vs private link the author will send to students
+
+	CreatedAt uint64
+	ExpiresAt uint64
+	Available uint32
+	Claimed   uint32
+	// TODO
+	/*
+		- CreateCoupon(ExpiresBy)
+		- Use methods to check coupons abaility
+			- GetNumAvailable
+			- Available
+			- GetStripeData
+	*/
+
+	ClaimedCoupons []ClaimedCoupon
+}
+
+// coupon claims
+type ClaimedCoupon struct {
+	ID        uint64
+	CouponID  uint64
+	UserID    uint64
+	CourseID  uint64
+	ReleaseID uint64
 }
 
 type User struct {
@@ -163,19 +224,6 @@ type Course struct {
 	Prerequisites []Prerequisite `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE; "` // prerequisites for this course
 }
 
-type Coupon struct {
-	StripeCouponID string `gorm:"primaryKey"`
-	CourseID       uint64
-	// TODO
-	/*
-		- CreateCoupon(ExpiresBy)
-		- Use methods to check coupons abaility
-			- GetNumAvailable
-			- Available
-			- GetStripeData
-	*/
-}
-
 type Release struct {
 	ID             uint64 `gorm:"primaryKey"`
 	Price          uint64 `gorm:"default:0"`
@@ -230,7 +278,7 @@ type GithubVersion struct {
 }
 
 type Section struct {
-	ID        uint64 `gorm:"primaryKey"`
+	ID        uint64 `gorm:"primaryKey"` // TODO convert to string UUID or sha
 	Name      string
 	UpdatedAt time.Time
 

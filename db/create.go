@@ -88,3 +88,7 @@ func CreateReview(review *PostToCourseReview) error {
 func CreatePrerequisite(preq *Prerequisite) error {
 	return gormDB.Create(preq).Error
 }
+
+func CreateOwnership(ownership *Ownership) error {
+	return gormDB.Create(ownership).Error
+}

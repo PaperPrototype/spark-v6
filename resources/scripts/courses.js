@@ -27,6 +27,8 @@ async function loadSearchCourses() {
 
 			cards.appendChild(card);
 		}
+        
+        convertHrefs(cards);
 	})
 	.catch(function(err) {
 		console.log(err)

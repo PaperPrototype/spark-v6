@@ -300,8 +300,8 @@ func getBuySuccess(c *gin.Context) {
 		return
 	}
 
-	// AmountPayed * 0.15
-	// we took 15 percent
+	// AmountPayed * PercentageShare
+	// we took PercentageShare percent
 	ourCut := uint64(math.Round(float64(float32(buyRelease.AmountPaying) * payments.PercentageShare)))
 	authorsCut := buyRelease.AmountPaying - ourCut
 
@@ -318,7 +318,21 @@ func getBuySuccess(c *gin.Context) {
 	}
 	err2 := db.CreatePurchase(&purchase)
 	if err2 != nil {
-		msg.SendMessage(c, "Purchase creating failed! That is not supposed to happen! Contact us and send a screenshot of this message!")
+		msg.SendMessage(c, "Failed to create purchase record! That is not supposed to happen! Contact us and send a screenshot of this message!")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
+		return
+	}
+
+	ownership := db.Ownership{
+		UserID:    user.ID,
+		CourseID:  version.CourseID,
+		ReleaseID: buyRelease.ReleaseID,
+		VersionID: version.ID,
+		Completed: false,
+	}
+	err5 := db.CreateOwnership(&ownership)
+	if err5 != nil {
+		msg.SendMessage(c, "Failed to create course ownership! That is not supposed to happen! Contact us and send a screenshot of this message!")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
 		return
 	}

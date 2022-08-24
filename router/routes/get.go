@@ -35,7 +35,7 @@ func getCourse(c *gin.Context) {
 		return
 	}
 
-	user, getUserErr := auth.GetLoggedInUser(c)
+	user, _ := auth.GetLoggedInUser(c)
 
 	// if private and outside user
 	if !course.Public && course.UserID != user.ID {
@@ -67,10 +67,10 @@ func getCourse(c *gin.Context) {
 	}
 
 	// user has clicked on course from searching, skip the landing page if it is free and take them straight to the course
-	if release.Price == 0 {
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
-		return
-	}
+	// if release.Price == 0 {
+	// 	c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
+	// 	return
+	// }
 
 	// convert release desc to support markdown
 	releaseMarkdowned, err5 := markdown.Convert([]byte(release.Markdown))
@@ -80,14 +80,14 @@ func getCourse(c *gin.Context) {
 
 	release.Markdown = template.HTML(releaseMarkdowned.String())
 
-	purchased := false
+	ownsCourse := false
+	if user.OwnsCourseRelease(release.ID) {
+		ownsCourse = true
+	}
 
-	if release.Price != 0 {
-		if getUserErr == nil {
-			if user.HasPurchasedRelease(release.ID) {
-				purchased = true
-			}
-		}
+	ownership := &db.Ownership{}
+	if ownsCourse {
+		ownership, _ = user.GetReleaseOwnership(release.ID)
 	}
 
 	meta := Meta{
@@ -111,7 +111,8 @@ func getCourse(c *gin.Context) {
 			"Post":          post,
 			"Prerequisites": course.GetAllPrerequisitesLogError(),
 			"Version":       release.GetNewestVersionLogError(),
-			"Purchased":     purchased,
+			"Ownership":     ownership,
+			"OwnsCourse":    ownsCourse,
 			"Course":        course,
 			"Release":       release,
 			"Messages":      msg.GetMessages(c),
@@ -388,7 +389,7 @@ func getCourseRelease(c *gin.Context) {
 		return
 	}
 
-	user, getUserErr := auth.GetLoggedInUser(c)
+	user, _ := auth.GetLoggedInUser(c)
 
 	// if private and outside user
 	if !course.Public && course.UserID != user.ID {
@@ -427,14 +428,14 @@ func getCourseRelease(c *gin.Context) {
 
 	release.Markdown = template.HTML(releaseMarkdowned.String())
 
-	purchased := false
+	ownsCourse := false
+	if user.OwnsCourseRelease(release.ID) {
+		ownsCourse = true
+	}
 
-	if release.Price != 0 {
-		if getUserErr == nil {
-			if user.HasPurchasedRelease(release.ID) {
-				purchased = true
-			}
-		}
+	ownership := &db.Ownership{}
+	if ownsCourse {
+		ownership, _ = user.GetReleaseOwnership(release.ID)
 	}
 
 	meta := Meta{
@@ -458,7 +459,8 @@ func getCourseRelease(c *gin.Context) {
 			"Post":          post,
 			"Prerequisites": course.GetAllPrerequisitesLogError(),
 			"Version":       release.GetNewestVersionLogError(),
-			"Purchased":     purchased,
+			"Ownership":     ownership,
+			"OwnsCourse":    ownsCourse,
 			"Course":        course,
 			"Release":       release,
 			"Messages":      msg.GetMessages(c),

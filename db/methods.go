@@ -297,3 +297,26 @@ func (user *User) NewNotifLogError(message, url string) {
 func (post *Post) MarkdownTemplateHTML() template.HTML {
 	return template.HTML(post.Markdown)
 }
+
+func (user *User) OwnsCourseRelease(releaseID uint64) bool {
+	var count int64 = 0
+	err := gormDB.Model(&Ownership{}).Where("user_id = ?", user.ID).Where("release_id = ?", releaseID).Count(&count).Error
+
+	// if err then not valid
+	if err != nil {
+		return false
+	}
+
+	// if nothing exists
+	if count == 0 {
+		return false
+	}
+
+	return true
+}
+
+func (user *User) GetReleaseOwnership(releaseID uint64) (*Ownership, error) {
+	ownership := Ownership{}
+	err := gormDB.Model(&Ownership{}).Where("user_id = ?", user.ID).Where("release_id = ?", releaseID).First(&ownership).Error
+	return &ownership, err
+}
