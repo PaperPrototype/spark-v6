@@ -49,7 +49,6 @@
 
 [markdown2] > pre > code > span {
     -webkit-text-size-adjust: 100%;
-    width:max-content;
     padding-right:2rem;
 }
 
