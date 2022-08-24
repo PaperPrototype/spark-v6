@@ -2,11 +2,9 @@
 {{ template "post_script.html" . }}
 
 <!-- post uses markdown -->
-<link href="/resources/css/markdownScaleImg.css" rel="stylesheet">
-<link href="/resources/css/markdown.css" rel="stylesheet">
+<link href="/resources/css/markdown2.css" rel="stylesheet">
 
 <!-- if the post was preloaded -->
-
 {{ if .Post }}
     {{ if ne .Post.Markdown "" }}
     <div x-data x-transition x-show="$store.post.visible === true" style="position:fixed; top:0; bottom:0; right:0; left:0; z-index:500; max-width: 100%;" class="bg-overlay pad-sides-5">
@@ -60,7 +58,7 @@
 			<!-- post viewing -->
             <div x-show="$store.post.state === 'view'" >
                 <h1 id="postTitle">{{ .Post.Title }}</h1>
-                <div markdown id="postMarkdown" style="padding-bottom:2rem;">
+                <div markdown2 id="postMarkdown" style="padding-bottom:2rem;">
                     {{ .Post.MarkdownTemplateHTML }}
                 </div>
             </div>

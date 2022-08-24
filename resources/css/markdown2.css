@@ -1,0 +1,123 @@
+[markdown2] > p {
+    padding-left:5%;
+    padding-right:5%;
+	width: 100%;
+	word-wrap: break-word;
+}
+
+[markdown2] > p > img {
+	width: 111%;
+    transform: translate(-5%);
+	display: table;
+}
+
+[markdown2] h1, [markdown2] h2, [markdown2] h3, [markdown2] h4, [markdown2] h5, [markdown2] h6 {
+    padding-left:5%;
+    padding-right:5%;
+	color: var(--c-bold);
+}
+
+[markdown2] > p > iframe {
+	display: table;
+	width: 111%;
+    transform: translate(-5%);
+	height: auto;
+	aspect-ratio: 16 / 9;
+}
+
+:root {
+    --markdown2-code-font-family: 'Red Hat Mono', monospace !important;
+    --markdown2-code-font-size: 0.8rem;
+    --markdown2-code-line-height: 0.5rem;
+}
+
+[markdown2] > pre {
+    overflow-x: scroll;
+    padding:0.5rem;
+    margin-left:5%;
+    margin-right:5%;
+    background-color: var(--c-bg);
+}
+
+[markdown2] > pre > code {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span {
+    width:max-content;
+    padding-right:2rem;
+}
+
+/* when width larger than 800px */
+@media only screen and (min-width: 800px){
+	[markdown2] > p {
+        max-width: 800px;
+    }
+
+    [markdown2] > p > img {
+        width: 100%;
+        transform: translate(0);
+        max-width: 800px;
+    }
+
+    [markdown2] > p > iframe {
+        display: table;
+        width: 100%;
+        transform: translate(0);
+    }
+
+    [markdown2] h1, [markdown2] h2, [markdown2] h3, [markdown2] h4, [markdown2] h5, [markdown2] h6 {
+        max-width: 800px;
+    }
+
+    [markdown2] > pre {
+        max-width: calc(800px - 10%);
+        padding:0.5rem;
+        margin-left:5%;
+        margin-right:5%;
+    }
+}
+
+[markdown2] > pre > code > span {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span > span  {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span > span > span {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span > span > span > span {
+    line-height: var(--markdown2-code-line-height);
+    font-size: var(--markdown2-code-font-size);
+	font-family: var( --markdown2-code-font-family);
+}

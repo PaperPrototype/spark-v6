@@ -3,7 +3,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 
 <div id="userID" hidden>{{ .User.ID }}</div>
 
-<ul class="nav nav-row pad-sides-5 bg-overlay" id="topNav" style="z-index: -1; border-bottom:0.08rem solid var(--c-light);">
+<ul class="nav nav-row pad-sides-5 bg-overlay" id="topNav" style="z-index: 5;">
 	{{ if not .LoggedIn }}
 		<img href="/" class="nav-logo" style="height:2.2rem; display: inline-block; position: relative;">
 		<li>
@@ -70,7 +70,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 </style>
 
 <!-- nav dropdown -->
-<div @click.outside="$store.nav.show = false" x-data x-cloak x-show="$store.nav.show" style="z-index:5; position:fixed; top:3.5rem; right:5%;" class="bd bg-overlay shadow thin-light">
+<div @click.outside="$store.nav.show = false" x-data x-cloak x-show="$store.nav.show" style="z-index:10; position:fixed; top:3.5rem; right:5%;" class="bd bg-overlay shadow thin-light">
 	<div nav style="padding:0.5rem;">
 		<table>
 			<tb>

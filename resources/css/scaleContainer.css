@@ -1,0 +1,32 @@
+.scale-item {
+    padding-left:5%;
+    padding-right:5%;
+	width: 100%;
+}
+
+.scale-item-full {
+	width: 111%;
+    transform: translate(-5%);
+	display: table;
+}
+
+/* when width larger than 800px */
+@media only screen and (min-width: 800px){
+    .scale-container {
+        width: 800px;
+        padding-left:0;
+        padding-right:0;
+        margin-left:50%;
+        transform: translate(-50%);
+    }
+
+    .scale-item {
+        max-width: 800px;
+    }
+
+    .scale-item-full {
+        width: 100%;
+        transform: translate(0);
+        max-width: 800px;
+    }
+}
