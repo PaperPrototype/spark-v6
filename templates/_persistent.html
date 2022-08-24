@@ -14,7 +14,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 		<li style="margin-left:auto;" class="nav-search-bar-signup">
 			<form action="/courses" method="get">
 				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0.15rem;">
-					<i class="fa-solid fa-magnifying-glass"></i><input name="search" placeholder="search..." class="pad-05 bd-none bd hide-focus bg-overlay">
+					<i class="fa-solid fa-magnifying-glass"></i><input name="search" placeholder="search courses..." class="pad-05 bd-none bd hide-focus bg-overlay">
 				</label>
 			</form>
 		</li>
@@ -35,7 +35,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 		<li style="margin-left:auto;" class="nav-search-bar">
 			<form action="/courses" method="get">
 				<label class="bd thin-light" style="padding-left:0.5rem; margin-top:0.15rem;">
-					<i class="fa-solid fa-magnifying-glass"></i><input name="search" placeholder="search..." class="pad-05 bd-none bd hide-focus bg-overlay">
+					<i class="fa-solid fa-magnifying-glass"></i><input name="search" placeholder="search courses..." class="pad-05 bd-none bd hide-focus bg-overlay">
 				</label>
 			</form>
 		</li>
@@ -44,7 +44,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 				<i x-show="$store.notify.new" x-text="$store.notify.count"
 				style="display:block; font-size:0.7rem; background-color:var(--c-code); padding:0.3rem; 
 				padding-bottom:0.05rem; padding-top:0.1rem; padding-right:0.4rem; border-radius:0.5rem; margin-right:0.2rem;"></i>
-				<i :class="$store.notify.new ? 'fa-solid fa-bell' : 'fa-regular fa-bell' "></i>
+				<i :class="$store.notify.new ? 'fa-solid fa-bell fa-bounce' : 'fa-regular fa-bell' "></i>
 			</a>
 		</li>
 		<li>

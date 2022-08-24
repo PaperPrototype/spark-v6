@@ -10,7 +10,7 @@
 }
 
 .shadow {
-	box-shadow: 0rem 0rem 0.5rem var(--c-shadow);
+	box-shadow: 0rem 0rem 1.5rem var(--c-shadow);
 }
 
 .hide-focus:focus {

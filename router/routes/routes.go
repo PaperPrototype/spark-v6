@@ -30,7 +30,7 @@ func AddRoutes(router *gin.Engine) {
 	router.GET("/", getLanding) // index
 
 	// landing page
-	router.GET("/view", getView) // index
+	router.GET("/view", getView) // v7 course view
 
 	// course landing pages
 	router.GET("/:username/:course", getCourse)                    // course page, gives newest release

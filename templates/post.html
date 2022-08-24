@@ -6,8 +6,13 @@
 <link href="/resources/css/markdown.css" rel="stylesheet">
 
 <!-- if the post was preloaded -->
-{{ if ne .Post.Markdown "" }}
-<div x-data x-transition x-show="$store.post.visible === true" style="position:fixed; top:0; bottom:0; right:0; left:0; z-index:500; max-width: 100%;" class="bg-overlay pad-sides-5">
+
+{{ if .Post }}
+    {{ if ne .Post.Markdown "" }}
+    <div x-data x-transition x-show="$store.post.visible === true" style="position:fixed; top:0; bottom:0; right:0; left:0; z-index:500; max-width: 100%;" class="bg-overlay pad-sides-5">
+    {{ else }}
+    <div x-data x-transition x-cloak x-show="$store.post.visible === true" style="position:fixed; top:0; bottom:0; right:0; left:0; z-index:500; max-width: 100%;" class="bg-overlay pad-sides-5">
+    {{ end }}
 {{ else }}
 <div x-data x-transition x-cloak x-show="$store.post.visible === true" style="position:fixed; top:0; bottom:0; right:0; left:0; z-index:500; max-width: 100%;" class="bg-overlay pad-sides-5">
 {{ end }}

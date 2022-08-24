@@ -1,17 +1,15 @@
 {{ template "_header.html" . }}
 
-<!-- so users can view and create posts -->
-{{ template "post.html" . }}
-
 <script defer>
     document.addEventListener("alpine:init", function(event) {
         Alpine.store("view", {
-            state: "main",
+            state: "course",
+            sectionID: "",
         });
     });
 
-    function viewMain() {
-        Alpine.store("view").state = "main";
+    function viewCourse(sectionID="") {
+        Alpine.store("view").state = "course";
     }
 
     function viewPosts() {
@@ -23,27 +21,26 @@
     }
 </script>
 
-<style>
-
-</style>
-
 <div style="position:absolute; bottom:0; left:0; top:60.5625px; right:0;">
 
     <!-- views -->
     <div x-data style="width:100%; height:100%;">
-        <div x-show="$store.view.state === 'main'" class="bg" style="position:absolute; width:100%; height:100%;">
-            main
-            <div>course</div>
-            <div>menu</div>
+        <div x-show="$store.view.state === 'course'" class="bg" style="position:absolute; width:100%; height:100%;">
+            {{ template "view_course.html" . }}
         </div>
+        <div x-show="$store.view.state === 'posts'" class="bg" style="position:absolute; width:100%; height:100%; z-index:2;">
+            {{ template "view_posts.html" . }}
 
-        <div x-show="$store.view.state === 'posts'" class="bg" style="position:absolute; width:100%; height:100%; z-index:1;">posts</div>
-        <div x-show="$store.view.state === 'chat'" class="bg" style="position:absolute; width:100%; height:100%; z-index:2;">chat</div>
+        </div>
+        <div x-show="$store.view.state === 'chat'" class="bg" style="position:absolute; width:100%; height:100%; z-index:3;">
+            {{ template "view_chat.html" . }}
+
+        </div>
     </div>
 
     <!-- bottom navigation bar -->
     <div x-data style="width:100%; padding:0; font-size:1.2rem; z-index:5; position:fixed; bottom:1rem;">
-        <div class="bd bg-overlay pad-05" style="transform:translate(-50%); margin-left:50%; width:20rem; display:flex; flex-direction:row; justify-content:center;">
+        <div class="shadow bd bg-overlay pad-05" style="transform:translate(-50%); margin-left:50%; width:20rem; display:flex; flex-direction:row; justify-content:center;">
             
             <!-- arrow left -->
             <span style="width:1.6rem; margin-right:0.5rem;"
@@ -53,14 +50,10 @@
 
             <!-- course / menu -->
             <span title="Course View and Menu"
-            @click="viewMain()"
+            @click="viewCourse()"
             style="margin-right:auto;"
             class="hoverable pad-05 bd"
-            :class="$store.view.state === 'main' ? 'hovered' : '' ">
-                <!--
-                    <i class="fa-solid fa-align-left"></i>
-                    <i class="fa-solid fa-bars"></i>
-                -->
+            :class="$store.view.state === 'course' ? 'hovered' : '' ">
                 <i class="fa-solid fa-book-open"></i>
             </span>
 
