@@ -41,12 +41,14 @@
 }
 
 [markdown2] > pre > code {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
 }
 
 [markdown2] > pre > code > span {
+    -webkit-text-size-adjust: none;
     width:max-content;
     padding-right:2rem;
 }
@@ -82,42 +84,49 @@
 }
 
 [markdown2] > pre > code > span {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
 }
 
 [markdown2] > pre > code > span > span {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
 }
 
 [markdown2] > pre > code > span > span > span {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
 }
 
 [markdown2] > pre > code > span > span > span > span {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
 }
 
 [markdown2] > pre > code > span > span > span > span > span  {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
 }
 
 [markdown2] > pre > code > span > span > span > span > span > span {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
 }
 
 [markdown2] > pre > code > span > span > span > span > span > span > span {
+    -webkit-text-size-adjust: none;
     line-height: var(--markdown2-code-line-height);
     font-size: var(--markdown2-code-font-size);
 	font-family: var( --markdown2-code-font-family);
