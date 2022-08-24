@@ -159,6 +159,19 @@ func TryUserPassword(username string, password string) (*User, bool) {
 
 // check if the user is the owner or if the user has purchased the course
 func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
+	course := Course{}
+	err1 := gormDB.Model(&Course{}).Where("id = ?", version.CourseID).First(&course).Error
+	if err1 != nil {
+		return false
+	}
+
+	// FIRST check if it is the author...
+	// if they are the owner of the course
+	if userID == course.UserID {
+		return true
+	}
+
+	// THEN if not author... check if they own the course
 	var count int64 = 0
 	err := gormDB.Model(&Ownership{}).Where("user_id = ?", userID).Where("release_id = ?", version.ReleaseID).Count(&count).Error
 
@@ -170,17 +183,6 @@ func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
 	// if nothing exists
 	if count == 0 {
 		return false
-	}
-
-	course := Course{}
-	err1 := gormDB.Model(&Course{}).Where("id = ?", version.CourseID).First(&course).Error
-	if err1 != nil {
-		return false
-	}
-
-	// if they are the owner of the course
-	if userID == course.UserID {
-		return true
 	}
 
 	return true
