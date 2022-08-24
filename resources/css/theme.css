@@ -7,8 +7,14 @@
 	--c-bg: rgb(240, 240, 240);
 	--c-text: rgb(34, 34, 34);
 	--c-bold: rgb(0, 0, 0); /* for text that needs to stand out */
+
+    /*
 	--c-code: rgb(255, 33, 133);
-	--c-code-darker: rgb(227, 0, 102);
+	--c-code-darker: rgb(202, 0, 91);
+    */
+
+    --c-code: hsl(206, 100%, 56%);
+    --c-code-darker: hsl(206, 100%, 45%);
 	--c-shadow: rgb(198, 198, 198);
 }
 

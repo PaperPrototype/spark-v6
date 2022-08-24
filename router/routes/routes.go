@@ -29,6 +29,9 @@ func AddRoutes(router *gin.Engine) {
 	// landing page
 	router.GET("/", getLanding) // index
 
+	// landing page
+	router.GET("/view", getView) // index
+
 	// course landing pages
 	router.GET("/:username/:course", getCourse)                    // course page, gives newest release
 	router.GET("/:username/:course/:releaseNum", getCourseRelease) // course page, gives specific release

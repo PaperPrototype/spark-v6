@@ -877,3 +877,16 @@ func getLost(c *gin.Context) {
 		},
 	)
 }
+
+func getView(c *gin.Context) {
+	c.HTML(
+		http.StatusOK,
+		"view.html",
+		gin.H{
+			"Messages": msg.GetMessages(c),
+			"User":     auth.GetLoggedInUserLogError(c),
+			"LoggedIn": auth.IsLoggedInValid(c),
+			"Meta":     metaDefault,
+		},
+	)
+}

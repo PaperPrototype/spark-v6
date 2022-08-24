@@ -4,15 +4,26 @@
 -->
 <script defer>
 document.addEventListener("alpine:init", function(event) {
-    {{ if ne .Post.Markdown "" }}
-        Alpine.store("post", {
-            visible: true,
-            state: 'view', // 'new' 'edit'
-            commentsVisible: false,
-            postID: {{ .Post.ID }},
-            newestCommentDate: "",
-            params: {},
-        });
+    {{ if .Post }}
+        {{ if ne .Post.Markdown "" }}
+            Alpine.store("post", {
+                visible: true,
+                state: 'view', // 'new' 'edit'
+                commentsVisible: false,
+                postID: {{ .Post.ID }},
+                newestCommentDate: "",
+                params: {},
+            });
+        {{ else }}
+            Alpine.store("post", {
+                visible: false,
+                state: 'view', // 'new' 'edit'
+                commentsVisible: false,
+                postID: 0,
+                newestCommentDate: "",
+                params: {},
+            });
+        {{ end }}
     {{ else }}
         Alpine.store("post", {
             visible: false,
@@ -24,8 +35,7 @@ document.addEventListener("alpine:init", function(event) {
         });
     {{ end }}
 
-	// const params = new URLSearchParams(window.location.search)
-
+	//const params = new URLSearchParams(window.location.search)
 	// if (params.has("post_id"))
 	// {
 	// 	loadPost(params.get("post_id"));

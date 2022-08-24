@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 });
 
+
 function toggleTheme() {
 	let theme = document.getElementById("theme");
 	let themeText = document.getElementById("themeToggleText");
@@ -31,7 +32,7 @@ function toggleTheme() {
 			localStorage.setItem("sparker/theme", "gamer");
 
 			console.log("theme:gamer")
-			themeText.innerText = "Theme: Gamer Mode";
+			themeText.innerText = "Gamer Mode";
 		} else {
 			// set to auto
 			theme.classList.add("theme");
@@ -41,7 +42,7 @@ function toggleTheme() {
 			localStorage.setItem("sparker/theme", "auto");
 
 			console.log("theme:auto")
-			themeText.innerText = "Theme: Auto";
+			themeText.innerText = "Auto";
 		}
 	} else {
 		console.log("saved theme was not empty");
@@ -54,7 +55,7 @@ function toggleTheme() {
 			localStorage.setItem("sparker/theme", "gamer");
 
 			console.log("theme:gamer")
-			themeText.innerText = "Theme: Gamer Mode";
+			themeText.innerText = "Gamer Mode";
 		} else {
 			// set to auto
 			theme.classList.remove("theme-gamer");
@@ -64,7 +65,7 @@ function toggleTheme() {
 			localStorage.setItem("sparker/theme", "auto");
 
 			console.log("theme:auto")
-			themeText.innerText = "Theme: Auto";
+			themeText.innerText = "Auto";
 		}
 	}
 }
@@ -93,7 +94,7 @@ function setToSavedTheme() {
 			localStorage.setItem("sparker/theme", "auto");
 
 			console.log("theme:auto")
-			themeText.innerText = "Theme: Auto";
+			themeText.innerText = "Auto";
 		} else {
 			// set to gamer
 			theme.classList.remove("theme");
@@ -103,7 +104,7 @@ function setToSavedTheme() {
 			localStorage.setItem("sparker/theme", "gamer");
 
 			console.log("theme:gamer")
-			themeText.innerText = "Theme: Gamer Mode";
+			themeText.innerText = "Gamer Mode";
 		}
 	} else {
 		console.log("theme not set");
