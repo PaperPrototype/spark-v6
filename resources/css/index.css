@@ -10,7 +10,11 @@
 }
 
 .shadow {
-	box-shadow: 0rem 0rem 1.5rem var(--c-shadow);
+	box-shadow: 0rem 0rem 1rem var(--c-shadow);
+}
+
+.text-shadow {
+	text-shadow: 0px 0px 10px var(--c-shadow);
 }
 
 .hide-focus:focus {
@@ -55,6 +59,16 @@
 
 .bd {
 	border-radius: 0.5rem;
+}
+
+.bd-left {
+	border-bottom-left-radius: 0.5rem;
+	border-top-left-radius: 0.5rem;
+}
+
+.bd-right {
+	border-bottom-right-radius: 0.5rem;
+	border-top-right-radius: 0.5rem;
 }
 
 .bd-none {

@@ -15,7 +15,7 @@
 
     --c-code: hsl(206, 100%, 56%);
     --c-code-darker: hsl(206, 100%, 45%);
-	--c-shadow: rgba(198, 198, 198, 0.5);
+	--c-shadow: rgba(198, 198, 198);
 }
 
 .nav-logo {
@@ -33,7 +33,7 @@
 		--c-bg: rgb(0, 0, 0);
 		--c-text: rgb(228, 228, 228);
 		--c-bold: rgb(255, 255, 255); /* for text that needs to stand out */
-		--c-shadow: rgb(0, 0, 0, 0.5);
+		--c-shadow: rgb(0, 0, 0);
 
 		--c-code: hsl(206, 100%, 56%);
 		--c-code-darker: hsl(206, 100%, 45%);
@@ -57,7 +57,7 @@
 	--c-bg: rgb(9, 8, 13);
 	--c-text: rgb(228, 228, 228);
 	--c-bold: rgb(255, 255, 255); /* for text that needs to stand out */
-	--c-shadow: rgb(0, 0, 0, 0.5);
+	--c-shadow: rgb(0, 0, 0);
 
 	--c-code: rgb(255, 0, 55); /* hsl(206, 100%, 56%); */
 	--c-code-darker: rgb(229, 10, 58);;
