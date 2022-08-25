@@ -16,55 +16,66 @@
     }
 </script>
 
-<!-- course menu with contents -->
+<!-- course menu with sections -->
 <div x-data x-cloak x-show="$store.course.menuOpen && $store.view.state === 'course'" class="bg" style="position:fixed; top:0; bottom:0; left:0; right:0; z-index:2;">
     <div class="scale-container">
         <div class="scale-item" style="display:flex; flex-direction:row; padding-top:0.5rem; padding-bottom:0.5rem;">
+            <!-- second progress bar-->
+            <span style="width:100%; padding-top:0.5rem; padding-right:0.5rem;">
+                <div class="bd" style="background-color:white; height:calc(1rem); width:100%; margin-top:0.15rem;">
+                    <div class="bd bg-code" style="height:100%; width:50%;"></div>
+                </div>
+            </span>
+            <!-- close button -->
             <span @click="closeMenu()" class="pad-05 hoverable bd" style="margin-left:auto; width:2.25rem; padding-left:0.8rem;">
                 <i class="fa-solid fa-xmark"></i>
             </span>
         </div>
         <div class="scale-item">
-            <div style="display:flex;" class="pad-05">
-                <span>00 - Welcome</span>
-                <i style="margin-left:auto;" class="fa-solid fa-check"></i>
+            <div style="display:flex;">
+                <span class="pad-05 hoverable-code bd" style="width:100%; margin-right:0.5rem;">00 - Welcome</span>
+                <i style="margin-left:auto; width:2.25rem;" class="fa-solid fa-check pad-05 hoverable-code bd"></i>
             </div>
-            <div style="display:flex;" class="pad-05">
-                <span>01 - Meshes</span>
-                <i style="margin-left:auto;" class="fa-solid fa-check"></i>
+            <div style="display:flex;">
+                <span class="pad-05 hoverable-code bd" style="width:100%; margin-right:0.5rem;">01 - Meshes</span>
+                <i style="margin-left:auto; width:2.25rem;" class="fa-solid fa-check pad-05 hoverable-code bd"></i>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-.background-blurred-image {
-    content: "";
-    margin-left:50%;
-    width:150%;
-    background-size: cover;
-    transform:translate(-50%, 0);
-    filter:blur(1px);
-    opacity:0.5;
-}
-</style>
-
-<div style="overflow:hidden; height:15rem;">
-    <div style="position:absolute; top:0; width:100%; z-index:1;">
+<!-- background image-->
+<div style="
+background-image: url('/resources/images/planet.png');
+width:200%;
+margin-left:50%;
+transform: translate(-50%);
+background-size: cover;">
+    <!-- trickery to remove extra width added to background-image element -->
+    <div style="width:50%; margin-left:50%; transform: translate(-50%);">
         <div class="scale-container">
+            <!-- title and version -->
             <div class="scale-item pad-top-2rem"> 
-                <h1 class="text-shadow">Course Name</h1>
-                <span>v1.1.1</span>
-                <span style class="bg-code bd pad-05">preview</span>
+                <h1 class="text-shadow">Course Name Course Name</h1>
+                <div class="pad-05">
+                    <strong class="text-shadow">v1.1.1</strong>
+                    <span style class="bg-code bd pad-05">preview</span>
+                </div>
             </div>
-            <div class="scale-item pad-top-2rem" style="display:flex;"> 
-                <div style="margin-left:auto;" class="pad-05 bd hoverable-bg-overlay">
-                    <i class="fa-solid fa-gear"></i>
+            <!-- progress bar and gear wheel -->
+            <div class="scale-item" style="display:flex; padding-top:1rem; padding-bottom:1rem;">
+                <div style="width:100%; padding-top:1rem;">
+                    <div class="bd" style="background-color:white; height:calc(1rem); width:100%; margin-top:0.15rem;">
+                        <div class="bd bg-code" style="height:100%; width:50%;"></div>
+                    </div>
+                </div>
+                <div style="padding-top:0.5rem;padding-left:0.5rem;">
+                    <div style="margin-left:auto;" class="pad-05 bd hoverable-bg-overlay">
+                        <i class="fa-solid fa-gear text-shadow"></i>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="background-blurred-image" style="z-index:-1; height:15rem; background-image: url('/resources/images/planet.png');">
     </div>
 </div>
 

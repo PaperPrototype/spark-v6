@@ -31,6 +31,14 @@
     cursor: pointer;
 }
 
+.hoverable-code {
+    cursor: pointer;
+}
+.hoverable-code:hover {
+	color:var(--c-white) !important;
+	background-color: var(--c-code);
+}
+
 .hoverable-bg-code {
 	background-color: var(--c-code-darker);
 	color:var(--c-white) !important;
