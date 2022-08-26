@@ -44,34 +44,36 @@
     </div>
 </div>
 
-<!-- background image-->
-<div style="
-background-image: url('/resources/images/planet.png');
-width:200%;
-margin-left:50%;
-transform: translate(-50%);
-background-size: cover;">
-    <!-- trickery to remove extra width added to background-image element -->
-    <div style="width:50%; margin-left:50%; transform: translate(-50%);">
-        <div class="scale-container">
-            <!-- title and version -->
-            <div class="scale-item pad-top-2rem"> 
-                <h1 class="text-shadow">Course Name Course Name</h1>
-                <div class="pad-05">
-                    <strong class="text-shadow">v1.1.1</strong>
-                    <span style class="bg-code bd pad-05">preview</span>
-                </div>
-            </div>
-            <!-- progress bar and gear wheel -->
-            <div class="scale-item" style="display:flex; padding-top:1rem; padding-bottom:1rem;">
-                <div style="width:100%; padding-top:1rem;">
-                    <div class="bd" style="background-color:white; height:calc(1rem); width:100%; margin-top:0.15rem;">
-                        <div class="bd bg-code" style="height:100%; width:50%;"></div>
+<div style="overflow:hidden;">
+    <!-- background image-->
+    <div style="
+    background-image:url('/resources/images/planet.png');
+    width:200%;
+    margin-left:50%;
+    transform:translate(-50%);
+    background-size:cover;">
+        <!-- trickery to remove extra width added to background-image element -->
+        <div style="width:50%; margin-left:50%; transform: translate(-50%);">
+            <div class="scale-container">
+                <!-- title and version -->
+                <div class="scale-item pad-top-2rem"> 
+                    <h1 class="text-shadow">Course Name Course Name</h1>
+                    <div class="pad-05">
+                        <strong class="text-shadow">v1.1.1</strong>
+                        <span style class="bg-code bd pad-05">preview</span>
                     </div>
                 </div>
-                <div style="padding-top:0.5rem;padding-left:0.5rem;">
-                    <div style="margin-left:auto;" class="pad-05 bd hoverable-bg-overlay">
-                        <i class="fa-solid fa-gear text-shadow"></i>
+                <!-- progress bar and gear wheel -->
+                <div class="scale-item" style="display:flex; padding-top:1rem; padding-bottom:1rem;">
+                    <div style="width:100%; padding-top:1rem;">
+                        <div class="bd" style="background-color:white; height:calc(1rem); width:100%; margin-top:0.15rem;">
+                            <div class="bd bg-code" style="height:100%; width:50%;"></div>
+                        </div>
+                    </div>
+                    <div style="padding-top:0.5rem;padding-left:0.5rem;">
+                        <div style="margin-left:auto;" class="pad-05 bd hoverable-bg-overlay">
+                            <i class="fa-solid fa-gear text-shadow"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,6 +110,15 @@ background-size: cover;">
         <p>Which will give the following:</p>
         <p><img src="https://pbs.twimg.com/media/FT0AuTZWAAEgQHU?format=jpg&amp;name=medium" alt=""></p>
         <p>Alrighty! Now go click that "New Showcase Post" button!</p>
+
+        <pre><code>
+Look at current item
+If current item is baseball
+    give baseball
+Else if current item not baseball
+    go to next item
+    start over
+        </code></pre>
     
         <h1 id="voxel-mesh" style="cursor: pointer;">Voxel Mesh</h1>
         <p>Why go through all the trouble of making a single Quad?!</p>

@@ -2,7 +2,6 @@
     padding-left:5%;
     padding-right:5%;
 	width: 100%;
-	word-wrap: break-word;
 }
 
 [markdown2] > p > img {
@@ -46,11 +45,16 @@
 }
 
 [markdown2] > pre > code {
-	font-family: var( --markdown2-code-font-family);
+	font-family: var(--markdown2-code-font-family);
+    line-height: 1.25rem;
 }
 
 [markdown2] > pre > code > span {
     padding-right:2rem;
+}
+
+[markdown2] > pre > code span {
+    line-height: var(--markdown2-code-line-height);
 }
 
 /* when width larger than 800px */
