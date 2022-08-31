@@ -1,9 +1,5 @@
 {{ template "_header.html" . }}
 
-<div style="background-color:var(--c-code); color:white; font-size:0.8rem; padding:0.5rem; z-index:-1000000000000000;">
-	The site is in test mode. All purchases are fake. Do not give your real card information, or personal information when paying. Use a fake name and the card number 4242 4242 4242 4242, and any future valid card date. Everything else can be random fake information. There may be "use test info" buttons. Make sure to click those when available as they will auto fill test information for you.
-</div>
-
 <div class="pad-sides-5 pad-top-2rem pad-bot-2rem">
     <div style="display:flex;">
         {{ if .Release.GetNewestVersionLogError.Preview }}
@@ -34,6 +30,6 @@
 	{{ end }}
 
     {{ if .Release.GetNewestVersionLogError.Preview }}
-        <p>The newest version of this course is still in preview so some things may not be complete.</p>
+        <p>This course is in preview. Some things may not be complete. Expect breaking changes.</p>
     {{ end }}
 </div>
