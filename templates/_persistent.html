@@ -7,7 +7,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 	{{ if not .LoggedIn }}
 		<img href="/" class="nav-logo" style="height:2.2rem; display: inline-block; position: relative;">
 		<li>
-			<a href="/" style="font-size:1.2rem; font-weight:600;">
+			<a href="/" style="font-size:1.2rem; font-weight:600; color:var(--c-bold);">
 				Sparker
 			</a>
 		</li>
@@ -19,16 +19,16 @@ TODO add DM's (Direct Messages) to top nav bar -->
 			</form>
 		</li>
 		<li style="margin-left:auto;">
-			<a class="hoverable" href="/login">login</a>
+			<a class="hoverable" style="color:var(--c-bold);" href="/login">login</a>
 		</li>
 		<li>
-			<a class="hoverable" href="/signup">signup</a>
+			<a class="hoverable" style="color:var(--c-bold);" href="/signup">signup</a>
 		</li>
 	{{ else }}
 		<!-- Logged in -->
 		<img href="/" class="nav-logo" style="height:2.2rem; display: inline-block; position: relative;">
 		<li>
-			<a href="/" style="font-size:1.2rem; font-weight:600;">
+			<a href="/" style="font-size:1.2rem; font-weight:600; color:var(--c-bold);">
 				Sparker
 			</a>
 		</li>
@@ -48,7 +48,7 @@ TODO add DM's (Direct Messages) to top nav bar -->
 			</a>
 		</li>
 		<li>
-			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto;" href="/{{ .User.Username }}"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
+			<a class="hoverable" style="padding-bottom:0.5rem; margin-bottom:auto; color:var(--c-bold);" href="/{{ .User.Username }}"><i class="fa-solid fa-at"></i>{{ .User.Username }}</a>
 		</li>
 	{{ end }}
 	<li x-data @click="$store.nav.show = ! $store.nav.show">

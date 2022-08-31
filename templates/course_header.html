@@ -21,7 +21,7 @@
 	white-space: -moz-pre-wrap;
 	white-space: -pre-wrap;
 	white-space: -o-pre-wrap;
-	word-wrap: break-word;">{{ .Course.Subtitle }}</pre>
+	word-wrap: break-word;" class="c-bold text-shadow">{{ .Course.Subtitle }}</pre>
 	{{ template "course_buyOrOpenButton.html" . }}
 	{{ if eq .Course.UserID .User.ID }}
 		<div style="text-align:right;">
@@ -30,6 +30,6 @@
 	{{ end }}
 
     {{ if .Release.GetNewestVersionLogError.Preview }}
-        <p>This course is in preview. Some things may not be complete. Expect breaking changes.</p>
+        <p class="text-shadow c-bold">This course is in preview. Some things may not be complete. Expect breaking changes.</p>
     {{ end }}
 </div>
