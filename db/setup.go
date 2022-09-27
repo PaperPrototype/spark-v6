@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var gormDB *gorm.DB
+var GormDB *gorm.DB
 
 func Setup() {
 	url := helpers.GetDatabaseURL()
@@ -16,7 +16,7 @@ func Setup() {
 		panic(err)
 	}
 
-	gormDB = db
+	GormDB = db
 
 	migrate()
 }

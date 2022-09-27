@@ -1,0 +1,43 @@
+.theme {
+    background-color: black;
+    --thm-bg: rgb(18, 18, 19);
+    --thm-bg-a: rgba(0,0,0,0.8);
+    --thm-hl:rgb(0, 136, 255);
+
+    --thm-hl-a: rgb(0, 136, 255, 0.5);
+    --thm-text-less:rgb(207, 207, 207);
+    --thm-overlay:rgb(37, 39, 44);
+    --thm-over-selected: hsl(217, 10%, 25%);
+    --thm-over-hover: hsl(217, 10%, 20%);
+}
+
+.thm-bg {
+    background-color: var(--thm-bg);
+    color:white;
+}
+
+.thm-c-less {
+    color: var(--thm-text-less);
+}
+
+.thm-c-less-hover:hover {
+    color:white;
+}
+
+.thm-over-selected {
+    background-color: var(--thm-over-selected);
+}
+
+.thm-over-hover {
+    background-color: var(--thm-over-hover);
+}
+
+.thm-overlay {
+    background-color: var(--thm-overlay);
+    color:white !important;
+}
+
+.thm-bg-hl {
+    background-color: var(--thm-hl);
+    color:white !important;
+}

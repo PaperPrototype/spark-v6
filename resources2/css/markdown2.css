@@ -1,0 +1,125 @@
+[markdown2] > p {
+    padding-left:2rem;
+    padding-right:2rem;
+	width: 100%;
+}
+
+[markdown2] > blockquote {
+    border-left: 0.25rem solid var(--thm-hl);
+    margin-left:2rem;
+    margin-right:2rem;
+	width: 100%;
+    background-color: var(--thm-hl-a);
+}
+
+[markdown2] > blockquote > p {
+    padding-top:0.5rem;
+    padding-bottom:0.5rem;
+    padding-left:1rem;
+}
+
+[markdown2] > p > img {
+	width: calc(100% + 6rem);
+    transform: translate(-3rem);
+	display: table;
+}
+
+[markdown2] h1, [markdown2] h2, [markdown2] h3, [markdown2] h4, [markdown2] h5, [markdown2] h6 {
+    padding-left:2rem;
+    padding-right:2rem;
+	color: var(--c-bold);
+}
+
+[markdown2] > p > iframe {
+	display: table;
+	width: calc(100% + 6rem);
+    transform: translate(-3rem);
+	height: auto;
+	aspect-ratio: 16 / 9;
+}
+
+:root {
+    --markdown2-code-font-family: 'Red Hat Mono', monospace !important;
+    --markdown2-code-font-size: 0.8rem;
+}
+
+[markdown2] > pre {
+    /* 
+    fix safari mobile from changing code font size randomly
+    https://css-tricks.com/your-css-reset-needs-text-size-adjust-probably/ 
+    */
+    display:block;
+    overflow-x: scroll;
+    padding:1rem;
+    margin-left:2rem;
+    margin-right:2rem;
+    max-width:100%;
+    background-color: var(--c-bg);
+    font-size: var(--markdown2-code-font-size);
+}
+
+[markdown2] > pre > code {
+	font-family: var(--markdown2-code-font-family);
+    line-height: 1.25rem;
+}
+/* 
+    when width larger than 800px
+    AKA when on desktop
+*/
+@media only screen and (min-width: 800px){
+	[markdown2] > p {
+        max-width: 800px;
+    }
+
+    [markdown2] > blockquote {
+        max-width: 800px;
+    }
+
+    [markdown2] > p > img {
+        width: 100%;
+        transform: translate(0);
+        max-width: 800px;
+    }
+
+    [markdown2] > p > iframe {
+        display: table;
+        width: 100%;
+        transform: translate(0);
+    }
+
+    [markdown2] h1, [markdown2] h2, [markdown2] h3, [markdown2] h4, [markdown2] h5, [markdown2] h6 {
+        max-width: 800px;
+    }
+
+    [markdown2] > pre {
+        max-width: calc(800px - 6rem);
+    }
+}
+
+[markdown2] > pre > code > span {
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span {
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span {
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span {
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span > span  {
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span > span > span {
+	font-family: var( --markdown2-code-font-family);
+}
+
+[markdown2] > pre > code > span > span > span > span > span > span > span {
+	font-family: var( --markdown2-code-font-family);
+}

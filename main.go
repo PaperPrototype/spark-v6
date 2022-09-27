@@ -6,22 +6,44 @@ import (
 	"main/mailer"
 	"main/payments"
 	"main/router"
+	"main/router2"
+	"os"
 )
 
 func main() {
-	// db connection pool used for course uploading
-	// and for performant db when ORM is too heavy
-	conn.Setup()
+	args := os.Args
 
-	mailer.Setup()
+	if len(args) > 1 {
+		// new router
 
-	payments.Setup()
+		// db connection pool used for course uploading
+		// and for performant db when ORM is too heavy
+		conn.Setup()
 
-	router.Setup()
+		mailer.Setup()
 
-	db.Setup()
+		payments.Setup()
 
-	router.Run()
+		db.Setup()
 
-	conn.Close()
+		router2.Run()
+
+		conn.Close()
+	} else {
+		// db connection pool used for course uploading
+		// and for performant db when ORM is too heavy
+		conn.Setup()
+
+		mailer.Setup()
+
+		payments.Setup()
+
+		router.Setup()
+
+		db.Setup()
+
+		router.Run()
+
+		conn.Close()
+	}
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html class="theme">
+	<head>
+		<title>{{ .Meta.Title }}</title>
+
+		<link rel="canonical" href="https://sparker3d.com">
+
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<meta name="title" content="{{ .Meta.Title }}">
+		<meta name="description" content="{{ .Meta.Desc }}">
+		<meta name="image" content="{{ .Meta.ImageURL }}">
+
+		<meta property="og:title" content="{{ .Meta.Title }}">
+		<meta property="og:type" content="{{ .Meta.Type }}" />
+		<meta property="og:description" content="{{ .Meta.Desc }}">
+		<meta property="og:image" content="{{ .Meta.ImageURL }}">
+		<meta property="og:url" content="{{ .Meta.URL }}">
+		<meta name="twitter:card" content="summary_large_image">
+				
+		<!-- load all Font Awesome styles -->
+		<link href="/resources2/fontawesome-free-6.1.0/css/all.css" rel="stylesheet">
+
+		<link rel="icon" href="/favicon.ico">
+
+		<!-- global styles sheets -->
+		<link href="/resources2/css/theme.css" rel="stylesheet">
+		<link href="/resources2/css/utils.css" rel="stylesheet">
+		<link href="/resources2/css/defaults.css" rel="stylesheet">
+
+		<!-- get font style for code blocks -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500&family=Red+Hat+Mono&display=swap" rel="stylesheet">
+
+        <!-- site wide simple messaging system -->
+        <script defer src="/resources2/scripts/msgs.js"></script>
+        <script defer src="/resources2/scripts/fetch2.js"></script>
+
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script defer async src="https://www.googletagmanager.com/gtag/js?id=G-RSWD23446W"></script>
+		<script defer>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-RSWD23446W');
+		</script>
+	</head>
+	<body>
+
+        <!-- messages -->
+        <div id="messages" style="position:fixed; bottom:0; left:0; right:0; height:fit-content; z-index:100;">
+            {{ range .Messages }}
+                <div x-data="{ open: true }" x-show="open" class="thm-bg-hl" style="padding:1rem;">
+                    <div style="display:flex; flex-direction:row;" @click="open = ! open">
+                        <span>{{ . }}</span> <i style="margin-left:auto;" class="fa-solid fa-xmark"></i>
+                    </div>
+                </div>
+            {{ end }}
+        </div>
+
+        <!-- main section of the page -->
+		<main>

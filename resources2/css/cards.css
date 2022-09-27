@@ -1,0 +1,40 @@
+.cards {
+    display:flex; 
+    justify-content: space-around;
+    flex-flow: row wrap;
+    align-items:center;
+    padding-left:1rem;
+}
+
+.card {
+    /* strategic margin so all items have same spacing between them */
+    margin-right:1rem;
+    margin-bottom:1rem;
+
+    /* card properties */
+    display: flex;
+    flex-direction: column;
+    height:30rem;
+    width:100%;
+    flex-grow:1;
+    background-color:var(--thm-overlay);
+    background-size: cover;
+    background-position: center;
+    border-radius: 0.25rem;
+}
+
+.card-content {
+    height:100%;
+    padding:1rem;
+    display:flex;
+    flex-direction: column;
+    background:linear-gradient(rgba(0,0,0,0), black);
+    border-radius: 0.25rem;
+}
+
+/* when width larger than 800px */
+@media only screen and (min-width: 800px){
+    .card {
+        width:30rem;
+    }
+}

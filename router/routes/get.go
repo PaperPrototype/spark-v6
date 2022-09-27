@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"main/db"
+	"main/githubapi"
 	"main/mailer"
 	"main/markdown"
 	"main/msg"
@@ -28,7 +29,7 @@ func getCourse(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("ERROR getting course:", err)
 		notFound(c)
@@ -81,7 +82,7 @@ func getCourse(c *gin.Context) {
 	release.Markdown = template.HTML(releaseMarkdowned.String())
 
 	ownsCourse := false
-	if user.OwnsCourseRelease(release.ID) {
+	if user.OwnsRelease(release.ID) {
 		ownsCourse = true
 	}
 
@@ -236,7 +237,7 @@ func getCourseSettings(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("ERROR getting course:", err)
 		notFound(c)
@@ -270,7 +271,7 @@ func getCourseVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
+	course, err1 := db.GetUserCoursePreload(username, courseName)
 	if err1 != nil {
 		log.Println("routes ERROR getting course from db:", err1)
 		notFound(c)
@@ -285,7 +286,7 @@ func getCourseVersion(c *gin.Context) {
 		return
 	}
 
-	release, err3 := db.GetAllRelease(version.ReleaseID)
+	release, err3 := db.GetAnyRelease(version.ReleaseID)
 	if err3 != nil {
 		log.Println("routes ERROR getting release from db:", err3)
 		msg.SendMessage(c, "That course release is not available.")
@@ -382,7 +383,7 @@ func getCourseRelease(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	releaseNum := c.Params.ByName("releaseNum")
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("ERROR getting course:", err)
 		notFound(c)
@@ -429,7 +430,7 @@ func getCourseRelease(c *gin.Context) {
 	release.Markdown = template.HTML(releaseMarkdowned.String())
 
 	ownsCourse := false
-	if user.OwnsCourseRelease(release.ID) {
+	if user.OwnsRelease(release.ID) {
 		ownsCourse = true
 	}
 
@@ -476,7 +477,7 @@ func getCourseVersionSection(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	course, err1 := db.GetUserCoursePreloadUser(username, courseName)
+	course, err1 := db.GetUserCoursePreload(username, courseName)
 	if err1 != nil {
 		log.Println("routes ERROR getting course from db:", err1)
 		notFound(c)
@@ -491,7 +492,7 @@ func getCourseVersionSection(c *gin.Context) {
 		return
 	}
 
-	release, err3 := db.GetAllRelease(version.ReleaseID)
+	release, err3 := db.GetAnyRelease(version.ReleaseID)
 	if err3 != nil {
 		log.Println("routes ERROR getting release from db:", err3)
 		msg.SendMessage(c, "That course release is not available.")
@@ -677,7 +678,7 @@ func getNameMedia(c *gin.Context) {
 			return
 		}
 
-		githubConnection, err4 := user.GetGithubConnection()
+		githubConnection, err4 := githubapi.GetGithubConnection(user)
 		if err4 != nil {
 			log.Println("routes/get ERROR getting authors github connection in getNameMedia", err4)
 			c.AbortWithStatus(http.StatusInternalServerError)
@@ -685,7 +686,7 @@ func getNameMedia(c *gin.Context) {
 		}
 
 		ctx := context.Background()
-		client := githubConnection.NewClient(ctx)
+		client := githubapi.NewClient(githubConnection, ctx)
 
 		githubUser, _, err5 := client.Users.Get(ctx, "")
 		if err5 != nil {
@@ -756,7 +757,7 @@ func getReleaseDelete(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	releaseID := c.Query("releaseID")
 
-	release, err := db.GetAllRelease(releaseID)
+	release, err := db.GetAnyRelease(releaseID)
 	if err != nil {
 		log.Println("routes/getReleaseDelete ERROR getting release:", err)
 	}

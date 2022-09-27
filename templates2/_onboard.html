@@ -1,0 +1,84 @@
+<!-- login and signup popover -->
+<script>
+    document.addEventListener("alpine:init", function(event) {
+        Alpine.store("onboard", {
+            open: false,
+            signup: true,
+            currentURL: "",
+        });
+
+        Alpine.store("onboard").currentURL = document.location;
+    });
+
+    function onboard_open() {
+        Alpine.store("onboard").open = true;
+    }
+
+    function onboard_close() {
+        Alpine.store("onboard").open = false;
+    }
+</script>
+
+<div x-data x-cloak x-show="$store.onboard.open" style="position:fixed; top:0; bottom:0; left:0; right:0; z-index:7; background-color:var(--thm-bg);
+background:linear-gradient(black, var(--thm-hl)); ">
+    <!-- top nav bar -->
+    <div style="position:fixed; top:0; left:0; right:0; height:2.5rem; background-color:var(--thm-bg-a); backdrop-filter: blur(10px);">
+        <img class="align-center-horizontal" style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
+
+        <div x-data @click="onboard_close()" style="position:fixed; top:0; right:0; height:2rem; width:100%; text-align: end;">
+            <i style="padding:0.5rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-xmark"></i>
+        </div>
+    </div>
+
+    <div style="height:20rem; padding-top:2rem;">
+        <div class="align-center-horizontal" style="text-align:center; width:20rem; max-width:100%; padding-top:4rem; font-size: 2.5rem;">
+            <h2 x-show="$store.onboard.signup">Signup for Sparker</h2>
+            <h2 x-show="!$store.onboard.signup">Login to Sparker</h2>
+        </div>
+    </div>
+
+    <div x-show="$store.onboard.open" x-transition>
+        <div style="width:20rem; max-width:100%; padding-top:5rem;" class="align-center-horizontal">
+            <!-- login form -->
+            <form action="/login" method="post" x-show="!$store.onboard.signup">
+                <input hidden x-bind:value="$store.onboard.currentURL" name="redirectURL" value="/">
+                <div>
+                    <input class="utls-bd" name="username" placeholder="email">
+                </div>
+                <div style="padding-top:0.5rem;">
+                    <input class="utls-bd" name="password" type="password" placeholder="password">
+                </div>
+                <div style="padding-top:2rem; display:flex; flex-direction: row;">
+                    <p>
+                        <a @click="$store.onboard.signup = true" style="text-decoration: underline;">signup instead?</a>
+                    </p>
+                    <button class="utls-bd" style="width:50%; margin-left:auto; background-color: var(--thm-hl);">
+                        <span style="color:white; font-size: 1rem;">Login</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- signup form -->
+            <form action="/signup" method="post" x-show="$store.onboard.signup">
+                <input hidden name="redirectURL" value="/">
+                <div>
+                    <input class="utls-bd" name="email" type="email" placeholder="email">
+                </div>
+                <div style="padding-top:0.5rem;">
+                    <input class="utls-bd" name="password" type="password" placeholder="password">
+                </div>
+                <div style="padding-top:0.5rem;">
+                    <input class="utls-bd" name="confirm" type="password" placeholder="confirm password" x-show="$store.onboard.signup">
+                </div>
+                <div style="padding-top:2rem; display:flex; flex-direction: row;">
+                    <p>
+                        <a @click="$store.onboard.signup = false" style="text-decoration: underline;">login instead?</a>
+                    </p>
+                    <button class="utls-bd" style="width:50%; margin-left:auto; background-color: var(--thm-hl);">
+                        <span style="color:white; font-size: 1rem;">Signup</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

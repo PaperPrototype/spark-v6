@@ -1,0 +1,296 @@
+<script defer>
+    document.addEventListener("alpine:init", function(event) {
+        Alpine.store("settings_sections", {
+            newSectionPopupOpen: false,
+            newSectionName: "",
+
+            startIsFree: false,
+            startName: "",
+            startDesc: "",
+            startNum: 0,
+
+            open: false,
+            isFree: false,
+            name: "",
+            desc: "",
+            id: 0,
+            num: 0,
+
+            // loaded on open
+            // if GithubEnabled (or release !+= null) then show message that says
+            // "GITHUB ENABLED. Select a markdown file from the repo"
+            release: null,
+            githubEnabled: false,
+            path: "",
+            tree: [],
+
+            startPath: "",
+        })
+    });
+
+    // open new sections menu
+    function settings_sectionsNewOpen() {
+        Alpine.store("settings_sections").newSectionPopupOpen = true;
+    }
+
+    function settings_sectionsNewClose() {
+        Alpine.store("settings_sections").newSectionPopupOpen = false;
+    }
+
+    // create a new section
+    function settings_sectionsNewSave() {
+        let releaseID = Alpine.store("course").releaseID;
+
+        let formData = new FormData();
+        formData.append("name", Alpine.store("settings_sections").newSectionName);
+
+        postFetch2("/v2/releases/"+releaseID+"/section", formData, function(json) {
+            if (json.Error !== "") {
+                return;
+            }
+
+            console.log("/v2/releases/:releaseID/section");
+            console.log(json);
+
+            let releaseID = Alpine.store("course").releaseID;
+            course_loadSections(releaseID);
+            Alpine.store("settings_sections").newSectionPopupOpen = false;
+            Alpine.store("settings_sections").newSectionName = "";
+        })
+    }
+
+    function settings_sectionsSaveGithubSection() {
+        if (Alpine.store("settings_sections").path === "") {
+            SendMessage("You must select a markdown file. Path cannot be empty.")
+            return;
+        }
+
+        let sectionID = Alpine.store("settings_sections").id;
+
+        let formData = new FormData();
+        formData.append("path", Alpine.store("settings_sections").path);
+
+        postFetch2("/v2/sections/"+sectionID+"/github", formData, function(json) {
+            if (json.Error !== "") {
+                return
+            }
+
+            settings_sectionsClose();
+
+            // reload the sections after applying a change
+            course_loadSections(Alpine.store("course").releaseID);
+        });
+    }
+
+    function settings_sectionsSaveSection() {
+        let sectionID = Alpine.store("settings_sections").id;
+
+        let formData = new FormData();
+        formData.append("name", Alpine.store("settings_sections").name);
+        formData.append("desc", Alpine.store("settings_sections").desc);
+        formData.append("num", Alpine.store("settings_sections").num);
+        formData.append("free", Alpine.store("settings_sections").isFree);
+
+        postFetch2("/v2/sections/"+sectionID, formData, function(json) {
+            if (json.Error !== "") {
+                return
+            }
+
+            settings_sectionsClose();
+
+            // reload the sections after applying a change
+            course_loadSections(Alpine.store("course").releaseID);
+        });
+    }
+
+    function settings_sectionsSave() {
+        if (Alpine.store("settings_sections").startName !== Alpine.store("settings_sections").name ||
+        Alpine.store("settings_sections").startDesc !== Alpine.store("settings_sections").desc ||
+        Alpine.store("settings_sections").startIsFree !== Alpine.store("settings_sections").isFree ||
+        Alpine.store("settings_sections").startNum !== Alpine.store("settings_sections").num) { 
+            settings_sectionsSaveSection() 
+        }
+
+        if (Alpine.store("settings_sections").path !== Alpine.store("settings_sections").startPath) 
+        { 
+            settings_sectionsSaveGithubSection() 
+        }
+    }
+
+    function settings_sectionsOpen() {
+        Alpine.store("settings_sections").open = true;
+    }
+
+    function settings_sectionsLoadGithubTree(releaseID) {
+        fetch2("/v2/releases/"+releaseID+"/github/tree", "GET", function(json) {
+            if (json.Error !== "") {
+                return;
+            }
+
+            console.log("/v2/releases/:releaseID/github/tree");
+            console.log(json);
+
+            Alpine.store("settings_sections").tree = json.Payload;
+        });
+    }
+
+    // load a section
+    function settings_sectionsLoad(sectionID) {
+        fetch2("/v2/sections/"+sectionID, "GET", function(json) {
+            if (json.Error != "") {
+                return;
+            }
+
+            console.log("/v2/sections/:sectionID");
+            console.log(json);
+
+            Alpine.store("settings_sections").id = json.Payload.ID;
+            Alpine.store("settings_sections").name = json.Payload.Name;
+            Alpine.store("settings_sections").desc = json.Payload.Description;
+            Alpine.store("settings_sections").num = json.Payload.Num;
+            Alpine.store("settings_sections").isFree = json.Payload.Free;
+
+            Alpine.store("settings_sections").startName = json.Payload.Name;
+            Alpine.store("settings_sections").startDesc = json.Payload.Description;
+            Alpine.store("settings_sections").startNum = json.Payload.Num;
+            Alpine.store("settings_sections").startIsFree = json.Payload.Free;
+
+            Alpine.store("settings_sections").path = json.Payload.GithubSection.Path;
+            Alpine.store("settings_sections").startPath = json.Payload.GithubSection.Path;
+
+            Alpine.store("settings_sections").release = course_getSelectedRelease();
+            let release = Alpine.store("settings_sections").release;
+
+            if (release !== null) {
+                Alpine.store("settings_sections").githubEnabled = release.GithubEnabled;
+            }
+
+            if (release !== null && release.GithubEnabled) {
+                settings_sectionsLoadGithubTree(release.ID);
+            }
+        });
+    }
+
+    function settings_sectionsClose() {
+        Alpine.store("settings_sections").open = false;
+    }
+
+    function settings_sectionsDelete() {
+        let id = Alpine.store("settings_sections").id;
+
+        fetch2("/v2/sections/"+id, "DELETE", function(json) {
+            if (json.Error !== "") {
+                return;
+            }
+
+            course_loadSections(Alpine.store("course").releaseID);
+            settings_sectionsClose();
+        });
+    }
+
+
+</script>
+
+<style>
+    .settings_sections_disabled {
+        opacity:0.5;
+    }
+</style>
+
+<div x-cloak x-data x-show="$store.settings_sections.newSectionPopupOpen"class="thm-bg-a" style="position:fixed; z-index:5; left:0; right:0; top:0; bottom:0; background-color:rgba(0,0,0,0.5);">
+    <div class="align-center-horizontal" style="width:40rem; max-width:100%; padding:1rem;">
+        <div class="thm-overlay utls-bd" style="padding:1rem;" 
+        x-transition x-show="$store.settings_sections.newSectionPopupOpen"
+        @click.outside="settings_sectionsNewClose()">
+            <div style="margin-top:2rem;">
+                <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">NEW SECTION</div>
+                <input x-model="$store.settings_sections.newSectionName" class="thm-bg utls-bd utls-bd-none" placeholder="Section Name" style="color:white; width:100%; padding:0.5rem;">
+            </div>
+    
+            <p style="color:grey;">Changes will be updated for other users once they reload the page.</p>
+
+            <div style="margin-top:1rem; display:flex; flex-direction:column;">
+                <button
+                @click="settings_sectionsNewSave()"
+                x-transition
+                :class="$store.settings_sections.newSectionName === '' ? 'settings_sections_disabled' : '' "
+                x-bind:disabled="$store.settings_sections.newSectionName === '' "
+                style="margin-left:auto; padding:1rem; font-size:16px;" 
+                class="utls-bd thm-bg-hl">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div x-data x-show="$store.settings_sections.open === true" class="thm-overlay" style=" z-index:4; position:fixed; top:0; left:0; right:0; bottom:0; overflow-y:scroll;">
+    <div style="display:flex; flex-direction:column; height:100vh; padding:1rem;">
+        <div style="display:flex;">
+            <i @click="settings_sectionsClose()" class="fa-solid fa-xmark" style="border-radius:100%; padding:0.5rem; padding-left:0.6rem; padding-right:0.6rem; margin-left:auto;"></i>
+        </div>
+    
+        <div style="margin-top:2rem;">
+            <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">SECTION NAME</div>
+            <input x-model="$store.settings_sections.name" class="thm-bg utls-bd utls-bd-none" placeholder="Section Name" style="color:white; width:100%; padding:0.5rem;">
+        </div>
+        
+        <div style="margin-top:2rem;">
+            <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">SECTION DESCRIPTION</div>
+            <textarea x-model="$store.settings_sections.desc" class="thm-bg utls-bd utls-bd-none" placeholder="Tell people what this section is about" style="color:white; max-width:100%; min-width:100%; padding:0.5rem; max-height:5rem; min-height:5rem;"></textarea>
+        </div>
+
+        <div style="margin-top:2rem;">
+            <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">SECTION NUM</div>
+            <div style="color:grey; padding-bottom:0.2rem; padding-left:0.2rem;">
+                What order to put the section in.
+            </div>
+            <input type="number" x-model="$store.settings_sections.num" class="thm-bg utls-bd utls-bd-none" min="0" style="color:white; width:100%; padding:0.5rem;">
+        </div>
+    
+        <div style="margin-top:2rem;">
+            <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">FREE SECTION</div>
+            <div style="color:grey; padding-bottom:0.2rem; padding-left:0.2rem;">
+                Allow anyone to preview this section for free, even if they are not logged in.
+            </div>
+            <input x-model="$store.settings_sections.isFree" type="checkbox" value="true" style="height:1rem; width:1rem;">
+        </div>
+
+        <div style="margin-top:2rem;" x-show="$store.settings_sections.release !== null || $store.settings_sections.githubEnabled">
+            <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">GITHUB ENABLED</div>
+            <div style="color:grey; padding-bottom:0.2rem; padding-left:0.2rem;">
+                Select a markdown file for this section.
+            </div>
+            <div>
+                <select x-model="$store.settings_sections.path" x-bind:disabled="$store.popups.loading" class="utls-bd utls-bd-none thm-bg" style="margin-bottom:0.5rem;">
+                    <option value="">---Select a Markdown file---</option>
+                    <template x-for="item in $store.settings_sections.tree" :key="item.path">
+                        <option x-text="item.path" x-bind:value="item.path" x-bind:selected="$store.settings_sections.path === item.path"></option>
+                    </template>
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-top:2rem;">
+            <button class="thm-bg-hl utls-bd" style="padding:0.5rem;" @click="settings_sectionsDelete()">
+                <i class="fa-solid fa-trash-can" style="color:white;"></i> Delete
+            </button>
+        </div>
+    
+        
+        <div style="margin-top:auto; display:flex; flex-direction:column; text-align: center;">
+            <button
+            @click="settings_sectionsSave()"
+            x-transition 
+            x-show="($store.settings_sections.startName !== $store.settings_sections.name ||
+            $store.settings_sections.startDesc !== $store.settings_sections.desc ||
+            $store.settings_sections.startIsFree !== $store.settings_sections.isFree ||
+            $store.settings_sections.startNum !== $store.settings_sections.num) ||
+            $store.settings_sections.path !== $store.settings_sections.startPath"
+            style="margin-left:auto; padding:1rem; font-size:16px;" 
+            class="utls-bd thm-bg-hl">Save Changes</button>
+        </div>
+
+        <p style="color:grey; text-align:center">
+            Changes will be updated for other users once they reload the page.
+        </p>
+    </div>
+</div>

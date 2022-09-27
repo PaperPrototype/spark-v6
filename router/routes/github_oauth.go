@@ -73,7 +73,7 @@ func getGithubConnectFinished(c *gin.Context) {
 	// we can ignore the error since middlewares.MustBeLoggedIn ensures no user can access this without being logged in
 	loggedInUser := auth.GetLoggedInUserLogError(c)
 	if loggedInUser.HasGithubConnection() {
-		err3 := loggedInUser.UpdateGithubConnection(token.AccessToken, token.TokenType)
+		err3 := githubapi.UpdateGithubConnection(loggedInUser, token.AccessToken, token.TokenType)
 		if err3 != nil {
 			log.Println("routes/github_oauth ERROR updating github connection:", err3)
 			msg.SendMessage(c, "Error updating github connection")
@@ -86,7 +86,7 @@ func getGithubConnectFinished(c *gin.Context) {
 		return
 	}
 
-	githubConnection := githubapi.GithubConnection{
+	githubConnection := db.GithubConnection{
 		UserID:      loggedInUser.ID,
 		AccessToken: token.AccessToken,
 		TokenType:   token.TokenType,

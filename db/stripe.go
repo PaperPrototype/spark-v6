@@ -8,7 +8,7 @@ package db
 import (
 	"log"
 
-	"github.com/stripe/stripe-go/v72/account"
+	"github.com/stripe/stripe-go/v73/account"
 )
 
 // if the account has finished onboarding
@@ -46,7 +46,7 @@ func (stripeConnection *StripeConnection) PayoutsEnabledLogError() bool {
 // using paging to load up to 20 purchases at a time
 func (course *Course) GetPurchasesLogError() []Purchase {
 	purchases := []Purchase{}
-	err := gormDB.Model(&Purchase{}).Where("course_id = ?", course.ID).Preload("User").Order("created_at DESC").Limit(20).Find(&purchases).Error
+	err := GormDB.Model(&Purchase{}).Where("course_id = ?", course.ID).Preload("User").Order("created_at DESC").Limit(20).Find(&purchases).Error
 	if err != nil {
 		log.Println("db/stripe.go ERROR getting purchases from GetPurchasesLogError:", err)
 	}
@@ -56,7 +56,7 @@ func (course *Course) GetPurchasesLogError() []Purchase {
 
 func (user *User) HasStripeConnection() bool {
 	var count int64 = 0
-	err := gormDB.Model(&StripeConnection{}).Where("user_id = ?", user.ID).Count(&count).Error
+	err := GormDB.Model(&StripeConnection{}).Where("user_id = ?", user.ID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -72,9 +72,9 @@ func (user *User) HasStripeConnection() bool {
 	return true
 }
 
-func (user *User) HasPurchasedRelease(releaseID uint64) bool {
+func (user *User) OwnsRelease(releaseID uint64) bool {
 	var count int64 = 0
-	err := gormDB.Model(&Purchase{}).Where("user_id = ?", user.ID).Where("release_id = ?", releaseID).Count(&count).Error
+	err := GormDB.Model(&Ownership{}).Where("user_id = ?", user.ID).Where("release_id = ?", releaseID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -91,6 +91,6 @@ func (user *User) HasPurchasedRelease(releaseID uint64) bool {
 
 func GetStripeConnection(userID interface{}) (*StripeConnection, error) {
 	stripeConnection := StripeConnection{}
-	err := gormDB.Model(&StripeConnection{}).Where("user_id = ?", userID).First(&stripeConnection).Error
+	err := GormDB.Model(&StripeConnection{}).Where("user_id = ?", userID).First(&stripeConnection).Error
 	return &stripeConnection, err
 }

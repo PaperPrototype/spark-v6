@@ -1,0 +1,36 @@
+<script>
+    document.addEventListener("alpine:init", function(event) {
+        Alpine.store("popups", {
+            popup: "", // "github_release", "github_sections"
+            loading: false,
+        })
+    });
+
+    function popups_LoadingOn() {
+        Alpine.store("popups").loading = true;
+    }
+
+    function popups_LoadingOff() {
+        Alpine.store("popups").loading = false;
+    }
+
+    function popups_popupClose() {
+        Alpine.store("popups").popup = "";
+        Alpine.store("popups").loading = false;
+    }
+</script>
+
+<!-- popup forms for settings -->
+<div x-data x-show="$store.popups.popup !== '' " style="position:fixed; z-index:5; left:0; right:0; top:0; bottom:0; background-color:rgba(0,0,0,0.5);">
+    <div class="align-center-horizontal" style="width:40rem; max-width:100%; padding:1rem;">
+        <div class="utls-bd thm-overlay" style="padding:1rem;">
+
+            <div style="display:flex; flex-direction:row;">
+                <!-- spinning loading -->
+                <i x-show="$store.popups.loading" class="fa-solid fa-spinner fa-spin-pulse"></i>
+
+                <i style="margin-left:auto;" @click="popups_popupClose()" class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+    </div>
+</div>

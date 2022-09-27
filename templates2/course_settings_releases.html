@@ -1,0 +1,348 @@
+<script>
+    document.addEventListener("alpine:init", function(event) {
+        Alpine.store("settings_releases", {
+            newReleasePopupOpen: false,
+            open: false,
+
+            // release info
+            id: 0,
+            num: 0,
+            price: "",
+            public: false,
+            postsNeededNum: 0,
+            githubEnabled: false,
+            imageURL: "",
+
+            // used to keep track if anythings changed
+            startPrice: "",
+            startPublic: false,
+            startPostsNeededNum: 0,
+            startGithubEnabled: false,
+            startImageURL: "",
+
+            // github release
+            repoID: "",
+            branch: "",
+            SHA: "",
+            repos: [],
+            branches: [],
+            commits: [],
+            startRepoID: 0,
+            startBranch: "",
+            startSHA: "",
+        });
+    });
+
+    // load a release
+    function settings_releasesLoad() {
+        let release = course_getSelectedRelease();
+
+        if (release == null) {
+            SendMessage("Release was null");
+            return;
+        }
+
+        Alpine.store("settings_releases").open = true;
+
+        Alpine.store("settings_releases").id = release.ID;
+        Alpine.store("settings_releases").num = release.Num;
+        Alpine.store("settings_releases").price = (release.Price / 100);
+        Alpine.store("settings_releases").public = release.Public;
+        Alpine.store("settings_releases").postsNeededNum = release.PostsNeededNum;
+        Alpine.store("settings_releases").githubEnabled = release.GithubEnabled;
+        Alpine.store("settings_releases").imageURL = release.ImageURL;
+
+        Alpine.store("settings_releases").startPrice = (release.Price / 100);
+        Alpine.store("settings_releases").startPublic = release.Public;
+        Alpine.store("settings_releases").startPostsNeededNum = release.PostsNeededNum;
+        Alpine.store("settings_releases").startGithubEnabled = release.GithubEnabled;
+        Alpine.store("settings_releases").startImageURL = release.ImageURL;
+
+        // github release
+        Alpine.store("settings_releases").repoID = release.GithubRelease.RepoID;
+        Alpine.store("settings_releases").branch = release.GithubRelease.Branch;
+        Alpine.store("settings_releases").SHA = release.GithubRelease.SHA;
+
+        Alpine.store("settings_releases").startRepoID = release.GithubRelease.RepoID;
+        Alpine.store("settings_releases").startBranch = release.GithubRelease.Branch;
+        Alpine.store("settings_releases").startSHA = release.GithubRelease.SHA;
+
+        settings_releasesGithub_loadRepos();
+
+        if (release.GithubRelease.Branch !== "") {
+            settings_releasesGithub_loadBranches();
+
+            if (release.GithubRelease.SHA !== "") {
+                settings_releasesGithub_loadCommits();
+            }
+        }
+    }
+
+    function settings_releasesGithub_loadRepos() {
+        fetch2("/v2/user/github/repos", "GET", function(json) {
+            if (json.Error !== "") {
+                return;
+            }
+
+            Alpine.store("settings_releases").repos = json.Payload;
+
+            console.log("/v2/user/github/repos");
+            // console.log(json);
+        });
+    }
+
+    function settings_releasesGithub_loadBranches() {
+        let repoID = Alpine.store("settings_releases").repoID;
+
+        fetch2("/v2/user/github/repo/"+repoID+"/branches", "GET", function(json) {
+            if (json.Error !== "") {
+                SendMessage("It's possible you don't have access to this repositories commits");
+                return;
+            }
+
+            Alpine.store("settings_releases").branches = json.Payload;
+
+            console.log("/v2/user/github/repo/:repoID/branches");
+            // console.log(json);
+        });
+    }
+
+    function settings_releasesGithub_loadCommits() {
+        let repoID = Alpine.store("settings_releases").repoID;
+        let branch = Alpine.store("settings_releases").branch;
+
+        fetch2("/v2/user/github/repo/"+repoID+"/branch/"+branch+"/commits", "GET", function(json) {
+            if (json.Error !== "") {
+                return;
+            }
+
+            Alpine.store("settings_releases").commits = json.Payload;
+
+            console.log("/v2/user/github/repo/:repoID/branch/:branch/commits");
+            // console.log(json);
+        });
+    }
+
+    function settings_releaseGithub_selectedNewRepository() {
+        console.log("selected new repository");
+
+        Alpine.store("settings_releases").branches = [];
+        Alpine.store("settings_releases").branch = "";
+        Alpine.store("settings_releases").commits = [];
+        Alpine.store("settings_releases").SHA = "";
+
+        settings_releasesGithub_loadBranches();
+    }
+        
+    function settings_releasesGithub_selectedNewBranch() {
+        console.log("selected new branch");
+
+        Alpine.store("settings_releases").commits = [];
+
+        settings_releasesGithub_loadCommits();
+    }
+
+
+    /* SAVE AND SELECT SECTIONS */
+    function settings_releasesGithub_save() {
+        let releaseID = Alpine.store("settings_releases").id;
+        let repoID = Alpine.store("settings_releases").repoID;
+        let branch = Alpine.store("settings_releases").branch;
+        let SHA = Alpine.store("settings_releases").SHA;
+
+        let formData = new FormData();
+        formData.append("releaseID", releaseID)
+        formData.append("repoID",  repoID);
+        formData.append("branch", branch);
+        formData.append("SHA",  SHA);
+
+        // we changed the github repo info so we need to update the sections
+        course_loadSections();
+
+        fetch("/v2/releases/"+releaseID+"/github", {
+            method: "POST",
+            body: formData,
+        })
+        .then(function(resp) {
+            if (!resp.ok) {
+
+                var json = resp.json();
+                if (json.Error !== "" && json.Error !== undefined)
+                {
+                    throw json.Error;
+                }
+
+                throw "Error getting response";
+            }
+
+            Alpine.store("settings_releases").startRepoID = repoID;
+            Alpine.store("settings_releases").startBranch = branch;
+            Alpine.store("settings_releases").startSHA = SHA;
+
+            return resp.json();
+        })
+        .then(function(json) {
+            if (json.Error !== "") {
+                SendMessage(json.Error);
+            }
+        })
+        .catch(function(err) {
+            SendMessage(err);
+            console.error(err);
+        });
+    }
+
+    function settings_releasesClose() {
+        Alpine.store("settings_releases").open = false;
+    }
+
+    function settings_releasesSave() {
+        let releaseID = Alpine.store("settings_releases").id;
+
+        let formData = new FormData();
+        formData.append("price", Alpine.store("settings_releases").price);
+        formData.append("public", Alpine.store("settings_releases").public);
+        formData.append("postsNeededNum", Alpine.store("settings_releases").postsNeededNum);
+        formData.append("githubEnabled", Alpine.store("settings_releases").githubEnabled);
+        formData.append("imageURL", Alpine.store("settings_releases").imageURL);
+
+        postFetch2("/v2/releases/"+releaseID, formData, function(json) {
+            if (json.Error) {
+                return;
+            }
+            
+            // TODO re-load releases
+            course_loadReleases();
+            settings_releasesClose();
+        });
+    }
+</script>
+
+<style>
+    .settings_releases_disabled {
+        opacity:0.5;
+    }
+</style>
+
+<div x-cloak x-ignore x-show="$store.settings_releases.newSectionPopupOpen" class="thm-bg-a" style="position:fixed; z-index:5; left:0; right:0; top:0; bottom:0; background-color:rgba(0,0,0,0.5); overflow-y:scroll;">
+    <div class="align-center-horizontal" style="width:40rem; max-width:100%; padding:1rem;">
+        <div class="thm-overlay utls-bd" style="padding:1rem;" 
+        x-transition x-show="$store.settings_releases.newSectionPopupOpen"
+        @click.outside="settings_releasesNewClose()">
+            <div style="margin-top:2rem;">
+                <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">NEW RELEASE</div>
+                <input x-model="" class="thm-bg utls-bd utls-bd-none" placeholder="Release Name" style="color:white; width:100%; padding:0.5rem;">
+            </div>
+    
+            <p style="color:grey;">Changes will be updated for other users once they reload the page.</p>
+
+            <div style="margin-top:1rem; display:flex; flex-direction:column;">
+                <button
+                @click=""
+                x-transition
+                style="margin-left:auto; padding:1rem; font-size:16px;" 
+                class="utls-bd thm-bg-hl">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div x-data x-show="$store.settings_releases.open === true" class="thm-overlay" style=" z-index:4; position:fixed; top:0; left:0; right:0; bottom:0; overflow-y:scroll;">
+    <div style="display:flex; flex-direction:column; height:100vh; padding:1rem;">
+        <div style="display:flex;">
+            <div x-text="'RELEASE V' + $store.settings_releases.num" class="thm-c-less" style="font-weight:600; font-size:1rem; padding:0.5rem;"></div>
+            <i @click="settings_releasesClose()" class="fa-solid fa-xmark" style="border-radius:100%; padding:0.5rem; padding-left:0.6rem; padding-right:0.6rem; margin-left:auto;"></i>
+        </div>
+
+        <div style="margin-top:2rem;">
+            <div class="thm-c-less" style="padding-bottom:0.5rem; font-weight:600; font-size:0.8rem;">PRICE USD</div>
+            <input x-model="$store.settings_releases.price" type="number" min="0" class="thm-bg utls-bd utls-bd-none" style="color:white; width:100%; padding:0.5rem;">
+        </div>
+
+        <div style="margin-top:2rem;">
+            <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">PUBLIC</div>
+            <div style="color:grey; padding-bottom:0.2rem; padding-left:0.2rem;">
+                Publish the release.
+            </div>
+            <input x-model="$store.settings_releases.public" type="checkbox" style="height:1rem; width:1rem;">
+        </div>
+
+        <div style="margin-top:2rem;">
+            <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">ENABLE GITHUB</div>
+            <div style="color:grey; padding-bottom:0.2rem; padding-left:0.2rem;">
+                Whether to host the course's contents using github or not.
+            </div>
+            <input x-model="$store.settings_releases.githubEnabled" type="checkbox" style="height:1rem; width:1rem;">
+        </div>
+
+        <div x-cloak x-show="$store.settings_releases.githubEnabled" style="margin-top:2rem;">
+            {{ if .User.HasGithubConnection }} 
+                <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">GITHUB REPOSITORY</div>
+                <div>
+                    <select x-on:change="settings_releaseGithub_selectedNewRepository()" x-model="$store.settings_releases.repoID" x-bind:disabled="$store.popups.loading" class="utls-bd utls-bd-none thm-bg" style="margin-bottom:0.5rem;">
+                        <option value="">---Select a Repository---</option>
+                        <template x-for="repo in $store.settings_releases.repos" :key="repo.id">
+                            <option x-text="repo.name" x-bind:value="repo.id" x-bind:selected="$store.settings_releases.repoID === repo.id"></option>
+                        </template>
+                    </select>
+                </div>
+                
+                <div>
+                    <select x-on:change="settings_releasesGithub_selectedNewBranch()" x-model="$store.settings_releases.branch" x-bind:disabled="$store.popups.loading" class="utls-bd utls-bd-none thm-bg" style="margin-bottom:0.5rem;">
+                        <option value="">---Select a Branch---</option>
+                        <template x-for="branch in $store.settings_releases.branches" :key="branch.name">
+                            <option x-text="branch.name" x-bind:value="branch.name" x-bind:selected="$store.settings_releases.branch === branch.name"></option>
+                        </template>
+                    </select>
+                </div>
+                
+                <div>
+                    <select x-model="$store.settings_releases.SHA" x-bind:disabled="$store.popups.loading" class="utls-bd utls-bd-none thm-bg" style="margin-bottom:0.5rem;">
+                        <option value="">---Select a Commit---</option>
+                        <template x-for="commit in $store.settings_releases.commits" :key="commit.sha">
+                            <option x-text="commit.commit.message" x-bind:value="commit.sha" x-bind:selected="$store.settings_releases.SHA === commit.sha"></option>
+                        </template>
+                    </select>
+                </div>
+            {{ else }}
+                <div>
+                    You must <a href="/settings">connect your account to github</a>
+                </div>
+            {{ end }}
+        </div>
+
+        <div style="margin-top:2rem;">
+            <button class="thm-bg-hl utls-bd" style="padding:0.5rem;" @click="settings_releasesDelete()">
+                <i class="fa-solid fa-trash-can" style="color:white;"></i> Delete
+            </button>
+        </div>
+
+        <div style="margin-top:auto; display:flex; flex-direction:column; text-align: center;">
+            <button
+            @click="settings_releasesSave()"
+            x-transition
+            x-show="
+            $store.settings_releases.startPrice !== $store.settings_releases.price || 
+            $store.settings_releases.public !== $store.settings_releases.startPublic ||
+            $store.settings_releases.githubEnabled !== $store.settings_releases.startGithubEnabled"
+            style="margin-left:auto; padding:1rem; font-size:16px;" 
+            class="utls-bd thm-bg-hl">SAVE CHANGES</button>
+        </div>
+
+        {{ if .User.HasGithubConnection }} 
+            <div style="margin-top:auto; display:flex; flex-direction:column; text-align: center;">
+                <button 
+                @click="settings_releasesGithub_save();"
+                x-transition
+                x-show="
+                $store.settings_releases.repoID !== $store.settings_releases.startRepoID || 
+                $store.settings_releases.branch !== $store.settings_releases.startBranch ||
+                $store.settings_releases.SHA    !== $store.settings_releases.startSHA"
+                style="margin-left:auto; padding:1rem; font-size:16px;"
+                class="utls-bd thm-bg-hl">SAVE CHANGES</button>
+            </div>
+        {{ end }}
+
+        <p style="color:grey; text-align:center;">Changes will be updated for other users once they reload the page.</p>
+    </div>
+</div>

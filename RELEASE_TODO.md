@@ -1,9 +1,8 @@
 TODO before going live:
-- Change stripe bank account to new personal bank account [DONE]
-- Stripe API key needs to be switched to the live key.
-- Remove the "this site is in test mode" message in course_header.html.
-- Create a new db, update DB_URL to new DB, and then delete the old db.
-    - WRONG: Reset db. There is test data in it that we should not mix with live data.
+- get webhook signing key
+    - set STRIPE_WEBHOOK env variable for payments webhook
+- get async payments working with the checkout flow [DONE]
+    - https://stripe.com/docs/payments/checkout/fulfill-orders#delayed-notification
  
 Features in order of importance:
 - Make new CourseOwned model

@@ -9,13 +9,13 @@ import (
 
 func UserCourseNameAvailable(username string, name string) (bool, error) {
 	user := User{}
-	err1 := gormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
+	err1 := GormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
 	if err1 != nil {
 		return false, err1
 	}
 
 	var count int64 = 0
-	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", name).Count(&count).Error
+	err := GormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", name).Count(&count).Error
 	// if err then taken
 	if err != nil {
 		return false, err
@@ -31,13 +31,13 @@ func UserCourseNameAvailable(username string, name string) (bool, error) {
 
 func UserCourseNameAvailableNotSelf(username string, name string, courseID interface{}) (bool, error) {
 	user := User{}
-	err1 := gormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
+	err1 := GormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
 	if err1 != nil {
 		return false, err1
 	}
 
 	var count int64 = 0
-	err := gormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", name).Where("id != ?", courseID).Count(&count).Error
+	err := GormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", name).Where("id != ?", courseID).Count(&count).Error
 
 	log.Println("checking if course name available not self.")
 
@@ -56,7 +56,7 @@ func UserCourseNameAvailableNotSelf(username string, name string, courseID inter
 
 func UsernameAvailable(username string) (bool, error) {
 	var count int64 = 0
-	err := gormDB.Model(&User{}).Where("username = ?", username).Count(&count).Error
+	err := GormDB.Model(&User{}).Where("username = ?", username).Count(&count).Error
 	// if err then taken
 	if err != nil {
 		log.Println("db/utils ERROR checking if username is available in UsernameAvailableLogError:", err)
@@ -73,7 +73,7 @@ func UsernameAvailable(username string) (bool, error) {
 
 func UsernameAvailableIgnoreError(username string) bool {
 	var count int64 = 0
-	err := gormDB.Model(&User{}).Where("username = ?", username).Count(&count).Error
+	err := GormDB.Model(&User{}).Where("username = ?", username).Count(&count).Error
 	// if err then taken
 	if err != nil {
 		log.Println("db/utils ERROR checking if username is available in UsernameAvailableLogError:", err)
@@ -90,7 +90,7 @@ func UsernameAvailableIgnoreError(username string) bool {
 
 func EmailAvailable(email string) (bool, error) {
 	var count int64 = 0
-	err := gormDB.Model(&User{}).Where("email = ?", email).Count(&count).Error
+	err := GormDB.Model(&User{}).Where("email = ?", email).Count(&count).Error
 	// if err then taken
 	if err != nil {
 		log.Println("db/utils ERROR checking if email is available in EmailAvailable:", err)
@@ -107,7 +107,7 @@ func EmailAvailable(email string) (bool, error) {
 
 func EmailAvailableIgnoreError(email string) bool {
 	var count int64 = 0
-	err := gormDB.Model(&User{}).Where("email = ?", email).Count(&count).Error
+	err := GormDB.Model(&User{}).Where("email = ?", email).Count(&count).Error
 	// if err then taken
 	if err != nil {
 		log.Println("db/utils ERROR checking if email is available in EmailAvailable:", err)
@@ -124,7 +124,7 @@ func EmailAvailableIgnoreError(email string) bool {
 
 func SessionExists(tokenUUID string) bool {
 	var count int64 = 0
-	err := gormDB.Model(&Session{}).Where("token_uuid = ?", tokenUUID).Count(&count).Error
+	err := GormDB.Model(&Session{}).Where("token_uuid = ?", tokenUUID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -142,7 +142,25 @@ func SessionExists(tokenUUID string) bool {
 // returns true if successfully entered password
 func TryUserPassword(username string, password string) (*User, bool) {
 	user := User{}
-	err := gormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
+	err := GormDB.Model(&User{}).Where("username = ?", username).First(&user).Error
+
+	// err == failed
+	if err != nil {
+		return &user, false
+	}
+
+	// returns error == failed
+	if bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(password)) != nil {
+		return &user, false
+	}
+
+	return &user, true
+}
+
+// returns true if successfully entered password
+func TryEmailPassword(email string, password string) (*User, bool) {
+	user := User{}
+	err := GormDB.Model(&User{}).Where("email = ?", email).First(&user).Error
 
 	// err == failed
 	if err != nil {
@@ -160,7 +178,7 @@ func TryUserPassword(username string, password string) (*User, bool) {
 // check if the user is the owner or if the user has purchased the course
 func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
 	course := Course{}
-	err1 := gormDB.Model(&Course{}).Where("id = ?", version.CourseID).First(&course).Error
+	err1 := GormDB.Model(&Course{}).Where("id = ?", version.CourseID).First(&course).Error
 	if err1 != nil {
 		return false
 	}
@@ -173,7 +191,7 @@ func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
 
 	// THEN if not author... check if they own the course
 	var count int64 = 0
-	err := gormDB.Model(&Ownership{}).Where("user_id = ?", userID).Where("release_id = ?", version.ReleaseID).Count(&count).Error
+	err := GormDB.Model(&Ownership{}).Where("user_id = ?", userID).Where("release_id = ?", version.ReleaseID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -190,7 +208,7 @@ func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
 
 func (release *Release) HasVersions() bool {
 	var count int64 = 0
-	err := gormDB.Model(&Version{}).Where("release_id = ?", release.ID).Count(&count).Error
+	err := GormDB.Model(&Version{}).Where("release_id = ?", release.ID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -208,7 +226,7 @@ func (release *Release) HasVersions() bool {
 
 func (release *Release) HasGithubRelease() bool {
 	var count int64 = 0
-	err := gormDB.Model(&GithubRelease{}).Where("release_id = ?", release.ID).Count(&count).Error
+	err := GormDB.Model(&GithubRelease{}).Where("release_id = ?", release.ID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -226,7 +244,7 @@ func (release *Release) HasGithubRelease() bool {
 
 func (version *Version) HasGithubVersion() bool {
 	var count int64 = 0
-	err := gormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).Count(&count).Error
+	err := GormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).Count(&count).Error
 
 	// if err then not valid
 	if err != nil {
@@ -244,7 +262,7 @@ func (version *Version) HasGithubVersion() bool {
 
 func CountPublicCourseReleasesLogError(courseID string) int64 {
 	var count int64 = 0
-	err := gormDB.Model(&Release{}).Where("course_id = ?", courseID).Where("public = ?", true).Count(&count).Error
+	err := GormDB.Model(&Release{}).Where("course_id = ?", courseID).Where("public = ?", true).Count(&count).Error
 	if err != nil {
 		log.Println("db/utils ERROR getting github release in HasGithubRelease:", err)
 	}
@@ -253,22 +271,22 @@ func CountPublicCourseReleasesLogError(courseID string) int64 {
 }
 
 func (version *Version) GetAuthorUser() (*User, error) {
-	userIDs := gormDB.Model(&Course{}).Select("user_id").Where("id = ?", version.CourseID)
+	userIDs := GormDB.Model(&Course{}).Select("user_id").Where("id = ?", version.CourseID)
 	user := User{}
-	err := gormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
+	err := GormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
 	return &user, err
 }
 
 func (release *Release) GetAuthorUser() (*User, error) {
-	userIDs := gormDB.Model(&Course{}).Select("user_id").Where("id = ?", release.CourseID)
+	userIDs := GormDB.Model(&Course{}).Select("user_id").Where("id = ?", release.CourseID)
 	user := User{}
-	err := gormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
+	err := GormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
 	return &user, err
 }
 
 func CountCourseReviewsLogError(courseID uint64) int64 {
 	var count int64
-	err := gormDB.Model(&PostToCourseReview{}).Where("course_id = ?", courseID).Count(&count).Error
+	err := GormDB.Model(&PostToCourseReview{}).Where("course_id = ?", courseID).Count(&count).Error
 	if err != nil {
 		log.Println("db/utils ERROR counting PostToCourseReviews in CountCourseReviewsLogError:", err)
 	}
@@ -277,7 +295,7 @@ func CountCourseReviewsLogError(courseID uint64) int64 {
 
 func CountUserReviewsLogError(userID uint64, courseID uint64) int64 {
 	var count int64
-	err := gormDB.Model(&PostToCourseReview{}).Where("course_id = ?", courseID).Where("user_id = ?", userID).Count(&count).Error
+	err := GormDB.Model(&PostToCourseReview{}).Where("course_id = ?", courseID).Where("user_id = ?", userID).Count(&count).Error
 	if err != nil {
 		log.Println("db/utils ERROR counting PostToCourseReviews in CountUserReviewsLogError:", err)
 	}

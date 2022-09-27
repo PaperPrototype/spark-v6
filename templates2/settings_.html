@@ -1,0 +1,126 @@
+{{ template "_header.html" . }}
+
+<!-- top nav bar -->
+<div style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:2; background-color:var(--thm-bg-a); backdrop-filter: blur(10px);">
+    <img class="align-center-horizontal" style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
+
+    <div x-data style="position:fixed; top:0; right:0; height:2rem; width:100%; display:flex;">
+        <a href="/" style="margin-right:auto;">
+            <i style="padding:0.7rem; font-size:1.25rem; padding-left:1rem;" class="fa-solid fa-angle-left"></i>
+        </a>
+    </div>
+</div>
+
+<!-- general settings -->
+<div style="padding:1rem;">
+	<form action="/settings/edit/user" method="post" style="margin-bottom:3rem;">
+		<h1>User</h1>
+		<label>Name</label>
+		<div>
+			<input name="name" style="padding:1rem" class="utls-bd thm-overlay" placeholder="Name" value="{{ .User.Name }}">
+		</div>
+		<label>Username</label>
+		<div>
+			<input name="username" style="padding:1rem" class="utls-bd thm-overlay" placeholder="Username" value="{{ .User.Username }}">
+		</div>
+		<label>Bio</label>
+		<div>
+			<textarea name="bio" class="utls-bd utls-bd-none thm-overlay" style="padding:1rem; min-width:100%; max-width:100%; min-height:20rem; color:black;" placeholder="Tell me about yourself...">{{ .User.Bio }}</textarea>
+		</div>
+		<div style="margin-top:1rem;">
+			<button type="submit" class="utls-bd thm-bg-hl" style="padding:1rem;width:max-content; border:none; color:white;" type="submit">Update Info</button>
+		</div>
+	</form>
+
+    <div x-data="{ open: false }">
+        <h1 @click="open = !open">Email <i class="fa-solid fa-angle-right"></i></h1>
+        <form x-show="open" action="/settings/edit/email" method="post">
+            <label>
+                Email
+            </label>
+            <div>
+                <input name="email" style="padding:1rem" class="utls-bd thm-overlay" placeholder="Email" value="{{ .User.Email }}">
+            </div>
+            {{ if not .User.Verified }}
+            <p>
+                <p class="c-grey"> <i class="fa-solid fa-triangle-exclamation"></i> <a href="/login/verify/new">Verify email</a> Your account has not been verified.</p>
+            </p>
+            {{ end }}
+            <div style="margin-top:1rem;">
+                <button type="submit" style="padding:1rem; color:white;" class="utls-bd thm-bg-hl">Update Email</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div style="margin-bottom:3rem; padding:1rem;">
+    {{ if not .User.Verified }}
+        <p class="c-grey">You must <a href="/login/verify/newettings">verify your email</a> before you can upload courses or accept payouts.</p>
+    {{ else }}
+
+        <!-- stripe -->
+        <div x-data="{ open: false }">
+            <h1 @click="open = !open">Stripe Connection <i class="fa-solid fa-angle-right"></i></h1>
+            <div x-show="open" class="pad-sides-5">
+                {{ if .User.HasStripeConnection }}
+                    <p>
+                        <a target="_blank" href="/settings/stripe/login">
+                            <button class="utls-bd thm-bg-hl" style="padding:0.5rem; width:max-content;">
+                                Stripe Dashboard <i class="fa-solid fa-up-right-from-square"></i>
+                            </button>
+                        </a>
+                        <p class="c-grey">View all your payments live in a dashboard built by stripe.</p>
+                    </p>
+                    {{ if .StripeConnection.DetailsSubmittedLogError }}
+                        <p>
+
+                            <a href="/settings/stripe/connect">
+                                <button class="utls-bd thm-bg-hl" style="padding:0.5rem; width:max-content;">
+                                    Update Stripe Info <i class="fa-solid fa-up-right-from-square"></i>
+                                </button>
+                            </a>
+                            <p class="c-grey">Stripe connected and all required details have been submitted <i class="fa-solid fa-check"></i>. Use this to update your stripe info if you need to.</p>
+                        </p>
+                    {{ else }}
+                        <p>
+                            <a href="/settings/stripe/connect">
+                                <button class="utls-bd thm-bg-hl" style="padding:0.5rem; width:max-content;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Finish submitting stripe info <i class="fa-solid fa-up-right-from-square"></i>
+                                </button>
+                            </a>
+                            <p>Oh no! You need to finish filling in your stripe info before you can accept any payments!</p>
+                        </p>
+                    {{ end }}
+                {{ else }}
+                    <a href="/settings/stripe/connect">
+                        <button class="utls-bd thm-bg-hl" style="padding:0.5rem; width:max-content;">
+                            Connect to Stripe Payouts <i class="fa-solid fa-up-right-from-square"></i>
+                        </button>
+                    </a>
+                    <p class="c-grey">We use stripe to handle payments and payouts. You must sign up with stripe before you can create a paid course and accept payments.</p>
+                {{ end }}
+            </div>
+        </div>
+
+        <!-- github -->
+        <div x-data="{ open: false }">
+            <h1 @click="open = ! open" style="margin-top:3rem;">Github Connection <i class="fa-solid fa-angle-right"></i></h1>
+            <div x-show="open" class="pad-sides-5">
+                {{ if not .User.HasGithubConnection }}
+                <a href="/settings/github/connect">
+                    <button class="utls-bd thm-bg-hl" style="padding:0.5rem; width:max-content;">
+                        Enable Github Based Courses
+                    </button>
+                </a>
+                    <p class="c-grey">You will be redirected to github to allow us access to your github repos.</p>
+                {{ else }}
+                    <p>Github connected <i class="fa-solid fa-check"></i></p>
+                    <p>Having trouble? <a href="/settings/github/connect">reconnect</a></p>
+                {{ end }}
+            </div>
+        </div>
+
+    {{ end }}
+</div>
+
+{{ template "_footer.html" . }}

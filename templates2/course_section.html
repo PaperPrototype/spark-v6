@@ -1,0 +1,192 @@
+<div x-data x-show="$store.course.view === 'section'" style="margin-top:3rem; overflow-y: scroll; max-width:100vw; overflow-x:hidden;">
+    <div class="align-center-horizontal" style="width:800px; max-width:100vw;">
+        <div x-html="$store.course.sectionHTML" markdown2 id="course_markdown" style="margin-bottom:25vh;">
+            <p>If we want to make an entire voxel world using a single mesh, we are going to have a problem.</p>
+            <p>Most mobile graphics cards use 16 bit indices (which allow you to have meshes with up to 65k vertices). In order to access a vertex the graphics card has to index into our array of vertices, and with 16 bits you can only count up to 65,535.</p>
+            <p>So the solution is to split up our world into "chunks" of voxels. Each chunk with however many voxels will give us less than 65,535 vertices.</p>
+            <p>You may recall Minecrafts "chunk distance" setting that lets you decide how far to load chunks around the player. Well, that is because Minecraft does exaclty what we just came up with! It splits the world up into chunks of blocks, and whenever we edit the terrain, it simply redoes that entire chunks mesh (at first it seems weird, why not update only that single voxels mesh? Well, its because making a system that would do that requires a lot more work, and just recreating an entire chunk's mesh is relatively fast and has worked quite well).</p>
+            <p>In this course we <strong>won't</strong> be builing a large world with many chunks, but instead will just be focusing on making a single "chunk" of voxels. That way you can nail the basics and in a later course make terrain or a building system that uses multiple chunks.</p>
+            <h1 id="chunk" style="cursor: pointer;">Chunk</h1>
+            <p>Create a new folder in Assets called "Chunk". Create a new Scene and Script called Chunk.</p>
+            <p><img src="/media/8/name/terrain_generator_beach.png" alt=""></p>
+            <p>Open the Chunk scene and create a new empty GameObject called "Chunk". Add the Chunk.cs script to it.</p>
+            <p>Now open the Chunk.cs script by double clicking it. Edit the code in Chunk.cs to be the following:</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">using</span> <span style="color:#447fcf;text-decoration:underline">UnityEngine</span>;
+            </span></span><span style="display:flex;"><span><span style="color:#bbb">
+            </span></span></span><span style="display:flex;"><span><span style="color:#bbb">[RequireComponent(typeof(MeshFilter))]</span>
+            </span></span><span style="display:flex;"><span><span style="color:#bbb">[RequireComponent(typeof(MeshRenderer))]</span>
+            </span></span><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">Chunk</span> : MonoBehaviour
+            </span></span><span style="display:flex;"><span>{
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">int</span> ChunkResolution = <span style="color:#3677a9">16</span>;
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">private</span> Vector3[] vertices;
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">private</span> <span style="color:#6ab825;font-weight:bold">int</span>[] triangles;
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">private</span> Vector2[] uvs;
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">private</span> <span style="color:#6ab825;font-weight:bold">int</span> vertexOffset = <span style="color:#3677a9">0</span>;
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">private</span> <span style="color:#6ab825;font-weight:bold">int</span> triangleOffset = <span style="color:#3677a9">0</span>;
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">void</span> Start()
+            </span></span><span style="display:flex;"><span>    {
+            </span></span><span style="display:flex;"><span>        <span style="color:#999;font-style:italic">// TODO create chunk mesh</span>
+            </span></span><span style="display:flex;"><span>    }
+            </span></span><span style="display:flex;"><span>}
+            </span></span></code></pre><p>We first make sure the Chunk GameObject will have a MeshRenderer and MeshFilter.</p>
+            <p>Then we have a ChunkResolution number, that we will use to set the number of voxels in the X Y and Z axis of the chunk.</p>
+            <p>Then we have our Vertex Triangle and UV arrays, as well as a <code>vertexOffset</code> and <code>triangleOffset</code>.</p>
+            <p>Now lets make this chunk! First we need a method that we can use to generate the voxels given an X Y and Z grid number. For that we create the <code>MeshVoxel</code> method right below <code>Start</code>:</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span>	<span style="color:#6ab825;font-weight:bold">private</span> <span style="color:#6ab825;font-weight:bold">void</span> MeshVoxel(<span style="color:#6ab825;font-weight:bold">int</span> x, <span style="color:#6ab825;font-weight:bold">int</span> y, <span style="color:#6ab825;font-weight:bold">int</span> z)
+            </span></span><span style="display:flex;"><span>    {
+            </span></span><span style="display:flex;"><span>        Vector3 offsetPos = <span style="color:#6ab825;font-weight:bold">new</span> Vector3(x, y, z);
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">for</span> (<span style="color:#6ab825;font-weight:bold">int</span> side = <span style="color:#3677a9">0</span>; side &lt; <span style="color:#3677a9">6</span>; side++)
+            </span></span><span style="display:flex;"><span>        {
+            </span></span><span style="display:flex;"><span>            vertices[vertexOffset + <span style="color:#3677a9">0</span>] = Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">0</span>]] + offsetPos;
+            </span></span><span style="display:flex;"><span>            vertices[vertexOffset + <span style="color:#3677a9">1</span>] = Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">1</span>]] + offsetPos;
+            </span></span><span style="display:flex;"><span>            vertices[vertexOffset + <span style="color:#3677a9">2</span>] = Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">2</span>]] + offsetPos;
+            </span></span><span style="display:flex;"><span>            vertices[vertexOffset + <span style="color:#3677a9">3</span>] = Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">3</span>]] + offsetPos;
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>            triangles[triangleOffset + <span style="color:#3677a9">0</span>] = vertexOffset + <span style="color:#3677a9">0</span>;
+            </span></span><span style="display:flex;"><span>            triangles[triangleOffset + <span style="color:#3677a9">1</span>] = vertexOffset + <span style="color:#3677a9">1</span>;
+            </span></span><span style="display:flex;"><span>            triangles[triangleOffset + <span style="color:#3677a9">2</span>] = vertexOffset + <span style="color:#3677a9">2</span>;
+            </span></span><span style="display:flex;"><span>            triangles[triangleOffset + <span style="color:#3677a9">3</span>] = vertexOffset + <span style="color:#3677a9">2</span>;
+            </span></span><span style="display:flex;"><span>            triangles[triangleOffset + <span style="color:#3677a9">4</span>] = vertexOffset + <span style="color:#3677a9">1</span>;
+            </span></span><span style="display:flex;"><span>            triangles[triangleOffset + <span style="color:#3677a9">5</span>] = vertexOffset + <span style="color:#3677a9">3</span>;
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>            uvs[vertexOffset + <span style="color:#3677a9">0</span>] = <span style="color:#6ab825;font-weight:bold">new</span> Vector2(<span style="color:#3677a9">0</span>, <span style="color:#3677a9">0</span>);
+            </span></span><span style="display:flex;"><span>            uvs[vertexOffset + <span style="color:#3677a9">1</span>] = <span style="color:#6ab825;font-weight:bold">new</span> Vector2(<span style="color:#3677a9">0</span>, <span style="color:#3677a9">1</span>);
+            </span></span><span style="display:flex;"><span>            uvs[vertexOffset + <span style="color:#3677a9">2</span>] = <span style="color:#6ab825;font-weight:bold">new</span> Vector2(<span style="color:#3677a9">1</span>, <span style="color:#3677a9">0</span>);
+            </span></span><span style="display:flex;"><span>            uvs[vertexOffset + <span style="color:#3677a9">3</span>] = <span style="color:#6ab825;font-weight:bold">new</span> Vector2(<span style="color:#3677a9">1</span>, <span style="color:#3677a9">1</span>);
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>            triangleOffset += <span style="color:#3677a9">6</span>;
+            </span></span><span style="display:flex;"><span>            vertexOffset += <span style="color:#3677a9">4</span>;
+            </span></span><span style="display:flex;"><span>        }
+            </span></span><span style="display:flex;"><span>    }
+            </span></span></code></pre><p><code>MeshVoxel</code> is almost exaclty the same as the previous lecture, with 1 important difference. We create an offset position (in the <code>offsetPos</code> variable) from the <code>x</code> <code>y</code> and <code>z</code> parameters given to the method. We then add the <code>offsetPos</code> to each quads vertices so that the entire voxel is offsetted.</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span><span style="color:#999;font-style:italic">// we offset each vertex position by the voxels offsetPos</span>
+            </span></span><span style="display:flex;"><span>= Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">0</span>]] + offsetPos;
+            </span></span><span style="display:flex;"><span>= Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">1</span>]] + offsetPos;
+            </span></span><span style="display:flex;"><span>= Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">2</span>]] + offsetPos;
+            </span></span><span style="display:flex;"><span>= Tables.Vertices[Tables.QuadVertices[side, <span style="color:#3677a9">3</span>]] + offsetPos;
+            </span></span></code></pre><p>Lets now use this to build an entire chunk of voxels!</p>
+            <p>In <code>Start</code> replace <code>// TODO create chunk mesh</code> with the following code:</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span>		vertices = <span style="color:#6ab825;font-weight:bold">new</span> Vector3[<span style="color:#3677a9">24</span> * ChunkResolution * ChunkResolution * ChunkResolution];
+            </span></span><span style="display:flex;"><span>        triangles = <span style="color:#6ab825;font-weight:bold">new</span> <span style="color:#6ab825;font-weight:bold">int</span>[<span style="color:#3677a9">36</span> * ChunkResolution * ChunkResolution * ChunkResolution];
+            </span></span><span style="display:flex;"><span>        uvs = <span style="color:#6ab825;font-weight:bold">new</span> Vector2[<span style="color:#3677a9">24</span> * ChunkResolution * ChunkResolution * ChunkResolution];
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">for</span> (<span style="color:#6ab825;font-weight:bold">int</span> x = <span style="color:#3677a9">0</span>; x &lt; ChunkResolution; x++)
+            </span></span><span style="display:flex;"><span>        {
+            </span></span><span style="display:flex;"><span>            <span style="color:#6ab825;font-weight:bold">for</span> (<span style="color:#6ab825;font-weight:bold">int</span> y = <span style="color:#3677a9">0</span>; y &lt; ChunkResolution; y++)
+            </span></span><span style="display:flex;"><span>            {
+            </span></span><span style="display:flex;"><span>                <span style="color:#6ab825;font-weight:bold">for</span> (<span style="color:#6ab825;font-weight:bold">int</span> z = <span style="color:#3677a9">0</span>; z &lt; ChunkResolution; z++)
+            </span></span><span style="display:flex;"><span>                {
+            </span></span><span style="display:flex;"><span>                    MeshVoxel(x, y, z);
+            </span></span><span style="display:flex;"><span>                }
+            </span></span><span style="display:flex;"><span>            }
+            </span></span><span style="display:flex;"><span>        }
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>		<span style="color:#999;font-style:italic">// TODO create new Mesh and set MeshFilter.mesh</span>
+            </span></span></code></pre><p>We initialize our <code>vertices</code> array and set the length to 24 times the number of voxels in the chunk, since 24 (4 * 6) is the number of vertices needed for 1 voxel. For triangles we set the length to 36 times the number of voxels in the chunk, since 1 voxel takes 36 triangles (6 * 6 was the previous number, but I simplified it to 36 to make the code easier to read). The UV's needed are the same as the vertices.</p>
+            <p>We then have 3 nested loops:</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">for</span> (<span style="color:#6ab825;font-weight:bold">int</span> x = <span style="color:#3677a9">0</span>; x &lt; ChunkResolution; x++)
+            </span></span><span style="display:flex;"><span>	<span style="color:#6ab825;font-weight:bold">for</span> (<span style="color:#6ab825;font-weight:bold">int</span> y = <span style="color:#3677a9">0</span>; y &lt; ChunkResolution; y++)
+            </span></span><span style="display:flex;"><span>		<span style="color:#6ab825;font-weight:bold">for</span> (<span style="color:#6ab825;font-weight:bold">int</span> z = <span style="color:#3677a9">0</span>; z &lt; ChunkResolution; z++)
+            </span></span></code></pre><p>These combined with <code>MeshVoxel</code> will fill our mesh arrays (namely <code>vertices</code> <code>uvs</code> and <code>triangles</code>) with the mesh data for an entire "chunk" of voxels.</p>
+            <p>After the nested loops replace the comment <code>// TODO create new Mesh and set MeshFilter.mesh</code> with the following code:</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span>        Mesh mesh = <span style="color:#6ab825;font-weight:bold">new</span> Mesh();
+            </span></span><span style="display:flex;"><span>        mesh.vertices = vertices;
+            </span></span><span style="display:flex;"><span>        mesh.triangles = triangles;
+            </span></span><span style="display:flex;"><span>        mesh.uv = uvs;
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>        mesh.RecalculateNormals();
+            </span></span><span style="display:flex;"><span>        mesh.RecalculateBounds();
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">var</span> filter = gameObject.GetComponent&lt;MeshFilter&gt;();
+            </span></span><span style="display:flex;"><span>        filter.mesh = mesh;
+            </span></span></code></pre><p>We create a new mesh, set the mesh.vertices mesh.triangles and mesh.uv to our <code>vertices</code> <code>triangles</code> and <code>uvs</code> arrays. We then use <code>RecalculateNormals</code> to generate the normals for our mesh, as well as use <code>RecalculateBounds</code> to tell the renderer what area in 3D our mesh is taking up. Finally we set the mesh in the <code>MeshFilter</code> component to our new mesh.</p>
+            <p>If you run this code you should see a pink chunk of voxels!</p>
+            <p><img src="/media/8/name/terrain_generator_beach.png" alt=""></p>
+            <p>Its pink because there is no material on it. Add our Voxel material and it should now look like this:</p>
+            <p><img src="/media/8/name/terrain_generator_beach.png" alt=""></p>
+            <p>There is 2 problems currently.</p>
+            <p>Our chunk seems to be missing half of its voxels!</p>
+            <p>And, our voxels are not optimized. Currently they are creating a quad on all 6 sides even if they don't need to be:</p>
+            <p><img src="/media/1/name/2D_voxel_terrain_unoptimized.png" alt=""></p>
+            <p>We will be optimizing the voxels in the next lecture. For now we can fix the first problem so that all the voxels meshes get created.</p>
+            <p>Currently our mesh has maxed out the number of vertices it can hold. To fix this we have to make a small change to the Chunk.cs script.</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">using</span> <span style="color:#447fcf;text-decoration:underline">UnityEngine</span>;
+            </span></span><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">using</span> <span style="color:#447fcf;text-decoration:underline">UnityEngine.Rendering</span>; <span style="color:#999;font-style:italic">// added</span>
+            </span></span><span style="display:flex;"><span><span style="color:#bbb">
+            </span></span></span><span style="display:flex;"><span><span style="color:#bbb">[RequireComponent(typeof(MeshFilter))]</span>
+            </span></span><span style="display:flex;"><span><span style="color:#bbb">[RequireComponent(typeof(MeshRenderer))]</span>
+            </span></span><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">class</span> <span style="color:#447fcf;text-decoration:underline">Chunk</span> : MonoBehaviour
+            </span></span><span style="display:flex;"><span>{
+            </span></span><span style="display:flex;"><span>	<span style="color:#999;font-style:italic">//...</span>
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">void</span> Start()
+            </span></span><span style="display:flex;"><span>    {
+            </span></span><span style="display:flex;"><span>		<span style="color:#999;font-style:italic">//...</span>
+            </span></span><span style="display:flex;"><span>        Mesh mesh = <span style="color:#6ab825;font-weight:bold">new</span> Mesh();
+            </span></span><span style="display:flex;"><span>        mesh.indexFormat = IndexFormat.UInt32; <span style="color:#999;font-style:italic">// added</span>
+            </span></span><span style="display:flex;"><span>        mesh.vertices = vertices;
+            </span></span><span style="display:flex;"><span>        mesh.triangles = triangles;
+            </span></span><span style="display:flex;"><span>        mesh.uv = uvs;
+            </span></span><span style="display:flex;"><span>		<span style="color:#999;font-style:italic">//...</span>
+            </span></span><span style="display:flex;"><span>    }
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>	<span style="color:#999;font-style:italic">//...</span>
+            </span></span><span style="display:flex;"><span>}
+            </span></span></code></pre><p>You'll notice we add <code>using UnityEngine.Rendering</code> at the top. This gives us access to <code>IndexFormat.UInt32</code> and we set the meshes indexFormat to use a <code>UInt32</code>, which lets us have twice as many vertices in our mesh.</p>
+            <p>After making those changes and click play, the chunk's mesh should now be fixed!</p>
+            <p><img src="/media/1/name/chunk_first.png" alt=""></p>
+            <p>Once we optimize our voxels the number of vertices should be reduced significantly and we can revert back to using a 16 bit indexFormat. I would encourage this because some mobile devices don't support 32 bit index formats.</p>
+            <p>And now onto optimizing our voxel mesh!</p>
+            <p>The last section showed you how to use Unity's profiler to see your jobs in the worker threads.</p>
+            <p>This section is going to use the profiler to discover the slow parts of our code, and fix them to be faster.</p>
+            <h1 id="cleanup" style="cursor: pointer;">Cleanup</h1>
+            <p>Lets first delete the code from <code>MeshJob</code> that we placed earlier that caused the job to sleep for 1 second (it was placed there to help us find the spike in the profiler when we ran the jobs).</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">using</span> <span style="color:#447fcf;text-decoration:underline">UnityEngine</span>;
+            </span></span><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">using</span> <span style="color:#447fcf;text-decoration:underline">Unity.Jobs</span>;
+            </span></span><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">using</span> <span style="color:#447fcf;text-decoration:underline">Unity.Collections</span>;
+            </span></span><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">using</span> <span style="color:#447fcf;text-decoration:underline">System.Threading</span>;
+            </span></span><span style="display:flex;"><span><span style="color:#999;font-style:italic">// DELETE THIS ^</span>
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span><span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">struct</span> <span style="color:#447fcf;text-decoration:underline">MeshJob</span> : IJob
+            </span></span><span style="display:flex;"><span>{
+            </span></span><span style="display:flex;"><span>    <span style="color:#999;font-style:italic">//...</span>
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">void</span> Execute()
+            </span></span><span style="display:flex;"><span>    {
+            </span></span><span style="display:flex;"><span>        <span style="color:#999;font-style:italic">// DELETE THIS</span>
+            </span></span><span style="display:flex;"><span>        Thread.Sleep(<span style="color:#3677a9">1000</span>);
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>        <span style="color:#999;font-style:italic">//...</span>
+            </span></span><span style="display:flex;"><span>    }
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#999;font-style:italic">//...</span>
+            </span></span><span style="display:flex;"><span>}
+            </span></span></code></pre><h1 id="profiling" style="cursor: pointer;">Profiling</h1>
+            <p>Make sure you have the hierarchy view selected in the profiler.</p>
+            <p><img src="/media/6/name/profiler_select_hierarchy.png" alt=""></p>
+            <p>And now a video :)</p>
+            <p>Minecraft Terrain Jobs Profiling<iframe width="560" height="315" src="https://www.youtube.com/embed/x_DvOGnLzT8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></p>
+            <p>Normals Table</p>
+            <pre tabindex="0" style="color:#d0d0d0;background-color:#202020;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="display:flex;"><span>    <span style="color:#999;font-style:italic">//... normals</span>
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#999;font-style:italic">// precalculated normals</span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#999;font-style:italic">// right, left, up, down, front, back</span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#6ab825;font-weight:bold">public</span> <span style="color:#6ab825;font-weight:bold">static</span> <span style="color:#6ab825;font-weight:bold">readonly</span> Vector3[] Normals = <span style="color:#6ab825;font-weight:bold">new</span> Vector3[<span style="color:#3677a9">6</span>]
+            </span></span><span style="display:flex;"><span>    {
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">new</span> Vector3(<span style="color:#3677a9">1f</span>, <span style="color:#3677a9">0f</span>, <span style="color:#3677a9">0f</span>),
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">new</span> Vector3(-<span style="color:#3677a9">1f</span>, <span style="color:#3677a9">0f</span>, <span style="color:#3677a9">0f</span>),
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">new</span> Vector3(<span style="color:#3677a9">0f</span>, <span style="color:#3677a9">1f</span>, <span style="color:#3677a9">0f</span>),
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">new</span> Vector3(<span style="color:#3677a9">0f</span>, -<span style="color:#3677a9">1f</span>, <span style="color:#3677a9">0f</span>),
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">new</span> Vector3(<span style="color:#3677a9">0f</span>, <span style="color:#3677a9">0f</span>, <span style="color:#3677a9">1f</span>),
+            </span></span><span style="display:flex;"><span>        <span style="color:#6ab825;font-weight:bold">new</span> Vector3(<span style="color:#3677a9">0f</span>, <span style="color:#3677a9">0f</span>, -<span style="color:#3677a9">1f</span>),
+            </span></span><span style="display:flex;"><span>    };
+            </span></span><span style="display:flex;"><span>
+            </span></span><span style="display:flex;"><span>    <span style="color:#999;font-style:italic">//...</span>
+            </span></span></code></pre>
+        </div>
+    </div>
+</div>

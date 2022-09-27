@@ -12,7 +12,7 @@ require (
 	github.com/jackc/pgx/v4 v4.16.0
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/sendgrid/sendgrid-go v3.11.1+incompatible
-	github.com/stripe/stripe-go/v72 v72.103.0
+	github.com/stripe/stripe-go/v73 v73.10.0
 	github.com/yuin/goldmark v1.4.12
 	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594
 	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f

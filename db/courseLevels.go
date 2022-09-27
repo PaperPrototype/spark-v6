@@ -11,7 +11,7 @@ import "log"
 func GetCoursesAtLevelPreload(level interface{}) ([]Course, error) {
 	courses := []Course{}
 
-	err := gormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Where("public = ?", true).Where("level = ?", level).Find(&courses).Error
+	err := GormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Where("public = ?", true).Where("level = ?", level).Find(&courses).Error
 
 	return courses, err
 }
@@ -28,7 +28,7 @@ func UpdateCourseLevel(courseID uint64) error {
 
 	// get all pre-requisites
 	preqs := []Prerequisite{}
-	gormDB.Model(&Prerequisite{}).Where("course_id = ?", courseID).Find(&preqs)
+	GormDB.Model(&Prerequisite{}).Where("course_id = ?", courseID).Find(&preqs)
 
 	// check the depth of each pre-requisite, and find the longest branch
 	depths := []uint32{}
@@ -42,7 +42,7 @@ func UpdateCourseLevel(courseID uint64) error {
 	greatestDepth := greatest(depths)
 
 	// set the course level = greatestDepth
-	err1 := gormDB.Model(&Course{}).Where("id = ?", courseID).Update("level", greatestDepth).Error
+	err1 := GormDB.Model(&Course{}).Where("id = ?", courseID).Update("level", greatestDepth).Error
 	if err1 != nil {
 		log.Println("db/courseLevels ERROR updating course level?", err1)
 		return err1
@@ -54,7 +54,7 @@ func UpdateCourseLevel(courseID uint64) error {
 func getDepthRecursive(preqCourseID uint64, depth uint32) uint32 {
 	// get all pre-requisites for this pre-requisite course
 	var preqCourses []Prerequisite
-	err := gormDB.Model(&Prerequisite{}).Where("course_id = ?", preqCourseID).First(&preqCourses).Error
+	err := GormDB.Model(&Prerequisite{}).Where("course_id = ?", preqCourseID).First(&preqCourses).Error
 	if err != nil {
 		log.Println("db/courseLevels ERROR getting course preq (recursive function found its end, so possibly ignore this), ", err)
 		return depth
@@ -88,7 +88,7 @@ func greatest(depths []uint32) uint32 {
 func UpdateDependantCourseLevels(courseID uint64) error {
 	// find courses that depend on this course
 	var dependants []Prerequisite
-	err := gormDB.Model(&Prerequisite{}).Where("prerequisite_course_id = ?", courseID).Find(&dependants).Error
+	err := GormDB.Model(&Prerequisite{}).Where("prerequisite_course_id = ?", courseID).Find(&dependants).Error
 	if err != nil {
 		log.Println("db/courseLevels ERROR getting preq from db (you can probably ignore this error since a recursive function has just found it end),", err)
 		// don't give back an error since nothing wen't wrong and this is expected to happen

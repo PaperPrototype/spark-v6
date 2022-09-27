@@ -70,6 +70,26 @@ func GetStripeKey() string {
 	return env
 }
 
+func GetStripeWebhook() string {
+	if FileExists("./stripewebhook") {
+		data, err := os.ReadFile("./stripewebhook")
+		if err != nil {
+			log.Println("config: error reading stripewebhook file")
+			panic(err)
+		}
+
+		return string(data)
+	}
+
+	env := os.Getenv("STRIPE_WEBHOOK")
+
+	if env == "" {
+		panic(errors.New("empty env variable for STRIPE_WEBHOOK"))
+	}
+
+	return env
+}
+
 func GetHost() string {
 	env := os.Getenv("HOST_URL")
 	if env == "" {

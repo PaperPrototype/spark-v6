@@ -1,0 +1,79 @@
+* {
+	font-family: "SF Pro Text","SF Pro Icons","Helvetica Neue","Helvetica","Arial",sans-serif;
+    color:white;
+
+	/* Hide scrollbar for IE, Edge and Firefox */
+	-ms-overflow-style: none;  /* IE and Edge */
+	scrollbar-width: none;  /* Firefox */
+}
+
+/* solve weird padding and width problems on input elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body, html {
+	padding: 0;
+	margin: 0;
+	height: auto;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+[x-cloak] {
+	display: none !important;
+}
+
+button {
+    color:black;
+    border:none;
+    font-size: 16px;
+}
+
+button * {
+    font-size: 16px;
+    color:black;
+}
+
+input {
+    font-size: 16px;
+    width:100%;
+    padding:1rem;
+    color:black;
+    border:none;
+}
+
+/* hide arrow For IE10 */
+select::-ms-expand {
+    display: none;
+}
+
+select {
+    /* hide arrow for Firefox */
+    -moz-appearance: none;
+    /* hide arrow for Chrome */
+    -webkit-appearance: none;
+
+    font-size: 16px;
+    width:100%;
+    padding:0.5rem;
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+}
+
+textarea {
+    font-size: 16px;
+}
+
+p {
+    font-size: 16px;
+}

@@ -1,0 +1,12 @@
+.utls-bd {
+    border-radius: 0.25rem;
+}
+
+.utls-bd-none {
+    border:none;
+}
+
+.align-center-horizontal {
+    transform:translate(-50%); 
+    margin-left:50%; 
+}

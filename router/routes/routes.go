@@ -2,9 +2,9 @@
 package routes
 
 import (
+	"main/middlewares"
 	"main/msg"
 	"main/router/auth"
-	"main/router/middlewares"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

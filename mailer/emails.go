@@ -22,7 +22,7 @@ func SendStripePaymentProblemEmail(userID uint64, messageProblem string) error {
 		"Sparker - There was an error with a payment or your stripe account.",
 		messageProblem,
 		helpers.GetHost()+"/settings/teaching/",
-		"If you did not sign up for an account on sparker3d.com contact us by replying to this email.",
+		"If you did not sign up for an account on sparker3d.com then someone may be using yur email. Contact us by replying to this email.",
 	)
 
 	from := mail.NewEmail("Sparker", "info@sparker3d.com")

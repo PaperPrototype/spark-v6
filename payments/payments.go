@@ -3,7 +3,7 @@ package payments
 import (
 	"main/helpers"
 
-	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v73"
 )
 
 // we take a 25 percent cut

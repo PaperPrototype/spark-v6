@@ -14,7 +14,7 @@ func postSettingsNewPrerequisite(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	preqCourseID := c.PostForm("preqCourseID")
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("api/courseSettings ERROR getting course in postSettingsPrerequisitesAdd:", err)
 		msg.SendMessage(c, "Error getting course.")
@@ -77,7 +77,7 @@ func postSettingsRemovePrerequisite(c *gin.Context) {
 		return
 	}
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("api/courseSettings ERROR getting course in postSettingsRemovePrerequisite:", err)
 		msg.SendMessage(c, "Error getting course.")

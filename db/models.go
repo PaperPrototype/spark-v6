@@ -2,12 +2,20 @@ package db
 
 import (
 	"html/template"
-	"main/githubapi"
 	"time"
 )
 
 func migrate() {
-	gormDB.AutoMigrate(
+	// updates to database for v7
+	GormDB.Migrator().DropTable(&Content{})
+	GormDB.Migrator().DropColumn(&Section{}, "version_id")
+	GormDB.Migrator().DropColumn(&Section{}, "parent_id")
+	GormDB.Migrator().DropColumn(&GithubSection{}, "github_release_id")
+	GormDB.Migrator().DropColumn(&GithubSection{}, "sha")
+	GormDB.Migrator().DropColumn(&GithubRelease{}, "github_sections")
+	GormDB.Migrator().DropColumn(&Ownership{}, "version_id")
+
+	GormDB.AutoMigrate(
 		// auth
 		&User{},
 		&Session{},
@@ -18,7 +26,8 @@ func migrate() {
 		&Course{},
 		&Release{},
 		&Version{},
-		// &Section{},
+		&Section{},
+		&GithubSection{},
 		// &Content{},
 
 		// chat
@@ -30,6 +39,7 @@ func migrate() {
 
 		// github based courses
 		&GithubRelease{},
+		// TODO DELETE
 		&GithubVersion{},
 
 		// purchases
@@ -42,7 +52,7 @@ func migrate() {
 
 		// third party apps
 		&StripeConnection{},
-		&githubapi.GithubConnection{},
+		&GithubConnection{},
 
 		// posts
 		&Post{},
@@ -52,10 +62,21 @@ func migrate() {
 	)
 }
 
+// github access tokens never expire
+type GithubConnection struct {
+	UserID uint64 `gorm:"not null"`
+
+	// the token for accessing the users github repos etc
+	AccessToken string
+
+	// the type of token
+	TokenType string
+}
+
 // temporary payment attempt
 type AttemptBuyRelease struct {
 	StripeSessionID string `gorm:"primaryKey"`
-	StripePaymentID string
+	StripePaymentID string // the id of the payment intent
 	ReleaseID       uint64
 	UserID          uint64
 	AmountPaying    uint64
@@ -105,6 +126,8 @@ type Ownership struct {
 	VersionID uint64
 
 	CreatedAt time.Time
+
+	Desc string // describe any errors or info
 
 	Completed   bool
 	CompletedAt time.Time
@@ -217,6 +240,7 @@ type Course struct {
 	// ORM preloadable property
 	User    User
 	Release Release // can be preloaded with the newest release
+	Version Version
 
 	Channels      []Channel      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // channels for the courses chat
 	Releases      []Release      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // course releases
@@ -229,24 +253,25 @@ type Release struct {
 	Price          uint64 `gorm:"default:0"`
 	Num            uint16 `gorm:"default:0"`
 	Markdown       template.HTML
-	CourseID       uint64    `gorm:"not null"`
-	Public         bool      `gorm:"default:f"`
-	Level          uint32    `gorm:"default:0; not null"`
-	PostsNeededNum uint16    `gorm:"default:2;"`
-	CreatedAt      time.Time `gorm:"default:now(); not null"`
-	ImageURL       string    `gorm:"default:'';"`
-
-	GithubRelease GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // github repo info
+	CourseID       uint64 `gorm:"not null"`
+	Public         bool   `gorm:"default:f"`
+	PostsNeededNum uint16 `gorm:"default:2;"`
+	CreatedAt      time.Time
+	ImageURL       string        `gorm:"default:'';"`
+	GithubEnabled  bool          `gorm:"default:f"`                                     // make this release use a github repo
+	GithubRelease  GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // github repo info
 
 	Versions  []Version  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type GithubRelease struct {
 	ReleaseID uint64 `gorm:"not null"`
-	RepoID    int64  `gorm:"not null"`
+	RepoID    uint64 `gorm:"not null"`
 	RepoName  string `gorm:"default:woops;"`
 	Branch    string `gorm:"default:main; not null"`
+	SHA       string // TODO use for tracking the SHA of the current git commit
+	UpdatedAt time.Time
 }
 
 type Version struct {
@@ -265,8 +290,7 @@ type Version struct {
 	UsingGithub bool `gorm:"default:f;"`
 
 	// if using manual uploading option with sections
-	Error    string    `gorm:"default:null"`                                  // uplaoding error
-	Sections []Section `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // delete sections when we delete the version
+	Error string `gorm:"default:null"` // uplaoding error
 }
 
 type GithubVersion struct {
@@ -278,17 +302,21 @@ type GithubVersion struct {
 }
 
 type Section struct {
-	ID        uint64 `gorm:"primaryKey"` // TODO convert to string UUID or sha
-	Name      string
-	UpdatedAt time.Time
+	ID          uint64 `gorm:"primaryKey"` // TODO convert to string UUID or sha
+	Name        string
+	Description string // short description that is used for google indexing
+	ReleaseID   uint64
+	Num         uint16 `gorm:"default:0"` // what order to put the sections in
+	Free        bool   `gorm:"default:f"`
+	UpdatedAt   time.Time
 
-	// version this section is connected to
-	VersionID uint64 `gorm:"not null"`
-	ParentID  uint64 `gorm:"not null"` // parent section ID
+	// delete the corresponding GithubSection when we delete its section
+	GithubSection GithubSection `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
 
-	// children contents
-	// special ORM parameter that can be preloaded with data
-	Contents []Content `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+type GithubSection struct {
+	SectionID uint64 `gorm:"unique"`
+	Path      string // sha for specific course section
 }
 
 type Content struct {

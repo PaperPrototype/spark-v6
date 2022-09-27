@@ -1,18 +1,17 @@
 package db
 
 import (
-	"main/githubapi"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 func CreateUser(user *User) error {
-	return gormDB.Create(user).Error
+	return GormDB.Create(user).Error
 }
 
 func CreateCourse(course *Course) error {
-	return gormDB.Create(course).Error
+	return GormDB.Create(course).Error
 }
 
 func CreateSession(userID uint64) (string, error) {
@@ -21,74 +20,115 @@ func CreateSession(userID uint64) (string, error) {
 		DeleteAt:  time.Now().Add(time.Hour * 100),
 		UserID:    userID,
 	}
-	err := gormDB.Create(&session).Error
+	err := GormDB.Create(&session).Error
 	return session.TokenUUID, err
 }
 
 func CreateRelease(release *Release) error {
-	return gormDB.Create(release).Error
+	return GormDB.Create(release).Error
 }
 
 func CreateVersion(version *Version) error {
-	return gormDB.Create(version).Error
+	return GormDB.Create(version).Error
 }
 
 func CreatePost(post *Post) error {
-	return gormDB.Create(post).Error
+	return GormDB.Create(post).Error
 }
 
 func CreatePostToCourse(relation *PostToCourse) error {
-	return gormDB.Create(relation).Error
+	return GormDB.Create(relation).Error
 }
 
 func CreatePurchase(purchase *Purchase) error {
-	return gormDB.Create(purchase).Error
+	return GormDB.Create(purchase).Error
 }
 
 func CreateBuyRelease(attemptBuyRelease *AttemptBuyRelease) error {
-	return gormDB.Create(attemptBuyRelease).Error
+	return GormDB.Create(attemptBuyRelease).Error
 }
 
 func CreateStripeConnection(stripeConnection *StripeConnection) error {
-	return gormDB.Create(stripeConnection).Error
+	return GormDB.Create(stripeConnection).Error
 }
 
 func CreateVerify(verify *Verify) error {
-	return gormDB.Create(verify).Error
+	return GormDB.Create(verify).Error
 }
 
-func CreateGithubConnection(githubConnection *githubapi.GithubConnection) error {
-	return gormDB.Create(githubConnection).Error
+func CreateGithubConnection(githubConnection *GithubConnection) error {
+	return GormDB.Create(githubConnection).Error
+}
+
+func CreateOrUpdateGithubSection(sectionID string, githubSection *GithubSection) error {
+	var count int64 = 0
+	err := GormDB.Model(&GithubSection{}).Where("section_id = ?", sectionID).Count(&count).Error
+
+	if err != nil {
+		return err
+	}
+
+	var err1 error = nil
+	if count > 0 {
+		err1 = GormDB.Model(&GithubSection{}).Where("section_id = ?", sectionID).Update("path", githubSection.Path).Error
+	} else {
+		err1 = GormDB.Create(githubSection).Error // create new record
+	}
+
+	return err1
+}
+
+func CreateOrUpdateGithubRelease(releaseID string, githubRelease *GithubRelease) error {
+
+	var count int64 = 0
+	err := GormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).Count(&count).Error
+
+	if err != nil {
+		return err
+	}
+
+	var err1 error = nil
+	if count > 0 {
+		err1 = GormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).Update("repo_id", githubRelease.RepoID).Update("repo_name", githubRelease.RepoName).Update("branch", githubRelease.Branch).Update("sha", githubRelease.SHA).Error
+	} else {
+		err1 = GormDB.Create(githubRelease).Error // create new record
+	}
+
+	return err1
 }
 
 func CreateGithubRelease(githubRelease *GithubRelease) error {
-	return gormDB.Create(githubRelease).Error
+	return GormDB.Create(githubRelease).Error
 }
 
 func CreateGithubVersion(githubVersion *GithubVersion) error {
-	return gormDB.Create(githubVersion).Error
+	return GormDB.Create(githubVersion).Error
+}
+
+func CreateSection(section *Section) error {
+	return GormDB.Create(section).Error
 }
 
 func CreateComment(comment *Comment) error {
-	return gormDB.Create(comment).Error
+	return GormDB.Create(comment).Error
 }
 
 func CreateChannel(channel *Channel) error {
-	return gormDB.Create(channel).Error
+	return GormDB.Create(channel).Error
 }
 
 func CreateMessage(message *Message) error {
-	return gormDB.Create(&message).Error
+	return GormDB.Create(&message).Error
 }
 
 func CreateReview(review *PostToCourseReview) error {
-	return gormDB.Create(&review).Error
+	return GormDB.Create(&review).Error
 }
 
 func CreatePrerequisite(preq *Prerequisite) error {
-	return gormDB.Create(preq).Error
+	return GormDB.Create(preq).Error
 }
 
 func CreateOwnership(ownership *Ownership) error {
-	return gormDB.Create(ownership).Error
+	return GormDB.Create(ownership).Error
 }

@@ -7,11 +7,15 @@ import (
 
 func DeleteExpiredSessions() error {
 	// when delete_at is before time.Now()
-	return gormDB.Delete(&Session{}, "delete_at < ?", time.Now()).Error
+	return GormDB.Delete(&Session{}, "delete_at < ?", time.Now()).Error
 }
 
 func DeleteSession(TokenUUID string) error {
-	return gormDB.Delete(&Session{}, "token_uuid = ?", TokenUUID).Error
+	return GormDB.Delete(&Session{}, "token_uuid = ?", TokenUUID).Error
+}
+
+func DeleteSection(sectionID string) error {
+	return GormDB.Delete(&Section{}, "id = ?", sectionID).Error
 }
 
 func DeleteVersion(versionID string) error {
@@ -22,7 +26,7 @@ func DeleteVersion(versionID string) error {
 	}
 
 	// delete version
-	err := gormDB.Where("id = ?", versionID).Delete(&Version{}).Error
+	err := GormDB.Where("id = ?", versionID).Delete(&Version{}).Error
 	if err != nil {
 		log.Println("db ERROR deleting Version:", err)
 		return err
@@ -33,14 +37,14 @@ func DeleteVersion(versionID string) error {
 
 func DeleteVersionSections(versionID string) error {
 	section := Section{}
-	err := gormDB.Where("id = ?", versionID).Delete(&section).Error
+	err := GormDB.Where("id = ?", versionID).Delete(&section).Error
 	if err != nil {
 		log.Println("db ERROR deleting Version Section:", err)
 		return err
 	}
 
 	// delte contents of section
-	err1 := gormDB.Where("section_id = ?", section.ID).Delete(&Content{}).Error
+	err1 := GormDB.Where("section_id = ?", section.ID).Delete(&Content{}).Error
 	if err1 != nil {
 		log.Println("db ERROR deleting Version Section:", err1)
 		return err1
@@ -49,12 +53,12 @@ func DeleteVersionSections(versionID string) error {
 	return nil
 }
 
-func DeleteBuyRelease(buyReleaseID string) error {
-	return gormDB.Where("stripe_session_id = ?", buyReleaseID).Update("expires_at = ?", time.Now()).Error
+func DeleteBuyRelease(stripeSessionID string) error {
+	return GormDB.Model(&AttemptBuyRelease{}).Where("stripe_session_id = ?", stripeSessionID).Update("expires_at = ?", time.Now()).Error
 }
 
 func DeleteRelease(releaseID string) error {
-	err := gormDB.Where("id = ?", releaseID).Delete(&Release{}).Error
+	err := GormDB.Where("id = ?", releaseID).Delete(&Release{}).Error
 	if err != nil {
 		return err
 	}
@@ -68,13 +72,13 @@ func DeleteRelease(releaseID string) error {
 }
 
 func DeleteReleaseVersions(releaseID string) error {
-	return gormDB.Model(&Version{}).Where("release_id = ?", releaseID).Delete(&Version{}).Error
+	return GormDB.Model(&Version{}).Where("release_id = ?", releaseID).Delete(&Version{}).Error
 }
 
 func DeleteExpiredVerify() error {
-	return gormDB.Delete(&Verify{}, "expires_at < ?", time.Now()).Error
+	return GormDB.Delete(&Verify{}, "expires_at < ?", time.Now()).Error
 }
 
 func DeletePrerequisite(preqID interface{}) error {
-	return gormDB.Delete(&Prerequisite{}, "id = ?", preqID).Error
+	return GormDB.Delete(&Prerequisite{}, "id = ?", preqID).Error
 }

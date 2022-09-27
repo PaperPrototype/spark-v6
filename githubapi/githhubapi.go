@@ -3,23 +3,13 @@ package githubapi
 import (
 	"context"
 	"log"
+	"main/db"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
 
-// github access tokens never expire
-type GithubConnection struct {
-	UserID uint64 `gorm:"not null"`
-
-	// the token for accessing the users github repos etc
-	AccessToken string
-
-	// the type of token
-	TokenType string
-}
-
-func (githubConnection *GithubConnection) NewClient(context context.Context) *github.Client {
+func NewClient(githubConnection *db.GithubConnection, context context.Context) *github.Client {
 	// put token into oauth struct
 	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: githubConnection.AccessToken})
 
@@ -28,9 +18,9 @@ func (githubConnection *GithubConnection) NewClient(context context.Context) *gi
 	return github.NewClient(client)
 }
 
-func (githubConnection *GithubConnection) GetRepoByIDBranches(repoID int64) ([]*github.Branch, error) {
+func GetRepoByIDBranches(githubConnection *db.GithubConnection, repoID int64) ([]*github.Branch, error) {
 	ctx := context.Background()
-	client := githubConnection.NewClient(ctx)
+	client := NewClient(githubConnection, ctx)
 
 	repo, _, err1 := client.Repositories.GetByID(ctx, repoID)
 	if err1 != nil {
@@ -47,9 +37,9 @@ func (githubConnection *GithubConnection) GetRepoByIDBranches(repoID int64) ([]*
 	return branches, nil
 }
 
-func (githubConnection *GithubConnection) GetRepoBranch(repo string, branch string) (*github.Branch, error) {
+func GetRepoBranch(githubConnection *db.GithubConnection, repo string, branch string) (*github.Branch, error) {
 	ctx := context.Background()
-	client := githubConnection.NewClient(ctx)
+	client := NewClient(githubConnection, ctx)
 
 	user, _, err := client.Users.Get(ctx, "")
 	if err != nil {
@@ -65,9 +55,9 @@ func (githubConnection *GithubConnection) GetRepoBranch(repo string, branch stri
 	return branchRepo, err1
 }
 
-func (githubConnection *GithubConnection) GetCommitsByRepoIDBranch(repoID int64, branch string) ([]*github.RepositoryCommit, error) {
+func GetCommitsByRepoIDBranch(githubConnection *db.GithubConnection, repoID int64, branch string) ([]*github.RepositoryCommit, error) {
 	ctx := context.Background()
-	client := githubConnection.NewClient(ctx)
+	client := NewClient(githubConnection, ctx)
 
 	user, _, err := client.Users.Get(ctx, "")
 	if err != nil {
@@ -95,9 +85,9 @@ func (githubConnection *GithubConnection) GetCommitsByRepoIDBranch(repoID int64,
 	return branches, err1
 }
 
-func (githubConnection *GithubConnection) GetRepoCommit(repo string, sha string) (*github.RepositoryCommit, error) {
+func GetRepoCommit(githubConnection *db.GithubConnection, repo string, sha string) (*github.RepositoryCommit, error) {
 	ctx := context.Background()
-	client := githubConnection.NewClient(ctx)
+	client := NewClient(githubConnection, ctx)
 
 	user, _, err := client.Users.Get(ctx, "")
 	if err != nil {
@@ -113,9 +103,9 @@ func (githubConnection *GithubConnection) GetRepoCommit(repo string, sha string)
 	return repoCommit, err1
 }
 
-func (githubConnection *GithubConnection) GetRepoCommits(repo string, branch string) ([]*github.RepositoryCommit, error) {
+func GetRepoCommits(githubConnection *db.GithubConnection, repo string, branch string) ([]*github.RepositoryCommit, error) {
 	ctx := context.Background()
-	client := githubConnection.NewClient(ctx)
+	client := NewClient(githubConnection, ctx)
 
 	user, _, err := client.Users.Get(ctx, "")
 	if err != nil {

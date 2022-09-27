@@ -8,6 +8,7 @@ import (
 	"log"
 	"main/conn"
 	"main/db"
+	"main/githubapi"
 	"main/helpers"
 	"main/msg"
 	"main/payments"
@@ -303,7 +304,7 @@ func postNewRelease(c *gin.Context) {
 	price := c.PostForm("price")
 	postsNeeded := c.PostForm("postsNeededNum")
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("routes ERROR getting course:", err)
 		msg.SendMessage(c, "Error getting course.")
@@ -421,7 +422,7 @@ func postNewVersion(c *gin.Context) {
 	}
 	defer os.RemoveAll("./upload" + uniqueName)
 
-	release, err := db.GetAllRelease(releaseID)
+	release, err := db.GetAnyRelease(releaseID)
 	if err != nil {
 		msg.SendMessage(c, "Error getting release.")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
@@ -470,13 +471,12 @@ func postEditRelease(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 	releaseID := c.PostForm("releaseID")
-	desc := c.PostForm("desc")
 	price := c.PostForm("price")
 	publicStr := c.PostForm("public")
 	postsNeeded := c.PostForm("postsNeededNum")
 	imageURL := c.PostForm("imageURL")
 
-	course, err6 := db.GetUserCoursePreloadUser(username, courseName)
+	course, err6 := db.GetUserCoursePreload(username, courseName)
 	if err6 != nil {
 		log.Println("routes/post ERROR getting user course in postEditRelease:", err6)
 		msg.SendMessage(c, "Error getting course.")
@@ -497,7 +497,7 @@ func postEditRelease(c *gin.Context) {
 		postsNeededNum = 1
 	}
 
-	release, err1 := db.GetAllRelease(releaseID)
+	release, err1 := db.GetAnyRelease(releaseID)
 	if err1 != nil {
 		msg.SendMessage(c, "Error updating release.")
 		c.Redirect(http.StatusFound, "/")
@@ -540,7 +540,7 @@ func postEditRelease(c *gin.Context) {
 
 	if !course.User.HasStripeConnection() && correctPriceNum > 0 {
 		msg.SendMessage(c, "You must connect your account to stripe before you can charge money for a course!")
-		err := db.UpdateRelease(releaseID, desc, 0, public, uint16(postsNeededNum), imageURL)
+		err := db.UpdateRelease(releaseID, 0, public, uint16(postsNeededNum), imageURL, false)
 		if err != nil {
 			log.Println("routes ERROR updating release:", err)
 			msg.SendMessage(c, "Error updating release.")
@@ -551,7 +551,7 @@ func postEditRelease(c *gin.Context) {
 		return
 	}
 
-	err := db.UpdateRelease(releaseID, desc, correctPriceNum, public, uint16(postsNeededNum), imageURL)
+	err := db.UpdateRelease(releaseID, correctPriceNum, public, uint16(postsNeededNum), imageURL, false)
 	if err != nil {
 		log.Println("routes ERROR updating release:", err)
 		msg.SendMessage(c, "Error updating release.")
@@ -635,7 +635,7 @@ func postCreateOrEditGithubRelease(c *gin.Context) {
 		return
 	}
 
-	release, err4 := db.GetAllRelease(releaseIDNum)
+	release, err4 := db.GetAnyRelease(releaseIDNum)
 	if err4 != nil {
 		log.Println("routes/post ERROR getting release in pistGithubRelease:", err4)
 		msg.SendMessage(c, "Error getting release.")
@@ -653,7 +653,8 @@ func postCreateOrEditGithubRelease(c *gin.Context) {
 
 	user := auth.GetLoggedInUserLogError(c)
 	context := context.Background()
-	client := user.GetGithubConnectionLogError().NewClient(context)
+	githubConnection := githubapi.GetGithubConnectionLogError(user)
+	client := githubapi.NewClient(githubConnection, context)
 
 	repo, _, err3 := client.Repositories.GetByID(context, repoIDNum)
 	if err3 != nil {
@@ -669,7 +670,7 @@ func postCreateOrEditGithubRelease(c *gin.Context) {
 		githubRelease := db.GithubRelease{
 			Branch:    branch,
 			ReleaseID: releaseIDNum,
-			RepoID:    repoIDNum,
+			RepoID:    uint64(repoIDNum),
 			RepoName:  *repo.Name,
 		}
 		err2 := db.CreateGithubRelease(&githubRelease)
@@ -701,7 +702,7 @@ func postNewGithubVersion(c *gin.Context) {
 	username := c.Params.ByName("username")
 	courseName := c.Params.ByName("course")
 
-	course, err5 := db.GetUserCoursePreloadUser(username, courseName)
+	course, err5 := db.GetUserCoursePreload(username, courseName)
 	if err5 != nil {
 		log.Println("routes/post ERROR getting user course in postNewGithubVersion:", err5)
 		msg.SendMessage(c, "Error getting course.")
@@ -724,7 +725,7 @@ func postNewGithubVersion(c *gin.Context) {
 		return
 	}
 
-	release, err2 := db.GetAllRelease(releaseID)
+	release, err2 := db.GetAnyRelease(releaseID)
 	if err2 != nil {
 		log.Println("routes/post ERROR getting release in postNewGithubVersion:", err2)
 		msg.SendMessage(c, "Error getting release.")
@@ -770,7 +771,7 @@ func postNewGithubVersion(c *gin.Context) {
 
 	githubVersion := db.GithubVersion{
 		VersionID: version.ID,
-		RepoID:    githubRelease.RepoID,
+		RepoID:    int64(githubRelease.RepoID),
 		Branch:    githubRelease.Branch,
 		SHA:       sha,
 	}
@@ -794,7 +795,7 @@ func postNewChannel(c *gin.Context) {
 
 	channelName = helpers.ConvertToAllowedName(channelName)
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("routes/post ERROR getting user course in postNewChannel:", err)
 		msg.SendMessage(c, "Error getting course.")

@@ -38,10 +38,7 @@ func GetMessages(c *gin.Context) []string {
 	var data []string
 
 	// convert messages json cookie into a map of strings
-	err := json.Unmarshal([]byte(messagesCookie), &data)
-	if err != nil {
-		log.Println("ERROR unmarshalling messages:", err)
-	}
+	json.Unmarshal([]byte(messagesCookie), &data)
 
 	return data
 }

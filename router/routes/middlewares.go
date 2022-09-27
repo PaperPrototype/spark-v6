@@ -26,7 +26,7 @@ func mustBeCourseEditor(c *gin.Context) {
 
 	name := c.Params.ByName("course")
 	username := c.Params.ByName("username")
-	course, err1 := db.GetUserCoursePreloadUser(username, name)
+	course, err1 := db.GetUserCoursePreload(username, name)
 	if err1 != nil {
 		notFound(c)
 		return
@@ -54,7 +54,7 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 	courseName := c.Params.ByName("course")
 	versionID := c.Params.ByName("versionID")
 
-	course, err2 := db.GetUserCoursePreloadUser(username, courseName)
+	course, err2 := db.GetUserCoursePreload(username, courseName)
 	if err2 != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting course:", err2)
 		notFound(c)
@@ -75,7 +75,7 @@ func MustHaveAccessToCourseRelease(c *gin.Context) {
 	}
 
 	redirectRelease := false
-	release, err1 := db.GetAllRelease(version.ReleaseID)
+	release, err1 := db.GetAnyRelease(version.ReleaseID)
 	if err1 != nil {
 		log.Println("routes/MustHaveAccessToCourseRelease ERROR getting release:", err1)
 		msg.SendMessage(c, "No course releases available.")

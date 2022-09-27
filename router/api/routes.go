@@ -2,7 +2,7 @@
 package api
 
 import (
-	"main/router/middlewares"
+	"main/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,11 +33,6 @@ func AddRoutes(group *gin.RouterGroup) {
 	// notifications
 	group.GET("/notifications/newest", middlewares.MustBeLoggedIn, getNewNotifications)
 	group.POST("/notifications/done", middlewares.MustBeLoggedIn, postDoneNotification) // set notification as read
-
-	// getting an UPLOAD based course
-	group.GET("/section/:sectionID", getSection)
-	group.GET("/section/:sectionID/plaintext", mustBeCourseAuthor, getSectionPlaintext)
-	group.POST("/section/:sectionID/content/:contentID/edit", postEditSectionContent)
 
 	// getting a GITHUB based course
 	// for public viewing and paying customers

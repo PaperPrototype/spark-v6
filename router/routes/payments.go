@@ -15,8 +15,8 @@ import (
 	"main/router/auth"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/checkout/session"
+	"github.com/stripe/stripe-go/v73"
+	"github.com/stripe/stripe-go/v73/checkout/session"
 )
 
 /*
@@ -31,6 +31,7 @@ then for payouts modify code a little to have a TransferData (aka transfer funds
 	- https://stripe.com/docs/connect/collect-then-transfer-guide
 */
 
+// 1 day and 5 minutes?
 const PaymentExpiresAfter time.Duration = (24 * time.Hour) + (time.Minute * 5)
 
 func warnUserStripeConnectionProblem(author *db.User, messageProblem string) {
@@ -62,13 +63,13 @@ func postBuyRelease(c *gin.Context) {
 		return
 	}
 
-	if user.HasPurchasedRelease(release.ID) {
+	if user.OwnsRelease(release.ID) {
 		msg.SendMessage(c, "You already own this course release!")
 		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/view/"+fmt.Sprint(release.GetNewestVersionLogError().ID))
 		return
 	}
 
-	course, err := db.GetUserCoursePreloadUser(username, courseName)
+	course, err := db.GetUserCoursePreload(username, courseName)
 	if err != nil {
 		log.Println("routes/payments ERROR getting course:", err)
 		msg.SendMessage(c, "Error getting course.")
@@ -87,7 +88,7 @@ func postBuyRelease(c *gin.Context) {
 	if !author.HasStripeConnection() {
 		msg.SendMessage(c, "An error has occured! The author of this course cannot accept payments at this time. We apologize. We are gifting you the course for free :)")
 
-		warnUserStripeConnectionProblem(author, "It appears someone tried to purchase a course from you, but you don't have stripe setup (the online payments service we use). We had to gift the course for free since you could not accept the payment.")
+		warnUserStripeConnectionProblem(author, "It appears someone tried to purchase a course from you, but you don't have stripe setup (the online payments service we use). We gifted the course for free since you could not accept the payment.")
 
 		purchase := db.Purchase{
 			VersionID:  release.GetNewestVersionLogError().ID,
@@ -148,7 +149,7 @@ func postBuyRelease(c *gin.Context) {
 		log.Println("toures/payments ERROR getting stripe connection postBuyRelease:", err8)
 		msg.SendMessage(c, "There was an error. But we'll gift you the course for free :)")
 
-		warnUserStripeConnectionProblem(author, "There was an error checking if yu can accept payouts! Your stripe info may need updated! We had to gift the course for free since you could not accept the payment.")
+		warnUserStripeConnectionProblem(author, "There was an error checking if yu can accept payouts! Your stripe info may need updated! We gifted the course for free since you could not accept the payment.")
 
 		purchase := db.Purchase{
 			VersionID:  release.GetNewestVersionLogError().ID,
@@ -166,7 +167,7 @@ func postBuyRelease(c *gin.Context) {
 			msg.SendMessage(c, "Error gifting course.")
 		}
 
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/"+fmt.Sprint(release.Num))
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
 		return
 	}
 

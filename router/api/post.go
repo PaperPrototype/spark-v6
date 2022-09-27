@@ -198,7 +198,7 @@ func postEditSectionContent(c *gin.Context) {
 		return
 	}
 
-	release, err4 := db.GetAllRelease(version.ReleaseID)
+	release, err4 := db.GetAnyRelease(version.ReleaseID)
 	if err4 != nil {
 		log.Println("api ERROR getting release:", err4)
 		c.AbortWithStatus(http.StatusInternalServerError)

@@ -9,10 +9,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/account"
-	"github.com/stripe/stripe-go/v72/accountlink"
-	"github.com/stripe/stripe-go/v72/loginlink"
+	"github.com/stripe/stripe-go/v73"
+	"github.com/stripe/stripe-go/v73/account"
+	"github.com/stripe/stripe-go/v73/accountlink"
+	"github.com/stripe/stripe-go/v73/loginlink"
 )
 
 func getSettings(c *gin.Context) {
