@@ -205,11 +205,15 @@ func postBuyRelease(c *gin.Context) {
 	params := &stripe.CheckoutSessionParams{
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Name:        stripe.String(course.Title + " v" + fmt.Sprint(release.Num)),
-				Amount:      stripe.Int64(int64(release.Price)),
-				Currency:    stripe.String(string(stripe.CurrencyUSD)),
-				Description: stripe.String(course.Subtitle),
-				Quantity:    stripe.Int64(1),
+				Quantity: stripe.Int64(1),
+				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+					Currency:   stripe.String(string(stripe.CurrencyUSD)),
+					UnitAmount: stripe.Int64(int64(release.Price)),
+					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+						Name:        stripe.String(course.Title + " v" + fmt.Sprint(release.Num)),
+						Description: stripe.String(course.Subtitle),
+					},
+				},
 			},
 		},
 		PaymentIntentData: &stripe.CheckoutSessionPaymentIntentDataParams{
@@ -234,7 +238,6 @@ func postBuyRelease(c *gin.Context) {
 
 	buyRelease := db.AttemptBuyRelease{
 		StripeSessionID: resultSession.ID,
-		StripePaymentID: resultSession.PaymentIntent.ID,
 		ReleaseID:       release.ID,
 		UserID:          user.ID,
 		AmountPaying:    release.Price,
