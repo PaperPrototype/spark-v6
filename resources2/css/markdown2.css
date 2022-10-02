@@ -1,4 +1,18 @@
 [markdown2] > p {
+    font-size: 17px;
+    padding-left:2rem;
+    padding-right:2rem;
+	width: 100%;
+    line-height: 1.7rem;
+}
+
+[markdown2] > ol {
+    padding-left:2rem;
+    padding-right:2rem;
+	width: 100%;
+}
+
+[markdown2] > ul {
     padding-left:2rem;
     padding-right:2rem;
 	width: 100%;
@@ -8,7 +22,7 @@
     border-left: 0.25rem solid var(--thm-hl);
     margin-left:2rem;
     margin-right:2rem;
-	width: 100%;
+	width: calc(100% - 4rem);
     background-color: var(--thm-hl-a);
 }
 
@@ -16,6 +30,7 @@
     padding-top:0.5rem;
     padding-bottom:0.5rem;
     padding-left:1rem;
+    padding-right:0.5rem;
 }
 
 [markdown2] > p > img {
@@ -58,9 +73,17 @@
     font-size: var(--markdown2-code-font-size);
 }
 
+[markdown2] > p > code {
+    padding-left:0.25rem;
+    padding-right:0.25rem;
+    border-radius:0.25rem;
+    background-color: rgb(58, 62, 70);
+    color: white;
+	font-family: var(--markdown2-code-font-family);
+}
+
 [markdown2] > pre > code {
 	font-family: var(--markdown2-code-font-family);
-    line-height: 1.25rem;
 }
 /* 
     when width larger than 800px
@@ -71,6 +94,14 @@
         max-width: 800px;
     }
 
+    [markdown2] > ol {
+        max-width: 800px;
+    }
+    
+    [markdown2] > ul {
+        max-width: 800px;
+    }
+    
     [markdown2] > blockquote {
         max-width: 800px;
     }
@@ -92,7 +123,7 @@
     }
 
     [markdown2] > pre {
-        max-width: calc(800px - 6rem);
+        max-width: 800px;
     }
 }
 

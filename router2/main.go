@@ -6,6 +6,7 @@ import (
 	"main/db"
 	"main/msg"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,14 +14,31 @@ import (
 func getBrowse(c *gin.Context) {
 	courses, _ := db.GetAllPublicCoursesPreload()
 
+	ownedCourses := []db.Ownership{}
+	user, err := auth2.GetLoggedInUser(c)
+	if err == nil {
+		ownedCourses, _ = db.GetOwnershipsPreloadCourses(user.ID)
+	}
+
+	authoredCourses := []db.Course{}
+	if err == nil {
+		authoredCourses, _ = user.GetPublicAndPrivateAuthoredCourses()
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"browse_.html",
 		gin.H{
-			"User":     auth2.GetLoggedInUserLogError(c),
-			"LoggedIn": auth2.IsLoggedInValid(c),
-			"Messages": msg.GetMessages(c),
-			"Courses":  courses,
+			"AuthoredCourses": authoredCourses,
+			"OwnedCourses":    ownedCourses,
+			"User":            user,
+			"LoggedIn":        auth2.IsLoggedInValid(c),
+			"Messages":        msg.GetMessages(c),
+			"Courses":         courses,
+			"Meta": meta{
+				Title: "Sparker - Browse",
+				Desc:  "learn coding to build ideas",
+			},
 		},
 	)
 }
@@ -29,8 +47,9 @@ func getCourse(c *gin.Context) {
 	usernameParam := c.Params.ByName("username")
 	courseParam := c.Params.ByName("course")
 	sectionIDParam := c.Params.ByName("sectionID")
+	_ = c.Params.ByName("releaseID")
 
-	course, err := db.GetUserCoursePreload(usernameParam, courseParam)
+	course, err := db.GetUserCoursePreload(usernameParam, strings.ToLower(courseParam))
 
 	if err != nil {
 		log.Println("router/get.go ERROR getting course:", err)
@@ -47,16 +66,30 @@ func getCourse(c *gin.Context) {
 		releases, _ = db.GetPublicReleases(course.ID)
 	}
 
+	owned := false
+	user, err1 := auth2.GetLoggedInUser(c)
+	if err1 != nil {
+		if user.OwnsRelease(course.Release.ID) {
+			owned = true
+		}
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"course_.html",
 		gin.H{
+			"Owned":     owned,
 			"SectionID": sectionIDParam,
 			"User":      auth2.GetLoggedInUserLogError(c),
 			"LoggedIn":  auth2.IsLoggedInValid(c),
 			"Messages":  msg.GetMessages(c),
 			"Releases":  releases,
 			"Course":    course,
+			"Meta": meta{
+				Title:    course.Title,
+				Desc:     course.Subtitle,
+				ImageURL: course.Release.ImageURL,
+			},
 		},
 	)
 }

@@ -14,7 +14,7 @@ import (
 )
 
 func postLogin(c *gin.Context) {
-	email := c.PostForm("username")
+	email := c.PostForm("email")
 	password := c.PostForm("password")
 	redirectURL := c.PostForm("redirectURL")
 
@@ -45,12 +45,12 @@ func postLogin(c *gin.Context) {
 func postSignup(c *gin.Context) {
 	pass := c.PostForm("password")
 	confirm := c.PostForm("confirm")
-	email := c.PostForm("username")
+	email := c.PostForm("email")
 	redirectURL := c.PostForm("redirectURL")
 
 	emailAvailable, err5 := db.EmailAvailable(email)
 	if err5 != nil {
-		log.Println("routes/post ERROR cheking if username is available:", err5)
+		log.Println("routes/post ERROR checking if email is available:", err5)
 		msg.SendMessage(c, "Error checking if email is taken.")
 		c.Redirect(http.StatusFound, redirectURL)
 		return

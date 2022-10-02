@@ -75,7 +75,7 @@
                 return
             }
 
-            settings_sectionsClose();
+            Alpine.store("settings_sections").startPath = Alpine.store("settings_sections").path;
 
             // reload the sections after applying a change
             course_loadSections(Alpine.store("course").releaseID);
@@ -96,7 +96,10 @@
                 return
             }
 
-            settings_sectionsClose();
+            Alpine.store("settings_sections").startName = Alpine.store("settings_sections").name;
+            Alpine.store("settings_sections").startDesc = Alpine.store("settings_sections").desc;
+            Alpine.store("settings_sections").startNum = Alpine.store("settings_sections").num;
+            Alpine.store("settings_sections").startIsFree = Alpine.store("settings_sections").isFree;
 
             // reload the sections after applying a change
             course_loadSections(Alpine.store("course").releaseID);
@@ -188,7 +191,6 @@
         });
     }
 
-
 </script>
 
 <style>
@@ -197,7 +199,7 @@
     }
 </style>
 
-<div x-cloak x-data x-show="$store.settings_sections.newSectionPopupOpen"class="thm-bg-a" style="position:fixed; z-index:5; left:0; right:0; top:0; bottom:0; background-color:rgba(0,0,0,0.5);">
+<div x-cloak x-transiton x-data x-show="$store.settings_sections.newSectionPopupOpen"class="thm-bg-a" style="position:fixed; z-index:5; left:0; right:0; top:0; bottom:0; background-color:rgba(0,0,0,0.5);">
     <div class="align-center-horizontal" style="width:40rem; max-width:100%; padding:1rem;">
         <div class="thm-overlay utls-bd" style="padding:1rem;" 
         x-transition x-show="$store.settings_sections.newSectionPopupOpen"

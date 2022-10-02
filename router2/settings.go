@@ -34,6 +34,9 @@ func getSettings(c *gin.Context) {
 			"User":             auth2.GetLoggedInUserLogError(c),
 			"LoggedIn":         auth2.IsLoggedInValid(c),
 			"Messages":         msg.GetMessages(c),
+			"Meta": meta{
+				Title: "Sparker - Settings",
+			},
 		},
 	)
 }

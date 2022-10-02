@@ -134,6 +134,7 @@ type Ownership struct {
 	Progress    float32
 	PostsCount  uint32
 
+	User    User
 	Course  Course
 	Release Release
 }
@@ -304,10 +305,10 @@ type GithubVersion struct {
 type Section struct {
 	ID          uint64 `gorm:"primaryKey"` // TODO convert to string UUID or sha
 	Name        string
-	Description string // short description that is used for google indexing
 	ReleaseID   uint64
 	Num         uint16 `gorm:"default:0"` // what order to put the sections in
 	Free        bool   `gorm:"default:f"`
+	Description string
 	UpdatedAt   time.Time
 
 	// delete the corresponding GithubSection when we delete its section

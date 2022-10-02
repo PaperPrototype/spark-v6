@@ -131,7 +131,7 @@ func GetSection(sectionID string) (*Section, error) {
 
 func GetReleaseSections(releaseID string) ([]Section, error) {
 	sections := []Section{}
-	err := GormDB.Model(&Section{}).Preload("GithubSection").Where("release_id = ?", releaseID).Order("num DESC").Find(&sections).Error
+	err := GormDB.Model(&Section{}).Preload("GithubSection").Where("release_id = ?", releaseID).Order("num ASC").Find(&sections).Error
 	return sections, err
 }
 
@@ -211,13 +211,13 @@ func GetPublicRelease(releaseID interface{}) (*Release, error) {
 
 func GetPublicReleases(courseID uint64) ([]Release, error) {
 	releases := []Release{}
-	err := GormDB.Model(&Release{}).Preload("GithubRelease").Where("public", true).Where("course_id = ?", courseID).Find(&releases).Error
+	err := GormDB.Model(&Release{}).Preload("GithubRelease").Where("public", true).Order("num ASC").Where("course_id = ?", courseID).Find(&releases).Error
 	return releases, err
 }
 
 func GetAnyReleases(courseID uint64) ([]Release, error) {
 	releases := []Release{}
-	err := GormDB.Model(&Release{}).Preload("GithubRelease").Where("course_id = ?", courseID).Find(&releases).Error
+	err := GormDB.Model(&Release{}).Preload("GithubRelease").Where("course_id = ?", courseID).Order("num ASC").Find(&releases).Error
 	return releases, err
 }
 
@@ -270,6 +270,14 @@ func GetAllPublicCoursesPreload() ([]Course, error) {
 	err := GormDB.Model(&Course{}).Preload("User").Preload("Release", orderByNewestCourseRelease).Where("public = ?", true).Find(&courses).Error
 
 	return courses, err
+}
+
+func GetOwnershipsPreloadCourses(userID uint64) ([]Ownership, error) {
+	ownerships := []Ownership{}
+
+	err := GormDB.Model(&Ownership{}).Where("user_id = ?", userID).Preload("Course").Preload("Release").Preload("User").Find(&ownerships).Error
+
+	return ownerships, err
 }
 
 // search courses by their title

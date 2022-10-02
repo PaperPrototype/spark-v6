@@ -1,7 +1,7 @@
 .theme {
     background-color: black;
-    --thm-bg: rgb(18, 18, 19);
-    --thm-bg-a: rgba(0,0,0,0.8);
+    --thm-bg: rgb(17, 17, 18);
+    --thm-bg-a: rgba(17,17,18,0.8);
     --thm-hl:rgb(0, 136, 255);
 
     --thm-hl-a: rgb(0, 136, 255, 0.5);

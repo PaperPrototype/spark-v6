@@ -10,3 +10,43 @@
     transform:translate(-50%); 
     margin-left:50%; 
 }
+
+.utls-tip {
+  position: relative;
+  display: inline-block;
+}
+
+.utls-tip .utls-tiptext {
+    visibility: hidden;
+    width: max-content;
+    max-width:10rem;
+    padding:0.5rem;
+    background-color: var(--thm-hl);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.utls-tip:hover .utls-tiptext {
+    visibility: visible;
+}
+
+.utls-tip .utls-tiptext-bot-left {
+    /* position to the left bottom */
+    top: 150%;
+    right: 50%;
+}
+
+.utls-tip .utls-tiptext-bot-right {
+    /* position to the bottom */
+    top: 100%;
+    left: 50%;
+}
+
+.utls-shadow {
+    box-shadow: 0 0 1rem var(--thm-bg);
+}

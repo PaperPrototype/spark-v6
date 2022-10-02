@@ -9,21 +9,24 @@
 <script defer>
     document.addEventListener("alpine:init", function(event) {
         Alpine.store("course", {
+            title: {{ .Course.Title }},
             courseID: {{ .Course.ID }}, 
             releaseID: {{ .Course.Release.ID }},
             sectionID: 0,
+            sectionName: "",
             releases: [],
             menuOpen: true,
             view: "section", // channel view, section view (posts?)
             active: "", // active menu item
             sections: [],
-            sectionHTML: "",
+            sectionHTML: "{{ .MarkdownHTML }}",
+
+            // next section button
+            previous: false,
+            next: false,
         });
 
         course_loadReleases();
-
-        // load initial sections
-        course_loadSections();
     });
 </script>
 <script src="/resources2/scripts/course.js" defer></script>
@@ -35,11 +38,18 @@
 <div style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:2; background-color:var(--thm-bg-a); backdrop-filter: blur(10px);">
     
     <div x-data @click="course_openMenu()" style="position:fixed; top:0; right:0; height:2rem; width:100%; display:flex;">
-        <a href="/" style="margin-right:auto;">
-            <img style="height:2.5rem; padding:0.5rem; padding-left:1rem;" src="/resources2/images/sparker_code_transp_large.png">
+        <a href="/" style="margin-right:auto; margin-left:0.5rem;">
+            <img style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
         </a>
 
-        <div style="font-weight:500; font-size:20px; padding-top:0.5rem;">{{ .Course.Title }}</div>
+        <div style="font-weight:500; font-size:16px; padding-top:0.5rem; display:flex">
+            <div x-text="$store.course.title" style="overflow-x:hidden;">
+                {{ .Course.Title }}
+            </div>
+            <div x-show="$store.course.sectionName !== ''" style="display:flex; flex-direction:row; margin-left:0.5rem; margin-right:2rem;">
+                /<span x-text="$store.course.sectionName" style="margin-left:0.5rem;" class="thm-c-less"></span>
+            </div>
+        </div>
 
         <i style="margin-left:auto; padding:0.6rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-equals"></i>
     </div>
@@ -60,7 +70,7 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
                 <i class="fa-solid fa-gear"></i>
             </div>
         {{ end }}
-        <div style="font-weight:500;
+        <div class="course-menu-item utls-bd" style="font-weight:500;
         padding-top:0.5rem; 
         margin-top:0.5rem; 
         margin-bottom:0.5rem;
@@ -72,6 +82,13 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
         </div>
     </div>
 
+    <!-- for course author only -->
+    {{ if eq $.User.ID $.Course.User.ID }}
+        <div @click="settings_releasesNewCreate()" style="display:flex; flex-direction:row; border:0.1rem solid var(--thm-over-hover); padding-left:0.8rem;" class="course-menu-item utls-bd">
+            New Release
+        </div>
+    {{ end }}
+
     <!-- releases -->
     <div>
         <template x-for="release in $store.course.releases">
@@ -80,7 +97,7 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
                     <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; margin-top:0.5rem;"></i>
                     RELEASE V<span class="thm-c-less" x-text="release.Num"></span>
                 </div>
-    
+
                 <!-- for course author only -->
                 {{ if eq $.User.ID $.Course.User.ID }}
                     <!-- create new section -->
@@ -100,17 +117,21 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
     <!-- sections -->
     <div>
         <template x-for="section in $store.course.sections" :key="section.ID">
-            <div @click="course_viewSection(section.ID); course_loadSection(section.ID);" style="display:flex; flex-direction:row;" class="utls-bd">
+            <div @click="course_viewSection(section.ID); course_loadSection(section.ID, section.Name);" style="display:flex; flex-direction:row;" class="utls-bd utls-tip">
                 <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd" :class="$store.course.active === 'section' + section.ID ? 'course-menu-item-selected' : 'course-menu-item' ">
-                    <div x-text="section.Name">
-                    </div>
+                    <div x-text="section.Name"></div>
+                    {{ if .Owned }}
+                    <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock-open' " class="fa-solid"></i>
+                    {{ else }}
                     <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock' " class="fa-solid"></i>
+                    {{ end }}
                 </div>
 
                 <!-- if they are the author then they can access settings -->
                 {{ if eq $.User.ID $.Course.User.ID }}
                     <i style="margin-left:auto; padding:0.5rem;" class="fa-solid fa-gear course-menu-item utls-bd" @click="settings_sectionsOpen(); settings_sectionsLoad(section.ID);"></i>
                 {{ end }}
+                <span x-show="section.Description !== '' " class="utls-tiptext utls-tiptext-bot-left utls-shadow" x-text="section.Description"></span>
             </div>
         </template>
     </div>

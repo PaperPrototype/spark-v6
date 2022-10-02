@@ -3,6 +3,11 @@ package router2
 import "main/middlewares"
 
 func SetupRoutes() {
+	// pahge to make new course
+	router.GET("/new", middlewares.MustBeLoggedIn, getNew)
+	router.POST("/new", middlewares.MustBeLoggedIn, postNew)
+
+	// landing and homepage
 	router.GET("/", getBrowse)
 
 	// 404 page

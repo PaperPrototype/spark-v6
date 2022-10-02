@@ -127,3 +127,34 @@ func mustBeAuthorReleaseID(c *gin.Context) {
 
 	c.Next()
 }
+
+func mustBeAuthorCourseID(c *gin.Context) {
+	if !auth2.IsLoggedInValid(c) {
+		c.JSON(http.StatusOK, payload{
+			Error: "Error getting logged in user. You must be logged in.",
+		})
+		return
+	}
+
+	user := auth2.GetLoggedInUserLogError(c)
+
+	courseID := c.Params.ByName("courseID")
+
+	course, err2 := db.GetCoursePreloadUser(courseID)
+	if err2 != nil {
+		log.Println("v2/middlewares.go ERROR getting course in mustBeAuthorCourseID:", err2)
+		c.JSON(http.StatusOK, payload{
+			Error: "Error getting course",
+		})
+		return
+	}
+
+	if course.UserID != user.ID {
+		c.JSON(http.StatusOK, payload{
+			Error: "You must be the author of the course to edit this",
+		})
+		return
+	}
+
+	c.Next()
+}

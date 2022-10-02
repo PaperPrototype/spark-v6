@@ -126,20 +126,21 @@ func getSectionMarkdownHTML(c *gin.Context) {
 
 	// if not the author
 	if course.UserID != user.ID {
-		// if paid course release
-		if !release.IsFree() {
-			// if section is not set as "free preview section"
-			if !section.Free {
+		// if section is not set as "free preview section"
+		if !section.Free {
+			// if paid course release
+			if !release.IsFree() {
 				// if does not own the course release
 				if !user.OwnsRelease(release.ID) {
 					if !loggedIn {
-						// return login to buy message
+						// return login message
 						c.JSON(http.StatusOK, payload{
 							Payload: `
-						<div x-data style="text-align:center; margin-top:40vh;">
-							<p>Login or signup to buy ` + course.Title + ` and unlock all sections of the course.</p>
-							<button @click="onboard_open()" class="thm-bg-hl utls-bd" style="padding:1rem;">Login or Signup</button>
-						</div>`,
+							<div x-data style="text-align:center; margin-top:40vh;">
+								<i class="fa-solid fa-lock" style="font-size:2rem; margin:2rem;"></i>
+								<p style="padding:2rem;">Login or signup to unlock all sections of the course</p>
+								<button @click="onboard_open()" class="thm-bg-hl utls-bd" style="padding:1rem;">Login or Signup</button>
+							</div>`,
 						})
 						return
 					}
@@ -148,7 +149,8 @@ func getSectionMarkdownHTML(c *gin.Context) {
 					c.JSON(http.StatusOK, payload{
 						Payload: `
 					<div style="text-align:center; margin-top:40vh;">
-						<p>Buy ` + course.Title + ` to unlock all sections of the course. One time payment.</p>
+						<i class="fa-solid fa-lock" style="font-size:2rem; margin:2rem;"></i>
+						<p style="padding:2rem;">Buy ` + course.Title + ` to unlock all sections of the course. One time payment</p>
 						<a href="/` + author.Username + `/` + course.Name + `/buy/` + fmt.Sprint(release.ID) + `">
 							<button class="thm-bg-hl utls-bd" style="padding:1rem;">USD $` + fmt.Sprint(release.GetPriceUSD()) + `.00</button>
 						</a>
@@ -156,6 +158,21 @@ func getSectionMarkdownHTML(c *gin.Context) {
 					})
 					return
 				}
+
+				// section is not free, and course is free
+				// and not logged in
+				// must log in to view section
+			} else if !loggedIn {
+				// return login message
+				c.JSON(http.StatusOK, payload{
+					Payload: `
+					<div x-data style="text-align:center; margin-top:40vh;">
+						<i class="fa-solid fa-lock" style="font-size:2rem; margin:2rem;"></i>
+						<p style="padding:2rem;">Login or signup to unlock all sections of this course for free</p>
+						<button @click="onboard_open()" class="thm-bg-hl utls-bd" style="padding:1rem;">Login or Signup</button>
+					</div>`,
+				})
+				return
 			}
 		}
 	}

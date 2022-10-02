@@ -101,6 +101,94 @@ func getReleaseGithubAsset(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func getGithubReleaseAssetsTreeJSON(c *gin.Context) {
+	releaseID := c.Params.ByName("releaseID")
+
+	githubRelease, err := db.GetGithubReleaseWithIDStr(releaseID)
+	if err != nil {
+		log.Println("v2/github.go ERROR getting github release in getGithubReleaseTreeJSON:", err)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting github release",
+			},
+		)
+		return
+	}
+
+	user := auth2.GetLoggedInUserLogError(c)
+
+	connection, err1 := githubapi.GetGithubConnection(user)
+	if err1 != nil {
+		log.Println("v2/github.go ERROR getting github connection in getGithubReleaseTreeJSON:", err1)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting github connection",
+			},
+		)
+		return
+	}
+
+	ctx := context.Background()
+
+	// get client
+	client := githubapi.NewClient(connection, ctx)
+
+	githubUser, _, err2 := client.Users.Get(ctx, "")
+	if err2 != nil {
+		log.Println("api/github ERROR getting github user in getGithubReleaseTreeJSON:", err2)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting github user",
+			},
+		)
+		return
+	}
+
+	repo, _, err3 := client.Repositories.GetByID(ctx, int64(githubRelease.RepoID))
+	if err3 != nil {
+		log.Println("api/github ERROR getting repo by ID in getGithubReleaseTreeJSON:", err3)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting repository",
+			},
+		)
+		return
+	}
+
+	// get folders from repo with info from githubVersion
+	// use sha to get specific commit
+	tree, _, err4 := client.Git.GetTree(ctx, *githubUser.Login, *repo.Name, githubRelease.SHA, true)
+	if err4 != nil {
+		log.Println("api/github ERROR getting repo contents in getGithubReleaseTreeJSON:", err4)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting repository tree",
+			},
+		)
+		return
+	}
+
+	entrees := []github.TreeEntry{}
+	for _, entree := range tree.Entries {
+		if strings.Contains(*entree.Path, ".jpg") || strings.Contains(*entree.Path, ".png") ||
+			strings.Contains(*entree.Path, ".jpeg") || strings.Contains(*entree.Path, ".gif") {
+			entrees = append(entrees, entree)
+		}
+	}
+
+	c.JSON(
+		http.StatusOK,
+		payload{
+			Payload: entrees,
+		},
+	)
+}
+
 // get the files tree of the github repository connected to the release
 func getGithubReleaseTreeJSON(c *gin.Context) {
 	releaseID := c.Params.ByName("releaseID")
@@ -203,7 +291,12 @@ func postReleaseFORM(c *gin.Context) {
 	githubEnabled := githubEnabledStr == "true"
 	imageURL := c.PostForm("imageURL")
 
-	db.UpdateRelease(releaseID, price*100, public, uint16(postsNeededNum), imageURL, githubEnabled)
+	fixedImageURL := ""
+	if len(imageURL) > 0 {
+		fixedImageURL = "/v2/releases/" + releaseID + "/assets/" + imageURL[7:len(imageURL)]
+	}
+
+	db.UpdateRelease(releaseID, price*100, public, uint16(postsNeededNum), fixedImageURL, githubEnabled)
 
 	c.JSON(http.StatusOK, payload{})
 }
@@ -303,8 +396,16 @@ func postReleaseSectionFORM(c *gin.Context) {
 		return
 	}
 
+	num := uint16(0)
+	sections, err2 := db.GetReleaseSections(releaseID)
+	if err2 == nil && len(sections) > 0 {
+		// get the greatest number currently and set ours to it plus 1
+		num = sections[len(sections)-1].Num + 1
+	}
+
 	name := c.PostForm("name")
 	section := db.Section{
+		Num:       num,
 		Name:      name,
 		ReleaseID: releaseIDNum,
 	}
@@ -371,4 +472,19 @@ func sectionNameAllowed(str string) bool {
 	}
 
 	return true
+}
+
+func deleteRelease(c *gin.Context) {
+	releaseID := c.Params.ByName("releaseID")
+
+	err := db.DeleteRelease(releaseID)
+	if err != nil {
+		log.Println("v2/releases.go ERROR deleting release in deleteRelease:", err)
+		c.JSON(http.StatusOK, payload{
+			Error: "Error deleting release",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, payload{})
 }
