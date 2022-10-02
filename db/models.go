@@ -8,6 +8,7 @@ import (
 func migrate() {
 	// updates to database for v7
 	GormDB.Migrator().DropTable(&Content{})
+	GormDB.Migrator().DropTable(&PostToCourseReview{})
 	GormDB.Migrator().DropColumn(&Section{}, "version_id")
 	GormDB.Migrator().DropColumn(&Section{}, "parent_id")
 	GormDB.Migrator().DropColumn(&GithubSection{}, "github_release_id")
