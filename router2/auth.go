@@ -78,7 +78,6 @@ func postSignup(c *gin.Context) {
 
 	user := db.User{
 		Username: "default_username" + uuid.NewString(),
-		Name:     "Default Name",
 		Hash:     hash,
 		Email:    email,
 	}
