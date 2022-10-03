@@ -7,14 +7,7 @@ import (
 
 func migrate() {
 	// updates to database for v7
-	GormDB.Migrator().DropTable(&Content{})
-	GormDB.Migrator().DropTable(&PostToCourseReview{})
-	GormDB.Migrator().DropColumn(&Section{}, "version_id")
-	GormDB.Migrator().DropColumn(&Section{}, "parent_id")
-	GormDB.Migrator().DropColumn(&GithubSection{}, "github_release_id")
-	GormDB.Migrator().DropColumn(&GithubSection{}, "sha")
-	GormDB.Migrator().DropColumn(&GithubRelease{}, "github_sections")
-	GormDB.Migrator().DropColumn(&Ownership{}, "version_id")
+	// TODO drop Versions table
 
 	GormDB.AutoMigrate(
 		// auth
@@ -40,6 +33,7 @@ func migrate() {
 
 		// github based courses
 		&GithubRelease{},
+
 		// TODO DELETE
 		&GithubVersion{},
 
