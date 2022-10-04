@@ -244,6 +244,22 @@
     }
 
     function settings_releasesSave() {
+        if (
+            Alpine.store("settings_releases").startPrice    !== Alpine.store("settings_releases").price || 
+            Alpine.store("settings_releases").public        !== Alpine.store("settings_releases").startPublic ||
+            Alpine.store("settings_releases").githubEnabled !== Alpine.store("settings_releases").startGithubEnabled ||
+            Alpine.store("settings_releases").imageURL      !== Alpine.store("settings_releases").startImageURL) {
+            settings_releasesSaveRelease();
+        }
+        if ( 
+            Alpine.store("settings_releases").repoID !== Alpine.store("settings_releases").startRepoID || 
+            Alpine.store("settings_releases").branch !== Alpine.store("settings_releases").startBranch ||
+            Alpine.store("settings_releases").SHA    !== Alpine.store("settings_releases").startSHA) {
+            settings_releasesGithub_save();
+        }
+    }
+
+    function settings_releasesSaveRelease() {
         let releaseID = Alpine.store("settings_releases").id;
 
         let formData = new FormData();
@@ -353,7 +369,7 @@
                     <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding-bottom:0.5rem;">COVER IMAGE</div>
                     <div>
                         <select x-model="$store.settings_releases.imageURL" class="utls-bd utls-bd-none thm-bg" style="margin-bottom:0.5rem;">
-                            <option value="">---Select an Image---</option>
+                            <option value="" x-text="if ( $store.settings_releases.imageURL === '' ) { return '---Select an Image---' } else { return $store.settings_releases.imageURL }"></option>
                             <template x-for="asset in $store.settings_releases.githubAssets" :key="asset.path">
                                 <option x-text="asset.path" x-bind:value="asset.path" x-bind:selected="$store.settings_releases.imageURL === asset.path"></option>
                             </template>
@@ -379,28 +395,20 @@
             @click="settings_releasesSave()"
             x-transition
             x-show="
-            $store.settings_releases.startPrice !== $store.settings_releases.price || 
-            $store.settings_releases.public !== $store.settings_releases.startPublic ||
-            $store.settings_releases.githubEnabled !== $store.settings_releases.startGithubEnabled ||
-            $store.settings_releases.imageURL !== $store.settings_releases.startImageURL"
+            (
+                $store.settings_releases.startPrice    !== $store.settings_releases.price || 
+                $store.settings_releases.public        !== $store.settings_releases.startPublic ||
+                $store.settings_releases.githubEnabled !== $store.settings_releases.startGithubEnabled ||
+                $store.settings_releases.imageURL      !== $store.settings_releases.startImageURL
+            ) ||
+            ( 
+                $store.settings_releases.repoID !== $store.settings_releases.startRepoID || 
+                $store.settings_releases.branch !== $store.settings_releases.startBranch ||
+                $store.settings_releases.SHA    !== $store.settings_releases.startSHA
+            )"
             style="margin-left:auto; padding:1rem; font-size:16px;" 
             class="utls-bd thm-bg-hl">SAVE CHANGES</button>
         </div>
-
-        <!-- github release settings -->
-        {{ if .User.HasGithubConnection }} 
-            <div style="margin-top:auto; display:flex; flex-direction:column; text-align: center;">
-                <button 
-                @click="settings_releasesGithub_save();"
-                x-transition
-                x-show="
-                $store.settings_releases.repoID !== $store.settings_releases.startRepoID || 
-                $store.settings_releases.branch !== $store.settings_releases.startBranch ||
-                $store.settings_releases.SHA    !== $store.settings_releases.startSHA"
-                style="margin-left:auto; padding:1rem; font-size:16px;"
-                class="utls-bd thm-bg-hl">SAVE CHANGES</button>
-            </div>
-        {{ end }}
 
         <p style="color:grey; text-align:center;">Changes will be updated for other users once they reload the page.</p>
     </div>
