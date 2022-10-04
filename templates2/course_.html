@@ -136,17 +136,15 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
         </template>
     </div>
 
-    <div style="font-weight:500; font-size:0.8rem; margin-top:1rem;" class="thm-c-less">
-        <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem;"></i>CHANNELS
-    </div>
-    <div @click="course_viewChannel()" class="utls-bd" :class="$store.course.active === 'channel' ? 'course-menu-item-selected' : 'course-menu-item' ">
-        <i class="fa-solid fa-hashtag"></i> channel
+    <div style="margin-top:2rem;">
+        <a href="https://discord.gg/QhqTE4t2tR" target="_blank" style="text-decoration:none;" class="utls-bd" :class="$store.course.active === 'channel' ? 'course-menu-item-selected' : 'course-menu-item' ">
+            <i class="fa-brands fa-discord"></i> Join Sparker's discord server!
+        </a>
     </div>
     <div style="margin-bottom:auto;"></div>
 </div>
 
 <!-- views -->
-{{ template "course_channel.html" . }}
 {{ template "course_section.html" . }}
 
 <!-- settings pages
