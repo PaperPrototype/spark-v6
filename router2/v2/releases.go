@@ -44,7 +44,7 @@ func getReleaseGithubAsset(c *gin.Context) {
 			return
 		}
 
-		githubConnection, err4 := githubapi.GetGithubConnection(user)
+		githubConnection, err4 := githubapi.GetGithubConnection(user.ID)
 		if err4 != nil {
 			log.Println("v2/releases.go ERROR getting authors github connection in getReleaseGithubAsset", err4)
 			c.AbortWithStatus(http.StatusInternalServerError)
@@ -101,6 +101,89 @@ func getReleaseGithubAsset(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func getReleaseResourceDOWNLOAD(c *gin.Context) {
+	releaseID := c.Params.ByName("releaseID")
+	name := c.Params.ByName("name")
+
+	release, err := db.GetAnyRelease(releaseID)
+	if err != nil {
+		log.Println("v2/releases.go ERROR getting release in getReleaseGithubAsset:", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	if release.GithubEnabled {
+		githubRelease, err1 := db.GetGithubReleaseWithIDStr(releaseID)
+		if err1 != nil {
+			log.Println("v2/releases.go ERROR getting github release in getReleaseGithubAsset:", err1)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
+		user, err3 := release.GetAuthorUser()
+		if err3 != nil {
+			log.Println("v2/releases.go ERROR getting githubVersion in getReleaseGithubAsset:", err3)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		githubConnection, err4 := githubapi.GetGithubConnection(user.ID)
+		if err4 != nil {
+			log.Println("v2/releases.go ERROR getting authors github connection in getReleaseGithubAsset", err4)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		ctx := context.Background()
+		client := githubapi.NewClient(githubConnection, ctx)
+
+		githubUser, _, err5 := client.Users.Get(ctx, "")
+		if err5 != nil {
+			log.Println("v2/releases.go ERROR getting githubUser in getReleaseGithubAsset", err5)
+			c.AbortWithStatus(http.StatusNotFound) // user should not know of the existence of this file
+			return
+		}
+
+		repo, _, err6 := client.Repositories.GetByID(ctx, int64(githubRelease.RepoID))
+		if err6 != nil {
+			log.Println("v2/releases.go ERROR getting repo by ID in getReleaseGithubAsset", err6)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		mediaType := filepath.Ext(name)
+
+		if mediaType == ".zip" {
+			readCloser, err7 := client.Repositories.DownloadContents(ctx, *githubUser.Login, *repo.Name, "Resources/"+name, &github.RepositoryContentGetOptions{
+				Ref: githubRelease.SHA,
+			})
+			if err7 != nil {
+				log.Println("v2/releases.go ERROR getting downloading contents in getReleaseGithubAsset", err6)
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+			defer readCloser.Close()
+
+			written, err8 := io.Copy(c.Writer, readCloser)
+			if err8 != nil {
+				log.Println("v2/releases.go ERROR copying/writing contents in getReleaseGithubAsset", err6)
+				c.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+
+			c.Writer.Header().Set("Content-Type", mediaType)
+			c.Writer.Header().Set("Content-Length", fmt.Sprint(written))
+			return
+		}
+
+		c.Status(http.StatusNoContent)
+	} else {
+		// TODO user uploaded courses and non github courses
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
 func getGithubReleaseAssetsTreeJSON(c *gin.Context) {
 	releaseID := c.Params.ByName("releaseID")
 
@@ -118,7 +201,7 @@ func getGithubReleaseAssetsTreeJSON(c *gin.Context) {
 
 	user := auth2.GetLoggedInUserLogError(c)
 
-	connection, err1 := githubapi.GetGithubConnection(user)
+	connection, err1 := githubapi.GetGithubConnection(user.ID)
 	if err1 != nil {
 		log.Println("v2/github.go ERROR getting github connection in getGithubReleaseTreeJSON:", err1)
 		c.JSON(
@@ -207,7 +290,7 @@ func getGithubReleaseTreeJSON(c *gin.Context) {
 
 	user := auth2.GetLoggedInUserLogError(c)
 
-	connection, err1 := githubapi.GetGithubConnection(user)
+	connection, err1 := githubapi.GetGithubConnection(user.ID)
 	if err1 != nil {
 		log.Println("v2/github.go ERROR getting github connection in getGithubReleaseTreeJSON:", err1)
 		c.JSON(
@@ -487,4 +570,94 @@ func deleteRelease(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, payload{})
+}
+
+// get all zip files from the repository
+func getReleaseResourcesJSON(c *gin.Context) {
+	releaseID := c.Params.ByName("releaseID")
+
+	githubRelease, err := db.GetGithubReleaseWithIDStr(releaseID)
+	if err != nil {
+		log.Println("v2/github.go ERROR getting github release in getGithubReleaseTreeJSON:", err)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting github release",
+			},
+		)
+		return
+	}
+
+	release, _ := db.GetAnyRelease(releaseID)
+
+	course, _ := db.GetCourseWithIDPreloadUser(release.CourseID)
+
+	connection, err1 := githubapi.GetGithubConnection(course.UserID)
+	if err1 != nil {
+		log.Println("v2/github.go ERROR getting github connection in getGithubReleaseTreeJSON:", err1)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting github connection",
+			},
+		)
+		return
+	}
+
+	ctx := context.Background()
+
+	// get client
+	client := githubapi.NewClient(connection, ctx)
+
+	githubUser, _, err2 := client.Users.Get(ctx, "")
+	if err2 != nil {
+		log.Println("api/github ERROR getting github user in getGithubReleaseTreeJSON:", err2)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting github user",
+			},
+		)
+		return
+	}
+
+	repo, _, err3 := client.Repositories.GetByID(ctx, int64(githubRelease.RepoID))
+	if err3 != nil {
+		log.Println("api/github ERROR getting repo by ID in getGithubReleaseTreeJSON:", err3)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting repository",
+			},
+		)
+		return
+	}
+
+	// get folders from repo with info from githubVersion
+	// use sha to get specific commit
+	tree, _, err4 := client.Git.GetTree(ctx, *githubUser.Login, *repo.Name, githubRelease.SHA, true)
+	if err4 != nil {
+		log.Println("api/github ERROR getting repo contents in getGithubReleaseTreeJSON:", err4)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting repository tree",
+			},
+		)
+		return
+	}
+
+	entrees := []github.TreeEntry{}
+	for _, entree := range tree.Entries {
+		if strings.Contains(*entree.Path, ".zip") {
+			entrees = append(entrees, entree)
+		}
+	}
+
+	c.JSON(
+		http.StatusOK,
+		payload{
+			Payload: entrees,
+		},
+	)
 }

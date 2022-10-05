@@ -17,7 +17,7 @@ func getUserGithubReposJSON(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,
 		payload{
-			Payload: githubapi.GithubGetReposLogError(user),
+			Payload: githubapi.GithubGetReposLogError(user.ID),
 		},
 	)
 }
@@ -27,7 +27,7 @@ func getUserGithubRepoBranchesJSON(c *gin.Context) {
 	repoID := c.Params.ByName("repoID")
 
 	user := auth2.GetLoggedInUserLogError(c)
-	connection, err := githubapi.GetGithubConnection(user)
+	connection, err := githubapi.GetGithubConnection(user.ID)
 	if err != nil {
 		log.Println("api/github ERROR getting github connection in getGithubRepoBranches:", err)
 		c.JSON(
@@ -79,7 +79,7 @@ func getUserGithubRepoBranchCommitsJSON(c *gin.Context) {
 
 	user := auth2.GetLoggedInUserLogError(c)
 
-	connection, err := githubapi.GetGithubConnection(user)
+	connection, err := githubapi.GetGithubConnection(user.ID)
 	if err != nil {
 		log.Println("apit/github ERROR getting github connection in getGithubRepoBranchCommits:", err)
 		c.JSON(

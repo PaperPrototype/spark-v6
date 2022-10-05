@@ -189,7 +189,7 @@ func getSectionMarkdownHTML(c *gin.Context) {
 		// has github section
 		if section.GithubSection.SectionID == section.ID {
 			// get authors's github connection
-			connection, err4 := githubapi.GetGithubConnection(author)
+			connection, err4 := githubapi.GetGithubConnection(author.ID)
 			if err4 != nil {
 				log.Println("v2/sections.go ERROR getting user's github connection in getSectionMarkdown:", err4)
 

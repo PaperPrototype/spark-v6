@@ -19,7 +19,7 @@ func getGithubUserRepos(c *gin.Context) {
 
 	c.JSON(
 		http.StatusOK,
-		githubapi.GithubGetReposLogError(user),
+		githubapi.GithubGetReposLogError(user.ID),
 	)
 }
 
@@ -27,7 +27,7 @@ func getGithubRepoBranches(c *gin.Context) {
 	repoID := c.Params.ByName("repoID")
 
 	user := auth.GetLoggedInUserLogError(c)
-	connection, err := githubapi.GetGithubConnection(user)
+	connection, err := githubapi.GetGithubConnection(user.ID)
 	if err != nil {
 		log.Println("api/github ERROR getting github connection in getGithubRepoBranches:", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -60,7 +60,7 @@ func getGithubRepoBranchCommits(c *gin.Context) {
 
 	user := auth.GetLoggedInUserLogError(c)
 
-	connection, err := githubapi.GetGithubConnection(user)
+	connection, err := githubapi.GetGithubConnection(user.ID)
 	if err != nil {
 		log.Println("apit/github ERROR getting github connection in getGithubRepoBranchCommits:", err)
 		c.AbortWithStatus(http.StatusNotFound)
@@ -132,7 +132,7 @@ func getGithubRepoCommitTree(c *gin.Context) {
 	}
 
 	// get owner's github connection
-	connection, err4 := githubapi.GetGithubConnection(user)
+	connection, err4 := githubapi.GetGithubConnection(user.ID)
 	if err4 != nil {
 		log.Println("api/github ERROR getting user's github connection in getGithubRepoCommitTree:", err4)
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -219,7 +219,7 @@ func getGithubRepoCommitContent(c *gin.Context) {
 	}
 
 	// get owner's github connection
-	connection, err4 := githubapi.GetGithubConnection(user)
+	connection, err4 := githubapi.GetGithubConnection(user.ID)
 	if err4 != nil {
 		log.Println("api/github ERROR getting user's github connection in getGithubRepoCommitContent:", err4)
 		c.AbortWithStatus(http.StatusInternalServerError)

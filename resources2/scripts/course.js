@@ -176,12 +176,17 @@ function course_loadReleases() {
 
         // reload the sections
         course_loadSections();
+        course_loadResources();
     });
 }
 
 function course_getSelectedRelease() {
     let releaseID = Alpine.store("course").releaseID;
     let releases = Alpine.store("course").releases;
+
+    if (releaseID === 0 && releases.length !== 0) {
+        return releases[0];
+    }
 
     for (let i = 0; i < releases.length; i++) {
         if (releaseID === releases[i].ID) {
@@ -190,4 +195,23 @@ function course_getSelectedRelease() {
     }
 
     return null;
+}
+
+function course_loadResources() {
+    let releaseID = Alpine.store("course").releaseID;
+
+    fetch2("/v2/releases/"+releaseID+"/github/resources", "GET", function(json) {
+        if (json.Error !== "") {
+            return;
+        }
+
+        console.log("/v2/releases/:releaseID/github/resources");
+
+        for (let i = 0; i < json.Payload.length; i++) {
+            json.Payload[i].path = json.Payload[i].path.slice(10, json.Payload[i].path.length);
+        }
+
+        console.log(json);
+        Alpine.store("course").resources = json.Payload;
+    });
 }

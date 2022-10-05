@@ -14,15 +14,17 @@ func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/course/:courseID/releases", getCourseReleasesJSON)
 	group.POST("/course/:courseID/releases", mustBeAuthorCourseID, postCourseReleasesFORM) // create a new release
 
-	group.GET("/releases/:releaseID", getReleaseJSON)                                                           // get release
-	group.POST("/releases/:releaseID", mustBeAuthorReleaseID, postReleaseFORM)                                  // update release
-	group.GET("/releases/:releaseID/github", getGithubReleaseJSON)                                              // get only the github release
-	group.GET("/releases/:releaseID/github/tree", mustBeAuthorReleaseID, getGithubReleaseTreeJSON)              // get only the github release
-	group.GET("/releases/:releaseID/github/tree/assets", mustBeAuthorReleaseID, getGithubReleaseAssetsTreeJSON) // get only the github release
-	group.POST("/releases/:releaseID/github", mustBeAuthorReleaseID, postGithubReleaseFORM)                     // update or create github release
-	group.GET("/releases/:releaseID/sections", getReleaseSectionsJSON)                                          // get sections of a release
-	group.POST("/releases/:releaseID/section", mustBeAuthorReleaseID, postReleaseSectionFORM)                   // create a new section
+	group.GET("/releases/:releaseID", getReleaseJSON)                          // get release
+	group.POST("/releases/:releaseID", mustBeAuthorReleaseID, postReleaseFORM) // update release
+	group.GET("/releases/:releaseID/github", getGithubReleaseJSON)             // get only the github release
+	group.GET("/releases/:releaseID/github/tree", mustBeAuthorReleaseID, getGithubReleaseTreeJSON)
+	group.GET("/releases/:releaseID/github/tree/assets", mustBeAuthorReleaseID, getGithubReleaseAssetsTreeJSON)
+	group.POST("/releases/:releaseID/github", mustBeAuthorReleaseID, postGithubReleaseFORM)   // update or create github release
+	group.GET("/releases/:releaseID/sections", getReleaseSectionsJSON)                        // get sections of a release
+	group.POST("/releases/:releaseID/section", mustBeAuthorReleaseID, postReleaseSectionFORM) // create a new section
 	group.GET("/releases/:releaseID/assets/:name", getReleaseGithubAsset)
+	group.GET("/releases/:releaseID/github/resources", getReleaseResourcesJSON)   // get release github resources
+	group.GET("/releases/:releaseID/resources/:name", getReleaseResourceDOWNLOAD) // get release github resource
 	group.DELETE("/releases/:releaseID", mustBeAuthorReleaseID, deleteRelease)
 
 	// get, edit and delete sections

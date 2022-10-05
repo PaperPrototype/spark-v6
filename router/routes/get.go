@@ -678,7 +678,7 @@ func getNameMedia(c *gin.Context) {
 			return
 		}
 
-		githubConnection, err4 := githubapi.GetGithubConnection(user)
+		githubConnection, err4 := githubapi.GetGithubConnection(user.ID)
 		if err4 != nil {
 			log.Println("routes/get ERROR getting authors github connection in getNameMedia", err4)
 			c.AbortWithStatus(http.StatusInternalServerError)

@@ -31,7 +31,7 @@ func GetVersionGithubTree(version *db.Version, c *gin.Context) (*github.Tree, er
 	}
 
 	// get owner's github connection
-	connection, err4 := GetGithubConnection(user)
+	connection, err4 := GetGithubConnection(user.ID)
 	if err4 != nil {
 		log.Println("api/github ERROR getting user's github connection in getGithubRepoCommitTree:", err4)
 		return nil, err4
@@ -78,14 +78,14 @@ func UpdateGithubConnection(user *db.User, AccessToken string, TokenType string)
 	return db.GormDB.Model(&db.GithubConnection{}).Where("user_id = ?", user.ID).Update("access_token", AccessToken).Update("token_type", TokenType).Error
 }
 
-func GetGithubConnection(user *db.User) (*db.GithubConnection, error) {
+func GetGithubConnection(userID uint64) (*db.GithubConnection, error) {
 	githubConnection := db.GithubConnection{}
-	err := db.GormDB.Model(&db.GithubConnection{}).Where("user_id = ?", user.ID).First(&githubConnection).Error
+	err := db.GormDB.Model(&db.GithubConnection{}).Where("user_id = ?", userID).First(&githubConnection).Error
 	return &githubConnection, err
 }
 
-func GithubGetReposLogError(user *db.User) []*github.Repository {
-	connection, err := GetGithubConnection(user)
+func GithubGetReposLogError(userID uint64) []*github.Repository {
+	connection, err := GetGithubConnection(userID)
 	if err != nil {
 		log.Println("db/github ERROR getting github connection in GetReposLogError:", err)
 	}
@@ -107,8 +107,8 @@ func GithubGetReposLogError(user *db.User) []*github.Repository {
 	return repos
 }
 
-func GithubGetRepoLogError(user *db.User, repoID uint64) *github.Repository {
-	connection, err := GetGithubConnection(user)
+func GithubGetRepoLogError(userID uint64, repoID uint64) *github.Repository {
+	connection, err := GetGithubConnection(userID)
 	if err != nil {
 		log.Println("db/github ERROR getting github connection in GetReposLogError:", err)
 	}
