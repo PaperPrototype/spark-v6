@@ -6,11 +6,11 @@ import (
 	"github.com/stripe/stripe-go/v73"
 )
 
-// we take a 25 percent cut
-const PercentageShare float32 = 0.20
+// we take a 30 percent cut
+const PercentageShare float32 = 0.30
 
-// 1000 => $10 USD
-const MaxCoursePrice uint64 = 1000
+// 500 => $5 USD
+const MinCoursePrice uint64 = 500
 
 // if something goes wrong it is our fault.
 // The customer should still be able to get what they are needing and we suffer the loss.

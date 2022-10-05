@@ -8,6 +8,7 @@ import (
 	"main/auth2"
 	"main/db"
 	"main/githubapi"
+	"main/payments"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -368,18 +369,26 @@ func postReleaseFORM(c *gin.Context) {
 	githubEnabledStr := c.PostForm("githubEnabled")
 	postsNeededStr := c.PostForm("postsNeededNum")
 
-	price, _ := strconv.ParseUint(priceStr, 10, 64)
+	priceTmp, _ := strconv.ParseUint(priceStr, 10, 64)
 	postsNeededNum, _ := strconv.ParseUint(postsNeededStr, 10, 64)
 	public := publicStr == "true"
 	githubEnabled := githubEnabledStr == "true"
 	imageURL := c.PostForm("imageURL")
+
+	price := priceTmp * 100
+
+	if price != 0 {
+		if price < payments.MinCoursePrice {
+			price = payments.MinCoursePrice
+		}
+	}
 
 	fixedImageURL := ""
 	if len(imageURL) > 0 {
 		fixedImageURL = "/v2/releases/" + releaseID + "/assets/" + imageURL[7:len(imageURL)]
 	}
 
-	db.UpdateRelease(releaseID, price*100, public, uint16(postsNeededNum), fixedImageURL, githubEnabled)
+	db.UpdateRelease(releaseID, price, public, uint16(postsNeededNum), fixedImageURL, githubEnabled)
 
 	c.JSON(http.StatusOK, payload{})
 }

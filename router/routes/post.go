@@ -11,7 +11,6 @@ import (
 	"main/githubapi"
 	"main/helpers"
 	"main/msg"
-	"main/payments"
 	"main/router/auth"
 	"main/upload"
 	"net/http"
@@ -322,12 +321,6 @@ func postNewRelease(c *gin.Context) {
 
 	correctPriceNum := priceNumIncorrect * 100
 
-	if correctPriceNum > payments.MaxCoursePrice {
-		msg.SendMessage(c, "The max price of a course is $10 USD")
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
-		return
-	}
-
 	if !course.User.HasStripeConnection() && correctPriceNum > 0 {
 		msg.SendMessage(c, "You must connect your account to stripe before you can charge money for a course!")
 		correctPriceNum = 0
@@ -520,12 +513,6 @@ func postEditRelease(c *gin.Context) {
 	}
 
 	correctPriceNum := priceNumIncorrect * 100
-
-	if correctPriceNum > payments.MaxCoursePrice {
-		msg.SendMessage(c, "The max price of a course is $10 USD")
-		c.Redirect(http.StatusFound, "/"+username+"/"+courseName+"/settings")
-		return
-	}
 
 	var public bool = false
 	if publicStr != "" {
