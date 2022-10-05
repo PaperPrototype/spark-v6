@@ -9,8 +9,8 @@ import (
 // we take a 30 percent cut
 const PercentageShare float32 = 0.30
 
-// 800 => $8 USD
-const MinCoursePrice uint64 = 800
+// 900 => $9 USD
+const MinCoursePrice uint64 = 900
 
 // if something goes wrong it is our fault.
 // The customer should still be able to get what they are needing and we suffer the loss.
