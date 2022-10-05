@@ -86,7 +86,7 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
 
     <!-- for course author only -->
     {{ if eq $.User.ID $.Course.User.ID }}
-        <div @click="settings_releasesNewCreate()" style="display:flex; flex-direction:row; border:0.1rem solid var(--thm-over-hover); padding-left:0.8rem;" class="course-menu-item utls-bd">
+        <div @click="settings_releasesNewCreate()" style="display:flex; flex-direction:row; border:0.1rem solid var(--thm-over-hover); padding:0.5rem; --utls-hover:black;" class="utls-bd utls-hover">
             New Release
         </div>
     {{ end }}
@@ -94,7 +94,7 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
     <!-- releases -->
     <div>
         <template x-for="release in $store.course.releases">
-            <div style="padding:0.5rem; background-color:black;" class="utls-bd">
+            <div style="padding:0.5rem; background-color:black; margin-top:1rem;" class="utls-bd">
                 <div style="display:flex; flex-direction:row;">
                     <div @click="course_loadSections(release.ID)" class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
                         RELEASE V<span class="thm-c-less" x-text="release.Num"></span>
@@ -108,12 +108,12 @@ display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll;">
                         </div>
         
                         <!-- release settings -->
-                        <div @click="settings_releasesLoad()" class="course-menu-hover utls-bd" style="margin-right:0.55rem;">
+                        <div @click="settings_releasesLoad(release.ID)" class="course-menu-hover utls-bd" style="margin-right:0.55rem;">
                             <i class="fa-solid fa-gear thm-c-less" style="padding:0.45rem;"></i>
                         </div>
                     {{ end }}
                 </div>
-                <div>
+                <div x-show="$store.course.releaseID === release.ID">
                     <!-- resources -->
                     <div>
                         <div class="thm-c-less" style="font-weight:500; font-size:0.8rem;">

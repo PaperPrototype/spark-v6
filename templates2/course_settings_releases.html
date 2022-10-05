@@ -59,52 +59,48 @@
     }
 
     // load a release
-    function settings_releasesLoad() {
-        let release = course_getSelectedRelease();
+    function settings_releasesLoad(releaseID) {
+        fetch2("/v2/releases/"+releaseID, "GET", function(json) {
 
-        if (release == null) {
-            SendMessage("Release was null");
-            return;
-        }
+            Alpine.store("settings_releases").id = json.Payload.ID;
+            Alpine.store("settings_releases").num = json.Payload.Num;
+            Alpine.store("settings_releases").price = (json.Payload.Price / 100);
+            Alpine.store("settings_releases").public = json.Payload.Public;
+            Alpine.store("settings_releases").postsNeededNum = json.Payload.PostsNeededNum;
+            Alpine.store("settings_releases").githubEnabled = json.Payload.GithubEnabled;
+            Alpine.store("settings_releases").imageURL = json.Payload.ImageURL;
 
-        Alpine.store("settings_releases").open = true;
+            Alpine.store("settings_releases").startPrice = (json.Payload.Price / 100);
+            Alpine.store("settings_releases").startPublic = json.Payload.Public;
+            Alpine.store("settings_releases").startPostsNeededNum = json.Payload.PostsNeededNum;
+            Alpine.store("settings_releases").startGithubEnabled = json.Payload.GithubEnabled;
+            Alpine.store("settings_releases").startImageURL = json.Payload.ImageURL;
 
-        Alpine.store("settings_releases").id = release.ID;
-        Alpine.store("settings_releases").num = release.Num;
-        Alpine.store("settings_releases").price = (release.Price / 100);
-        Alpine.store("settings_releases").public = release.Public;
-        Alpine.store("settings_releases").postsNeededNum = release.PostsNeededNum;
-        Alpine.store("settings_releases").githubEnabled = release.GithubEnabled;
-        Alpine.store("settings_releases").imageURL = release.ImageURL;
+            // github release
+            Alpine.store("settings_releases").repoID = json.Payload.GithubRelease.RepoID;
+            Alpine.store("settings_releases").branch = json.Payload.GithubRelease.Branch;
+            Alpine.store("settings_releases").SHA = json.Payload.GithubRelease.SHA;
 
-        Alpine.store("settings_releases").startPrice = (release.Price / 100);
-        Alpine.store("settings_releases").startPublic = release.Public;
-        Alpine.store("settings_releases").startPostsNeededNum = release.PostsNeededNum;
-        Alpine.store("settings_releases").startGithubEnabled = release.GithubEnabled;
-        Alpine.store("settings_releases").startImageURL = release.ImageURL;
+            Alpine.store("settings_releases").startRepoID = json.Payload.GithubRelease.RepoID;
+            Alpine.store("settings_releases").startBranch = json.Payload.GithubRelease.Branch;
+            Alpine.store("settings_releases").startSHA = json.Payload.GithubRelease.SHA;
 
-        // github release
-        Alpine.store("settings_releases").repoID = release.GithubRelease.RepoID;
-        Alpine.store("settings_releases").branch = release.GithubRelease.Branch;
-        Alpine.store("settings_releases").SHA = release.GithubRelease.SHA;
-
-        Alpine.store("settings_releases").startRepoID = release.GithubRelease.RepoID;
-        Alpine.store("settings_releases").startBranch = release.GithubRelease.Branch;
-        Alpine.store("settings_releases").startSHA = release.GithubRelease.SHA;
-
-        if (Alpine.store("settings_releases").githubEnabled === true) {
-            settings_releasesGithub_loadGithubAssets();
-        }
-
-        settings_releasesGithub_loadRepos();
-
-        if (release.GithubRelease.Branch !== "") {
-            settings_releasesGithub_loadBranches();
-
-            if (release.GithubRelease.SHA !== "") {
-                settings_releasesGithub_loadCommits();
+            if (Alpine.store("settings_releases").githubEnabled === true) {
+                settings_releasesGithub_loadGithubAssets();
             }
-        }
+
+            settings_releasesGithub_loadRepos();
+
+            if (json.Payload.GithubRelease.Branch !== "") {
+                settings_releasesGithub_loadBranches();
+
+                if (json.Payload.GithubRelease.SHA !== "") {
+                    settings_releasesGithub_loadCommits();
+                }
+            }
+
+            Alpine.store("settings_releases").open = true;
+        })
     }
 
     function settings_releasesGithub_loadRepos() {

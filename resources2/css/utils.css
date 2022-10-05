@@ -50,3 +50,7 @@
 .utls-shadow {
     box-shadow: 0 0 1rem var(--thm-bg);
 }
+
+.utls-hover:hover {
+    background-color: var(--utls-hover);
+}
