@@ -1,3 +1,5 @@
+Basically a massive todo list + idea planning / writing space for me to think.
+
 Note: the MOST IMPORTANT todo's are in the RELEASE_TODO.md file, so make sure you finish those first before we go live!
 
 - user profile

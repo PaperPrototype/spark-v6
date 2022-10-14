@@ -1,38 +1,62 @@
-# My Vision of the end product
-> scroll to the bottom for setup instructions to run the app locally.
+# The most important things you'll hear me say are here
+This document is very important. Please to not edit it without talking to me (Abdiel).
 
-If your part of the team it's gonna help to know what exactly what you are building. Well, it's not just courses. It's a learning experience. And I want to solve some big hickups, with ridiculously simple solutions. I'll use Udemy as an example since they are the biggest competitor.
+> Scroll to the bottom for setup instructions to run the app locally.
+> Check the RELEASE_TODO.md for critical features that need to be added.
 
-1. No organization to courses or logical pathway to the ultimate learning goal (eg. Make minecraft game, make multiplayer MMO, make a game engine. Everyone who codes has one, it's our job to inspire them to remember). Essentially, I could take an intro to scripting course (if I can even find a good one) but then what? **There's isn't a logical path to the next course to take based on what I'm interested in.** There is an incredibly simple solution to this. Any course can set other courses as pre-requisites. And with that your courses start to form a hierarchy or "graph", that you can use to display "next courses to take", and "pre-requisite courses".
-   - teachers know what the student has already learned based on selected pre-requisite courses
-   - students don't waste time learning stuff they've already learned
+If your part of the team it's gonna help to know what exactly what you are building so lets get started. 
 
-2. Assistence and help when you get stuck. Udemy has a "Q&A" section for each course. They've attacked the problem in the most direct way possible. But what are people using even more than the Q&A system? Discord. With Discord you can make more than just a Q&A section, you can organize your community, make announcements, threads, showcase channels. Discord is a place for your student to come tegther as a community. So what we are we going to do? Each course is going to be like it's own dedicated discord server.
+It's not just courses, it's a learning experience. We want to solve online learnings biggest problems, with ridiculously simple solutions. I'll use Udemy as an example for comparison since they are our biggest competitor.
 
-There is a few trivial but important features that need to exist
+1. 
+    No organization to courses or logical pathway to the ultimate learning goal (eg. Make minecraft game, make multiplayer MMO, make a game engine. Everyone who codes has one, it's our job to inspire them to remember). Essentially, I could take an intro to scripting course (if I can even find a good one) but then what? **There's isn't a logical path to the next course to take based on what I'm interested in.** There is an incredibly simple solution to this. Any course can set other courses as pre-requisites. And with that your courses start to form a hierarchy or "graph", that you can use to display "next courses to take", and "pre-requisite courses". 
+
+    - teachers know what the student has already learned based on selected pre-requisite courses
+    - students don't waste time learning stuff they've already learned
+
+    **Marketing:**
+    I realize that trying to sell this concept directly will be bad marketing. Users buy things if it is what they are needing. So we should make "paths", groups of courses with a final goal that users are asking for, because that is what customers will buy! I'd say 90% of sales will come from this if we do it right.
+
+2. 
+    Community + Assistence and help when you get stuck. 
+    
+    Udemy has a "Q&A" section for each course. They've attacked the problem in the most direct way possible. But what are people using even more than the Q&A system? Discord servers. With Discord you can make more than just a Q&A section, you can organize your community, make announcements, threads, showcase channels. Discord is a place for your student to come tegther as a community. So what we are we going to do? Each course is going to be like it's own dedicated discord server.
+
+    **Marketing:**
+    Marketing is selling a good to saisfy a need. People need a place to ask questions and get help. They also will create or find a community to satisfy conversing with poeple with similar interests.
+    Each course should display what students are currently live online (like discord). This gives a sense of not being alone. And its encouraging to know other people are working on the same thing you are.
+3. 
+    Posts system like medium. The purpose is for the Profile system to create the coolest portfolio ever. Utilizing showcase posts the user has made. I'm still stuck on how to keep continuity between the posts system and the messages system in the discord like chat system.
+
+    **Marketing:**
+    I have no idea. But first we need to figure out why students would want to make a post vs use our chat system. Somehow I need to change it from "sparker needs ppl to make posts" to "students want/need to post because..." 
+
+    **Marketing Ideas:**
+    I say it's best used as a method of showcasing progress, and users who want to indirectly add tutorials or information they learned to a course. Its also a more permanent way of showcasing work/sharing thoughts than a fast-paced chat system where conversations get forgotten.
+
+And thats our MVP! So far none of the above have been implemented, and the only things working are courses hosted through github and payments are working. We have 2 courses that are active, and 1 of them is paid.
+
+Now you know what needs done. Go do it! Ask for help, and get your hands dirty. Remember someone else may already be working on the thing you want to work on, so ask around (if someone ask you what your working on, make sure you answer them). 
+
+less critical MVP features
 - Course progress system. When you finish a section its marked as complete
-- Profile system that looks like the coolest portfolio ever.
-    - The Discord system also comes with simple (think of medium.com) posts for things like showcases. I'm still stuck on how to keep continuity between the posts and messages in the discord like chat system.
+- Ranking system. Courses with more pre-requisites get a higher "level" (think "levels" like in a video game). This will could bring out the competitive nature of some pestudents, and make a system for evaluating how deep a students knowledge has gone. Basically the higher level course a student takes the higher their rank gets.
 
+Make sure to readthe [CHECKLIST.md](/CHECKLIST.md) file in the repo as it outlines questions that we should have answers for!
 
-## Lets take a visionary tour of what I'm invisioning
-Imagine a courses site where each course is like a dedicated discord server. You have live chat, voice, and video. As well as posts that showcase your progress and skills and what you are capable of. 
-
-Just like discord, you get live noifications to help you find where people have mentioned you. The best part is that you can view the chat and posts without interrupting your work on the course, because the chat *is* part of the course! There is even an overlay DM voice and video system so you can chat directly with your best friend while working on a course together!
-
-The priorty customer is the END USER (the students). Not the teachers, or the companies using our site for hiring. We want to be like apple. Our students are king, even at the cost of possibly losing a profitable deal with another company. No ad's (well at the beginning we may use google ads to keep from going under). We make and sell really good courses. Thats our business model.
-
-Eventually courses will have to start costing more (as an example: apple is expensive, but worth it). We can get students hooked by making all lower level courses free, and then allow teachers to charge more money the higher the level of the course is (the level of a course depends on the number of prerequisites the student has to go through to get to your course).
-
-### Hierarchy system
-The best part is the course hierarchy system. Every course is part of a massive "tree" of courses. Unlike other sites where you have to look through thousands of random courses, at sparker3d.com, courses can set pre-requisite courses! That way you know where to start, and what courses to take next!
-
-Courses are also given a "Level" based on the depth of pre-requisite courses it has (Courses at Level 0 are always free!). You "level up" by taking courses that are at higher levels. It gives the community a ranking system, the highest level students are held in awe by their peers because of their "rank".
-
-Without realizing it, you get sucked in (like a video game!) and end up building a really awesome portfolio from all the showcase posts you made! Now you start posting your profile on job hiring websites. No actually, sparker3d.com is a hiring website, based on skill, not certification.
-
-### Job hiring (once we have 1 million users)
-Since our site is kinda becoming the future of online tech portfolios, we add features targeted at helping companies and entreprenours hire our students. Our top priority is to benefit and protect the students at all costs. Again, the priorty customer is the END USER (the students). Not the teachers, or the companies using our site for hiring. We want to be like apple. Our students are king.
+There is also a list of the most important questions that I haven't figured out:
+1. Who is gonna make the course other than me? Should we hire teachers? I personally like making courses, but this is not going to work long term.
+2. How are we going to break even while we continue to develop the site. How can we increase our runway as much as possible!
+    - google ads
+        - this needs to be done as soon as possible.
+    - a few high demand niche courses
+        - voxel planets <= a course that I am working on right now
+- Password resetting through email. Yeah, still need to get that one working.
+- Customer support. Not even sure where to start with that one. Currently the Discord server
+- Server costs with google ads. Thinking of popping in some **unabtrusive** ads along the sides of the course and at the bottom to help cover server costs.
+- Accountability structure for me and other founders to keep us from going off the rail.
+- What is Unit economics?
+- I'm putting the follwing here because its important, and I want help figuring this out properly. It's very important that I figure it out as soon as possible since it *could* become a very BIG problem if it's not figured out (I'm also going to be very blunt and not hide what I'm thinking): 5% of the company is David Spooners (currently), and 3% is my parents (currently). I need to clarify what exactly this means for the company. I also need to know what this will mean legally for the company and what 3% evem means. Stock? Shareholders stock? Voting stock? Equity? Profit share? Once I figure it out I need to make a it legal and write  operating agreement with my parents and uncle. I want to my uncles and parents percentage to be used for VC's (not all of it, but I'm not sure I want them holding 9% of the company). Does that mean buying some of it back from them? Should I add something to the operating agreement. I want them to get their fair share, but I also don't want to regret giving 9% to them. Reason I gave it in the first place? My parents are paying the server fee's and my uncle is paying for the domain name and SSL certificate. Without them I'd still be stuck without a domain and dedicated servers. Here is a link to a reddit that has some good answers related to this https://www.reddit.com/r/legaladvice/comments/y3rp3n/my_mom_wants_13_of_my_business_and_13_or_more_of/ (not that I am having trouble with my parents. They will probably be happy to just give up their percentage, but I want them to be treated fairly)
 
 # Local Setup
 config vars are stored in single key files when running locally. These files must be in the repos root folder. They are ignored in `.gitignore` for security purposes.
