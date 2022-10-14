@@ -16,6 +16,9 @@ func SetupRoutes() {
 	// get course
 	router.GET("/:username/:course", getCourse)
 	router.GET("/:username/:course/:sectionID", getCourse)
+
+	// TODO use course.ID instead of username and courseName
+	// incase name changes when user clicks buy
 	router.GET("/:username/:course/buy/:releaseID", getBuyRelease)
 	router.GET("/:username/:course/buy/success", middlewares.MustBeLoggedIn, getBuySuccess)
 	router.GET("/:username/:course/buy/cancel", middlewares.MustBeLoggedIn, getBuyCancel)
