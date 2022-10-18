@@ -16,6 +16,8 @@ function course_loadPreviousSection() {
     let sectionID = Alpine.store("course").sectionID;
     let sections = Alpine.store("course").sections;
 
+    Alpine.store("course").loadingSection = true;
+
     for (let i = 0; i < sections.length; i++) {
         if (sections[i].ID === sectionID) {
             if (i <= sections.length) {
@@ -28,6 +30,8 @@ function course_loadPreviousSection() {
 function course_loadNextSection() {
     let sectionID = Alpine.store("course").sectionID;
     let sections = Alpine.store("course").sections;
+
+    Alpine.store("course").loadingSection = true;
 
     for (let i = 0; i < sections.length; i++) {
         if (sections[i].ID === sectionID) {
@@ -67,6 +71,8 @@ function course_isThereAPreviousSection(sectionID) {
 }
 
 function course_loadSection(sectionID, sectionName) {
+    Alpine.store("course").loadingSection = true;
+    
     let releaseID = Alpine.store("course").releaseID;
     Alpine.store("course").sectionID = sectionID;
     Alpine.store("course").sectionName = sectionName;
@@ -95,6 +101,8 @@ function course_loadSection(sectionID, sectionName) {
 
         let course_markdown = document.getElementById("course_markdown");
         course_markdown.scrollIntoView();
+
+        Alpine.store("course").loadingSection = false;
     } else {
         fetch2("/v2/sections/"+sectionID+"/html", "GET", function(json) {
             if (json.Error) {
@@ -113,6 +121,8 @@ function course_loadSection(sectionID, sectionName) {
 
             // when a section is loaded close the menu
             Alpine.store("course").menuOpen = false;
+
+            Alpine.store("course").loadingSection = false;
         });
     }
 }

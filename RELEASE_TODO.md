@@ -33,3 +33,9 @@ Features in order of importance:
     - display prerequisite courses for a course somehow
     - display upcoming courses somehow
     - a way to search and set prerequisite courses for a course
+
+3. Offline viewing of website page (like youtube)
+http://diveinto.html5doctor.com/offline.html
+    - make course pages viewable offline
+        - change sections to be stored in "localStorage" instead of "sessionStorage"
+        - add cache manifest so browser will download resources that can be loaded when offline

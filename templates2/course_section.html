@@ -19,7 +19,25 @@
                 border:0.25rem solid var(--thm-text-less);
                 color: var(--thm-text-less);
             }
+
+            .next-prev-loader {
+                border: 0.5rem solid var(--thm-bg);
+                border-top: 0.5rem solid var(--thm-hl-a);
+                border-radius: 50%;
+                width: 3rem;
+                height: 3rem;
+                animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
         </style>
+
+        <div style="display:flex; flex-direction:row;">
+            <div style="height:3rem; width:3rem; margin-left:auto; margin-right:auto;" :class="$store.course.loadingSection ? 'next-prev-loader' : '' "></div>
+        </div>
 
         <div style="display:flex; flex-direction:row; width:100%; margin-bottom:5rem; padding-left:2rem; padding-right:2rem;">
             <div x-show="$store.course.previous" @click="course_loadPreviousSection()" class="next-prev" style="margin-right:auto;">
@@ -29,5 +47,6 @@
                 next
             </div>
         </div>
+
     </div>
 </div>
