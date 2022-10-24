@@ -375,22 +375,40 @@ func postReleaseFORM(c *gin.Context) {
 	githubEnabled := githubEnabledStr == "true"
 	imageURL := c.PostForm("imageURL")
 
+	author := auth2.GetLoggedInUserLogError(c)
+
+	message := ""
+
 	price := priceTmp * 100
 
 	if price != 0 {
 		if price < payments.MinCoursePrice {
 			price = payments.MinCoursePrice
 		}
+
+		if !author.Verified {
+			message = "You must verify your email in <a href='/settings'>settings</a> before you can charge money for a course. "
+			price = 0
+		}
+
+		if !author.HasStripeConnection() {
+			price = 0
+			message += "You must connect your account to stripe in <a href='/settings'>settings</a> before you can charge money for a course."
+		}
 	}
 
 	fixedImageURL := ""
-	if len(imageURL) > 0 {
-		fixedImageURL = "/v2/releases/" + releaseID + "/assets/" + imageURL[7:len(imageURL)]
+	if strings.Contains(imageURL, "Assets") {
+		if len(imageURL) > 0 {
+			fixedImageURL = "/v2/releases/" + releaseID + "/assets/" + imageURL[7:]
+		}
 	}
 
 	db.UpdateRelease(releaseID, price, public, uint16(postsNeededNum), fixedImageURL, githubEnabled)
 
-	c.JSON(http.StatusOK, payload{})
+	c.JSON(http.StatusOK, payload{
+		Error: message,
+	})
 }
 
 func getReleaseJSON(c *gin.Context) {
