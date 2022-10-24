@@ -14,7 +14,7 @@ import (
 )
 
 func postLogin(c *gin.Context) {
-	email := c.PostForm("email")
+	email := c.PostForm("username") // form field name has to be "username" for autcomplete
 	password := c.PostForm("password")
 	redirectURL := c.PostForm("redirectURL")
 
@@ -45,7 +45,7 @@ func postLogin(c *gin.Context) {
 func postSignup(c *gin.Context) {
 	pass := c.PostForm("password")
 	confirm := c.PostForm("confirm")
-	email := c.PostForm("email")
+	email := c.PostForm("username") // form name must be "username" for autocomplete
 	redirectURL := c.PostForm("redirectURL")
 
 	emailAvailable, err5 := db.EmailAvailable(email)
