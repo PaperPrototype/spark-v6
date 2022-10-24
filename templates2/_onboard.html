@@ -43,10 +43,10 @@ background:linear-gradient(black, var(--thm-hl)); ">
             <form action="/login" method="post" x-show="!$store.onboard.signup">
                 <input hidden x-bind:value="$store.onboard.currentURL" name="redirectURL" value="/">
                 <div>
-                    <input class="utls-bd" name="username" type="email" placeholder="email">
+                    <input class="utls-bd" name="username" type="email" placeholder="Email">
                 </div>
                 <div style="padding-top:0.5rem;">
-                    <input class="utls-bd" name="password" type="password" placeholder="password">
+                    <input class="utls-bd" name="password" type="password" placeholder="Password">
                 </div>
                 <div style="padding-top:2rem; display:flex; flex-direction: row;">
                     <p>
@@ -62,13 +62,16 @@ background:linear-gradient(black, var(--thm-hl)); ">
             <form action="/signup" method="post" x-show="$store.onboard.signup">
                 <input hidden name="redirectURL" value="/">
                 <div>
-                    <input class="utls-bd" name="username" type="email" placeholder="email">
+                    <input class="utls-bd" name="name" type="text" placeholder="Name">
                 </div>
                 <div style="padding-top:0.5rem;">
-                    <input class="utls-bd" name="password" type="password" placeholder="password">
+                    <input class="utls-bd" name="username" type="email" placeholder="Email">
                 </div>
                 <div style="padding-top:0.5rem;">
-                    <input class="utls-bd" name="confirm" type="password" placeholder="confirm password" x-show="$store.onboard.signup">
+                    <input class="utls-bd" name="password" type="password" placeholder="Password">
+                </div>
+                <div style="padding-top:0.5rem;">
+                    <input class="utls-bd" name="confirm" type="password" placeholder="Confirm Password" x-show="$store.onboard.signup">
                 </div>
                 <div style="padding-top:2rem; display:flex; flex-direction: row;">
                     <p>
