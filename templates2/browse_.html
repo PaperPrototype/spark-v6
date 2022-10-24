@@ -30,11 +30,16 @@
                 <span class="utls-tiptext utls-tiptext-bot-left">logout</span>
             </div>
         {{ else }}
-            <i style="padding:0.5rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-circle-user"></i>
+            <div @click="onboard_open()" style="padding:0.5rem; font-weight: 500; padding-right:1rem;">
+                <button class="utls-bd" style="background:none; border: 0.15rem solid var(--thm-hl); color:var(--thm-hl); font-weight: 500; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
+                    signup
+                </button>
+                login
+            </div>
         {{ end }}
     </div>
 </div>
-
+rgb(65, 147, 255)
 <div class="align-center-horizontal" style="width:100vw;">
     <!-- title and gradient -->
     <div style="padding-left:1rem; padding-right:1rem; height:100vh; min-height:840px; padding-top:2rem; background:linear-gradient(black, var(--thm-hl));">
