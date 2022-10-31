@@ -1,6 +1,8 @@
 package router2
 
-import "main/middlewares"
+import (
+	"main/middlewares"
+)
 
 func SetupRoutes() {
 	// pahge to make new course
