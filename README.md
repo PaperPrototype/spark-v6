@@ -13,7 +13,7 @@ If you are part of the team it's gonna help to know what exactly what it is we a
 It's not just courses, it's a learning experience. We want to solve online learnings biggest problems, with ridiculously simple solutions. I'll use Udemy as an example for comparison since they are our biggest competitor.
 
 1. 
-    Poeple learn things with an end goal in mind.
+    People learn things with an end goal in mind.
 
     Sites like Udemy have no organization to courses or logical pathway to the ultimate learning goal (Everyone who codes has one, and we can teach for those goals to maximize impact), they are just a massive collection of random courses. I see that their disadvantage. 
     
@@ -35,7 +35,7 @@ It's not just courses, it's a learning experience. We want to solve online learn
     I'd say 90% of sales will happen if we can paint this perspective of "series" right (eg: a dedicated section in browse for "series". A "series" page that displays a series of courses. Maybe alos show a "tree structure" of connections?).
 
 2. 
-    Courses. We need to make courses that poeple will want to take. Also the courses need to not suck when it comes to quality. We can make money and do quality assurance by offering in-person classes (2 birds in one stone, steadier revenue + quality assurance)
+    Increase runway and do quality assurance by offering in-person classes (2 birds in one stone, steadier revenue + quality assurance)
     
     We could aim for high interest catalyst and exciting but simple to learn niche' subjects that the internet has (so far) failed to fill.
 
@@ -61,20 +61,32 @@ It's not just courses, it's a learning experience. We want to solve online learn
     On "series" page, have a "next course to buy" that the user can click "buy" on
 
 3. 
-    Humans seek out other humans with similar interests. They are also more likely to succeed if they are part of a community of people who can help them and encourage them.
+    Help my code isn't working!!
+
+    NEW IDEA: Q&A system where people earn points if they gave the answer that solved the person's problem. We give away "points" that the user can use to get courses for free.
     
     To solve this Udemy has a "Q&A" section for each course. **They've attacked the problem in the most direct way possible.** But what are people using even more than the Q&A system? Discord servers! With Discord you can make more than just a Q&A section, you can organize your community, make announcements, threads, showcase channels. Discord is a place for your student to come together as a community. Youtube is also probably the most exciting place when it comes to discovering cool things programmers have built. So what we are we going to do? Each course is going to be like it's own dedicated discord server. We aren't just selling courses, we are offering the whole social experience, online.
 
     **Marketing:**
 
-    Marketing is selling a good to saisfy a need. People need a place to ask questions and get help. They also have a need for recogniition. They also will create or find a community to satisfy conversing with poeple with similar interests.
+    Marketing is selling a good to saisfy a need. People need a place to ask questions and get help. They also will create or find a community to satisfy conversing with poeple with similar interests.
     Each course should display what students are currently online and which ones aren't online (ege: like discord). This does something important. It shows you aren't alone in what your doing. This gives a sense of not being alone. And its encouraging to know other people are working on the same thing you are.
 4. 
-    Posts system like medium. Not as important but the purpose is for course progress to not just be a checkmark, but to help you create an online persona and portfolio that you can use to sell youself to others and show them what you are capable of. Also it's just so cool to see what people have done. 
+    People have a need for recognition. Ranking system and posts system? Upvotes? User's get a higher rank by getting upvotes?
+
+    People are motivated by recognition and percieved reward.
+
+    Upvotes can be gained through the following:
+    - posts (showcase / tutorial / help)
+    - answers (answering questions. The user that gives the answer that solves someones problem gets upvotes)
+        - explore giving a free course for each new rank a user gains?
+    - finishing a course!
+
+    Posts system like medium. The purpose is for course progress to not just be a checkmark, but to be recognition. It's just so cool to see what people have accomplished. 
     
-    I'm think of it like a bunch of mini master thesis'.
+    I'm think of it like a bunch of mini master thesis'?
     
-    I'm still stuck on how to keep continuity between the posts system and chat system. But they should each have a purpose.
+    I'm still stuck on how to keep continuity between the posts system and chat system and Q&A system. But they should each have a purpose.
 
     Video uploading? Best thing I can think of: In broswer recording tool? after you record it is stored in the cloud and you can share that?
 
