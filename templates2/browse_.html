@@ -31,10 +31,10 @@
             </div>
         {{ else }}
             <div @click="onboard_open()" style="padding:0.5rem; font-weight: 500; padding-right:1rem;">
-                <button class="utls-bd thm-bg-hl" style="padding:0.5rem; font-weight: 500; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
+                <button class="utls-bd thm-bg-hl" style="padding:0.45rem; font-weight: 500; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
                     signup
                 </button>
-                login
+                <span style="padding:0.45rem;">login</span>
             </div>
         {{ end }}
     </div>
@@ -42,7 +42,7 @@
 
 <div class="align-center-horizontal" style="width:100vw;">
     <!-- title and gradient -->
-    <div style="padding-left:1rem; padding-right:1rem; height:100vh; min-height:840px; padding-top:2rem; background:linear-gradient(black, var(--thm-hl));">
+    <div style="margin-top:3.2rem; padding-left:1rem; padding-right:1rem; height:calc(100vh - 3.2rem); min-height:840px; padding-top:2rem; background:linear-gradient(black, var(--thm-hl));">
         <div style="text-align:center; max-width:100%; padding-top:1rem;">
             {{ if .LoggedIn }}
                 <!-- title -->

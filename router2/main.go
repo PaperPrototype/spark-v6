@@ -6,7 +6,6 @@ import (
 	"main/db"
 	"main/msg"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -80,10 +79,8 @@ func getCourse(c *gin.Context) {
 
 	metaDescription := strings.Trim(course.Subtitle, " ")
 
-	sectionID := uint64(0)
+	section := db.Section{}
 	if sectionIDParam != "" {
-		sectionID, _ = strconv.ParseUint(sectionIDParam, 10, 64)
-
 		section, err2 := db.GetSection(sectionIDParam)
 		if err2 == nil && section.Description != "" {
 			metaDescription = "In this Section - " + strings.Trim(section.Description, " ")
@@ -95,13 +92,14 @@ func getCourse(c *gin.Context) {
 		http.StatusOK,
 		"course_.html",
 		gin.H{
-			"Owned":     owned,
-			"SectionID": sectionID,
-			"User":      auth2.GetLoggedInUserLogError(c),
-			"LoggedIn":  auth2.IsLoggedInValid(c),
-			"Messages":  msg.GetMessages(c),
-			"Releases":  releases,
-			"Course":    course,
+			"Owned":        owned,
+			"MarkdownHTML": section.GithubSection.MarkdownCache,
+			"Section":      section,
+			"User":         auth2.GetLoggedInUserLogError(c),
+			"LoggedIn":     auth2.IsLoggedInValid(c),
+			"Messages":     msg.GetMessages(c),
+			"Releases":     releases,
+			"Course":       course,
 			"Meta": meta{
 				Title:    metaTitle,
 				Desc:     metaDescription,

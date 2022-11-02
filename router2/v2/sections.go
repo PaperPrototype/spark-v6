@@ -1,18 +1,15 @@
 package v2
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"main/auth2"
 	"main/db"
-	"main/githubapi"
 	"main/markdown"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/go-github/github"
 )
 
 // create or update github section
@@ -188,73 +185,33 @@ func getSectionMarkdownHTML(c *gin.Context) {
 	if release.HasGithubRelease() {
 		// has github section
 		if section.GithubSection.SectionID == section.ID {
-			// get authors's github connection
-			connection, err4 := githubapi.GetGithubConnection(author.ID)
-			if err4 != nil {
-				log.Println("v2/sections.go ERROR getting user's github connection in getSectionMarkdown:", err4)
+			tmpMarkdown := ""
+			Error := ""
 
-				c.JSON(http.StatusOK, payload{
-					Error:   "Error getting github connection for author",
-					Payload: html,
-				})
-				return
+			// check if markdown is cached
+			if section.GithubSection.MarkdownCache != "" {
+				// markown cached
+				tmpMarkdown = section.GithubSection.MarkdownCache
+			} else {
+				// cache the markdown from this section if not cached already
+				tmpMarkdown, Error = getGithubMarkdown(author, release, section)
+				db.UpdateGithubSectionMarkdownCache(section.ID, tmpMarkdown)
 			}
 
-			ctx := context.Background()
+			// if tmpMarkdown not empty
+			if tmpMarkdown != "" {
+				buffer, err9 := markdown.Convert([]byte(tmpMarkdown))
+				if err9 != nil {
+					log.Println("api/sections ERROR converting content tp markdown in getSectionMarkdownHTML:", err9)
+				}
 
-			// get client
-			client := githubapi.NewClient(connection, ctx)
-
-			githubUser, _, err5 := client.Users.Get(ctx, "")
-			if err5 != nil {
-				log.Println("v2/sections.go ERROR getting github user in getSectionMarkdown:", err5)
-
-				c.JSON(http.StatusOK, payload{
-					Error:   "Error getting github user",
-					Payload: html,
-				})
-				return
-			}
-
-			repo, _, err6 := client.Repositories.GetByID(ctx, int64(release.GithubRelease.RepoID))
-			if err6 != nil {
-				log.Println("v2/sections.go ERROR getting repo by ID in getSectionMarkdown:", err6)
-
-				c.JSON(http.StatusOK, payload{
-					Error:   "Error getting github user",
-					Payload: html,
-				})
-				return
-			}
-
-			// get folders from repo with info from githubVersion
-			// use sha to get specific commit
-			contentEncoded, _, _, err7 := client.Repositories.GetContents(ctx, *githubUser.Login, *repo.Name, section.GithubSection.Path, &github.RepositoryContentGetOptions{
-				Ref: release.GithubRelease.SHA,
-			})
-			if err7 != nil {
-				log.Println("api/github ERROR getting repo contents in getGithubRepoCommitContent:", err7)
-				c.AbortWithStatus(http.StatusInternalServerError)
-				return
-			}
-
-			// decode content
-			content, err8 := contentEncoded.GetContent()
-			if err8 != nil {
-				log.Println("api/github ERROR decoding", *contentEncoded.Encoding, "content in getGithubRepoCommitContent:", err8)
-				c.AbortWithStatus(http.StatusInternalServerError)
-				return
-			}
-
-			buffer, err9 := markdown.Convert([]byte(content))
-			if err9 != nil {
-				log.Println("api/github ERROR converting content ot markdown in getGithubRepoCommitContent:", err9)
-				c.AbortWithStatus(http.StatusInternalServerError)
-				return
+				// set HTML variable
+				html = buffer.String()
 			}
 
 			c.JSON(http.StatusOK, payload{
-				Payload: buffer.String(),
+				Error:   Error,
+				Payload: html,
 			})
 			return
 		}
@@ -266,6 +223,8 @@ func getSectionMarkdownHTML(c *gin.Context) {
 	}
 
 	// else TODO get html contents from user created (non github based) course
+
+	// return html
 	c.JSON(http.StatusOK, payload{
 		Payload: html,
 	})

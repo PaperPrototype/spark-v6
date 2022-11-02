@@ -291,8 +291,9 @@ type Section struct {
 }
 
 type GithubSection struct {
-	SectionID uint64 `gorm:"unique"`
-	Path      string // sha for specific course section
+	SectionID     uint64 `gorm:"unique"`
+	Path          string // sha for specific course section
+	MarkdownCache string // cache
 }
 
 type Content struct {

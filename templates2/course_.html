@@ -14,14 +14,14 @@
             title: {{ .Course.Title }},
             courseID: {{ .Course.ID }}, 
             releaseID: {{ .Course.Release.ID }},
-            sectionID: {{ .SectionID }},
-            sectionName: "",
+            sectionID: {{ .Section.ID }},
+            sectionName: {{ .Section.Name }},
             releases: [],
             menuOpen: true,
             view: "section", // channel view, section view (posts?)
             active: "", // active menu item
             sections: [],
-            sectionHTML: "{{ .MarkdownHTML }}",
+            sectionHTML: "",
 
             resources: [],
 
@@ -54,7 +54,7 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
 
         <div style="font-weight:500; font-size:16px; padding-top:0.5rem; display:flex">
             <div x-show="$store.course.sectionName !== ''" style="display:flex; flex-direction:row; margin-left:0.5rem; margin-right:2rem;">
-                <span x-text="$store.course.sectionName" style="margin-left:0.5rem;" class="thm-c-less"></span>
+                <span x-text="$store.course.sectionName" style="margin-left:0.5rem;" class="thm-c-less">{{ .Section.Name }}</span>
             </div>
         </div>
 

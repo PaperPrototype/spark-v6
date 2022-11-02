@@ -506,6 +506,7 @@ func postReleaseSectionFORM(c *gin.Context) {
 		return
 	}
 
+	// "num" is used to order sections from first to last
 	num := uint16(0)
 	sections, err2 := db.GetReleaseSections(releaseID)
 	if err2 == nil && len(sections) > 0 {
