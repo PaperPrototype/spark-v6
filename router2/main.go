@@ -76,9 +76,19 @@ func getCourse(c *gin.Context) {
 		}
 	}
 
+	metaTitle := strings.Trim(course.Title, " ")
+
+	metaDescription := strings.Trim(course.Subtitle, " ")
+
 	sectionID := uint64(0)
 	if sectionIDParam != "" {
 		sectionID, _ = strconv.ParseUint(sectionIDParam, 10, 64)
+
+		section, err2 := db.GetSection(sectionIDParam)
+		if err2 == nil && section.Description != "" {
+			metaDescription = "In this Section - " + strings.Trim(section.Description, " ")
+			metaTitle += " - " + section.Name
+		}
 	}
 
 	c.HTML(
@@ -93,8 +103,8 @@ func getCourse(c *gin.Context) {
 			"Releases":  releases,
 			"Course":    course,
 			"Meta": meta{
-				Title:    course.Title,
-				Desc:     course.Subtitle,
+				Title:    metaTitle,
+				Desc:     metaDescription,
 				ImageURL: course.Release.ImageURL,
 			},
 		},
