@@ -43,18 +43,10 @@
 <div 
 x-data
 :class="$store.course.menuOpen ? '' : '' "
-style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:4; background-color:var(--thm-bg); backdrop-filter: blur(10px);">
+style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:3; background-color:var(--thm-bg); backdrop-filter: blur(10px);">
     
     <div x-data style="position:fixed; top:0; right:0; height:2.5rem; width:100%; display:flex;">
-        
-        <i x-cloak x-show="$store.course.menuOpen"
-        style="margin-right:auto; padding:0.6rem; padding-left:1rem; padding-right:1rem; font-size:1.25rem; color:var(--thm-text-less);"
-        class="thm-bg-hl fa-solid fa-xmark"
-        @click="course_closeMenu()">
-        </i>
-
-        <i x-cloak x-show="!$store.course.menuOpen"
-        style="margin-right:auto; padding:0.6rem; padding-left:1rem; padding-right:1rem; font-size:1.25rem; color:var(--thm-text-less);"
+        <i style="margin-right:auto; padding:0.6rem; padding-left:1rem; padding-right:1rem; font-size:1.25rem; color:var(--thm-text-less);"
         class="thm-bg-hl fa-solid fa-equals"
         @click="course_openMenu()">
         </i>
@@ -76,7 +68,7 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
 x-data
 class="course-menu"
 x-show="$store.course.menuOpen" 
-style="position:fixed; top:2.49rem; left:0; bottom:0; z-index:3;">
+style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
     <div style="width:100%; height:100vh; display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll; background-color: var(--thm-bg); box-shadow:0 0 1rem black;"
     @click.outside="course_closeMenu()">
     
