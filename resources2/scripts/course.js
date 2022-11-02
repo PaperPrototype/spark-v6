@@ -10,6 +10,14 @@ function course_viewSection(id) {
     Alpine.store("course").view = "section";
     Alpine.store("course").active = "section"+id;
     Alpine.store("course").sectionID = id;
+
+    let username = Alpine.store("course").username;
+    let courseName = Alpine.store("course").name;
+
+    history.replaceState({
+        id: username+'/'+courseName+"/"+id,
+        source: 'web'
+    }, Alpine.store("course").title, '/'+username+'/'+courseName+'/'+id);
 }
 
 function course_loadPreviousSection() {
@@ -158,9 +166,11 @@ function course_loadSections() {
         console.log(json);
         Alpine.store("course").sections = json.Payload;
 
+        // if sectionID is set
         if (Alpine.store("course").sectionID !== 0) {
             course_loadSection(Alpine.store("course").sectionID, Alpine.store("course").sectionName);
         } else if (json.Payload.length > 0) {
+            // else load first section
             course_loadSection(json.Payload[0].ID, json.Payload[0].Name);
         }
     });

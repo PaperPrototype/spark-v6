@@ -9,10 +9,12 @@
 <script defer>
     document.addEventListener("alpine:init", function(event) {
         Alpine.store("course", {
+            name: {{ .Course.Name }},
+            username: {{ .Course.User.Username }},
             title: {{ .Course.Title }},
             courseID: {{ .Course.ID }}, 
             releaseID: {{ .Course.Release.ID }},
-            sectionID: 0,
+            sectionID: {{ .SectionID }},
             sectionName: "",
             releases: [],
             menuOpen: true,
@@ -44,7 +46,6 @@
 x-data
 :class="$store.course.menuOpen ? '' : '' "
 style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:3; background-color:var(--thm-bg); backdrop-filter: blur(10px);">
-    
     <div x-data style="position:fixed; top:0; right:0; height:2.5rem; width:100%; display:flex;">
         <i style="margin-right:auto; padding:0.6rem; padding-left:1rem; padding-right:1rem; font-size:1.25rem; color:var(--thm-text-less);"
         class="thm-bg-hl fa-solid fa-equals"

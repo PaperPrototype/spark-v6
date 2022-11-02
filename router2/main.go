@@ -6,6 +6,7 @@ import (
 	"main/db"
 	"main/msg"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -75,12 +76,17 @@ func getCourse(c *gin.Context) {
 		}
 	}
 
+	sectionID := uint64(0)
+	if sectionIDParam != "" {
+		sectionID, _ = strconv.ParseUint(sectionIDParam, 10, 64)
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"course_.html",
 		gin.H{
 			"Owned":     owned,
-			"SectionID": sectionIDParam,
+			"SectionID": sectionID,
 			"User":      auth2.GetLoggedInUserLogError(c),
 			"LoggedIn":  auth2.IsLoggedInValid(c),
 			"Messages":  msg.GetMessages(c),
