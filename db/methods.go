@@ -98,33 +98,6 @@ func (release *Release) GetVersionsLogError() []Version {
 	return versions
 }
 
-func (release *Release) GetNewestVersionNumLogError() uint16 {
-	version := Version{}
-	err := GormDB.Model(&Version{}).Where("release_id = ?", release.ID).Order("num DESC").First(&version).Error
-	if err != nil {
-		log.Println("db/methods ERROR getting newest version num:", err)
-	}
-	return version.Num
-}
-
-func (version *Version) GetSectionsLogError() []Section {
-	sections := []Section{}
-	err := GormDB.Model(&Section{}).Where("version_id = ?", version.ID).Find(&sections).Error
-	if err != nil {
-		log.Println("db/methods ERROR getting sections for version in GetSectionsLogError:", err)
-	}
-	return sections
-}
-
-func (version *Version) GetBaseSectionsLogError() []Section {
-	sections := []Section{}
-	err := GormDB.Model(&Section{}).Where("version_id = ?", version.ID).Where("parent_id = ?", 0).Find(&sections).Error
-	if err != nil {
-		log.Println("db/methods ERROR getting sections for version in GetBaseSectionsLogError:", err)
-	}
-	return sections
-}
-
 func (section *Section) GetChildrenSectionsLogError() []Section {
 	sections := []Section{}
 	err := GormDB.Model(&Section{}).Where("parent_id = ?", section.ID).Find(&sections).Error
@@ -132,12 +105,6 @@ func (section *Section) GetChildrenSectionsLogError() []Section {
 		log.Println("db/methods ERROR getting sections for version in GetBaseSectionsLogError:", err)
 	}
 	return sections
-}
-
-func (version *Version) GetFirstSectionPreload() (*Section, error) {
-	section := Section{}
-	err := GormDB.Model(&Section{}).Preload("Contents").Where("version_id = ?", version.ID).First(&section).Error
-	return &section, err
 }
 
 func (content *Content) GetMarkdownHTMLLogError() template.HTML {
@@ -157,16 +124,6 @@ func (release *Release) UserPostsCountLogError(userID uint64) int64 {
 	err := GormDB.Model(&Post{}).Where("user_id = ?", userID).Where("id IN (?)", postIDs).Count(&count).Error
 	if err != nil {
 		log.Println("db ERROR counting posts of a user for course release:", err)
-	}
-
-	return count
-}
-
-func (version *Version) SectionsCountLogError() int64 {
-	var count int64
-	err := GormDB.Model(&Section{}).Where("version_id = ?", version.ID).Count(&count).Error
-	if err != nil {
-		log.Println("db ERROR counting sections for version:", err)
 	}
 
 	return count
@@ -281,22 +238,6 @@ func GetGithubReleaseWithIDStr(releaseID string) (*GithubRelease, error) {
 	}
 
 	return &githubRelease, err
-}
-
-func (version *Version) GetGithubVersionLogError() *GithubVersion {
-	githubVersion := GithubVersion{}
-	err := GormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).First(&githubVersion).Error
-	if err != nil {
-		log.Println("db/utils ERROR getting github version in GetGithubVersionLogError:", err)
-	}
-
-	return &githubVersion
-}
-
-func (version *Version) GetGithubVersion() (*GithubVersion, error) {
-	githubVersion := GithubVersion{}
-	err := GormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).First(&githubVersion).Error
-	return &githubVersion, err
 }
 
 func (user *User) NewNotifLogError(message, url string) {

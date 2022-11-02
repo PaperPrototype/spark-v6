@@ -175,37 +175,6 @@ func TryEmailPassword(email string, password string) (*User, bool) {
 	return &user, true
 }
 
-// check if the user is the owner or if the user has purchased the course
-func UserCanAccessCourseRelease(userID uint64, version *Version) bool {
-	course := Course{}
-	err1 := GormDB.Model(&Course{}).Where("id = ?", version.CourseID).First(&course).Error
-	if err1 != nil {
-		return false
-	}
-
-	// FIRST check if it is the author...
-	// if they are the owner of the course
-	if userID == course.UserID {
-		return true
-	}
-
-	// THEN if not author... check if they own the course
-	var count int64 = 0
-	err := GormDB.Model(&Ownership{}).Where("user_id = ?", userID).Where("release_id = ?", version.ReleaseID).Count(&count).Error
-
-	// if err then not valid
-	if err != nil {
-		return false
-	}
-
-	// if nothing exists
-	if count == 0 {
-		return false
-	}
-
-	return true
-}
-
 func (release *Release) HasVersions() bool {
 	var count int64 = 0
 	err := GormDB.Model(&Version{}).Where("release_id = ?", release.ID).Count(&count).Error
@@ -242,24 +211,6 @@ func (release *Release) HasGithubRelease() bool {
 	return true
 }
 
-func (version *Version) HasGithubVersion() bool {
-	var count int64 = 0
-	err := GormDB.Model(&GithubVersion{}).Where("version_id = ?", version.ID).Count(&count).Error
-
-	// if err then not valid
-	if err != nil {
-		log.Println("db/utils ERROR getting github release in HasGithubRelease:", err)
-		return false
-	}
-
-	// if nothing exists
-	if count == 0 {
-		return false
-	}
-
-	return true
-}
-
 func CountPublicCourseReleasesLogError(courseID string) int64 {
 	var count int64 = 0
 	err := GormDB.Model(&Release{}).Where("course_id = ?", courseID).Where("public = ?", true).Count(&count).Error
@@ -268,13 +219,6 @@ func CountPublicCourseReleasesLogError(courseID string) int64 {
 	}
 
 	return count
-}
-
-func (version *Version) GetAuthorUser() (*User, error) {
-	userIDs := GormDB.Model(&Course{}).Select("user_id").Where("id = ?", version.CourseID)
-	user := User{}
-	err := GormDB.Model(&User{}).Where("id IN (?)", userIDs).First(&user).Error
-	return &user, err
 }
 
 func (release *Release) GetAuthorUser() (*User, error) {

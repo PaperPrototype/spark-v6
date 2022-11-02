@@ -51,11 +51,6 @@ func GetUserCoursePreload(username string, courseName string) (*Course, error) {
 
 	err1 := GormDB.Model(&Course{}).Where("user_id = ?", user.ID).Where("name = ?", courseName).Preload("Release", GormDB.Model(&Release{}).Order("num DESC")).First(&course).Error
 
-	// preload newest version
-	version := Version{}
-	_ = GormDB.Model(&Version{}).Where("release_id = ?", course.Release.ID).Order("num DESC").First(&version).Error
-	course.Version = version
-
 	// preload user
 	course.User = user
 

@@ -8,6 +8,11 @@ import (
 func migrate() {
 	// updates to database for v7
 	// TODO drop Versions table
+	GormDB.Migrator().DropTable(&Version{})
+	GormDB.Migrator().DropTable(&GithubVersion{})
+	GormDB.Migrator().DropColumn(&Release{}, "versions")
+	GormDB.Migrator().DropColumn(&Course{}, "version")
+	GormDB.Migrator().DropColumn(&Course{}, "versions")
 
 	GormDB.AutoMigrate(
 		// auth
@@ -19,7 +24,6 @@ func migrate() {
 		// course
 		&Course{},
 		&Release{},
-		&Version{},
 		&Section{},
 		&GithubSection{},
 		// &Content{},
@@ -236,11 +240,9 @@ type Course struct {
 	// ORM preloadable property
 	User    User
 	Release Release // can be preloaded with the newest release
-	Version Version
 
 	Channels      []Channel      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // channels for the courses chat
 	Releases      []Release      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // course releases
-	Versions      []Version      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`  // course versions (have a parent release)
 	Prerequisites []Prerequisite `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE; "` // prerequisites for this course
 }
 
@@ -257,7 +259,6 @@ type Release struct {
 	GithubEnabled  bool          `gorm:"default:f"`                                     // make this release use a github repo
 	GithubRelease  GithubRelease `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"` // github repo info
 
-	Versions  []Version  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Purchases []Purchase `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
@@ -271,30 +272,9 @@ type GithubRelease struct {
 }
 
 type Version struct {
-	ID        uint64 `gorm:"primaryKey"`
-	Num       uint16
-	Patch     uint16 `gorm:"not null; default:0"`
-	CourseID  uint64 `gorm:"not null"`
-	ReleaseID uint64 `gorm:"not null"`
-	CreatedAt time.Time
-	Preview   bool `gorm:"default:f"`
-
-	// relation for github based versions
-	GithubVersion GithubVersion `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-
-	// if using github version instead of manual upload with sections
-	UsingGithub bool `gorm:"default:f;"`
-
-	// if using manual uploading option with sections
-	Error string `gorm:"default:null"` // uplaoding error
 }
 
 type GithubVersion struct {
-	VersionID uint64 `gorm:"not null; primaryKey"`
-	RepoID    int64  `gorm:"not null"`
-	SHA       string `gorm:"not null"`
-	Branch    string `gorm:"not null"`
-	UpdatedAt time.Time
 }
 
 type Section struct {

@@ -5,64 +5,8 @@ import (
 	"log"
 	"main/db"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/go-github/github"
 )
-
-func GetVersionGithubTree(version *db.Version, c *gin.Context) (*github.Tree, error) {
-	// get course owner
-	course, err2 := db.GetCoursePreloadUser(version.CourseID)
-	if err2 != nil {
-		log.Println("api/github ERROR getting course in getGithubRepoCommitTree:", err2)
-		return nil, err2
-	}
-
-	// get version's githubVersion
-	githubVersion, err1 := version.GetGithubVersion()
-	if err1 != nil {
-		log.Println("api/github ERROR getting githubVersion in getGithubRepoCommitTree:", err1)
-		return nil, err1
-	}
-
-	user, err3 := db.GetUser(course.UserID)
-	if err3 != nil {
-		log.Println("api/github ERROR getting user in getGithubRepoCommitTree:", err3)
-		return nil, err3
-	}
-
-	// get owner's github connection
-	connection, err4 := GetGithubConnection(user.ID)
-	if err4 != nil {
-		log.Println("api/github ERROR getting user's github connection in getGithubRepoCommitTree:", err4)
-		return nil, err4
-	}
-
-	ctx := context.Background()
-	// get client
-	client := NewClient(connection, ctx)
-
-	githubUser, _, err5 := client.Users.Get(ctx, "")
-	if err5 != nil {
-		log.Println("api/github ERROR getting github user in getGithubRepoCommitTree:", err5)
-		return nil, err5
-	}
-
-	repo, _, err6 := client.Repositories.GetByID(ctx, githubVersion.RepoID)
-	if err6 != nil {
-		log.Println("api/github ERROR getting repo by ID in getGithubRepoCommitTree:", err6)
-		return nil, err6
-	}
-
-	// get folders from repo with info from githubVersion
-	// use sha to get specific commit
-	tree, _, err7 := client.Git.GetTree(ctx, *githubUser.Login, *repo.Name, githubVersion.SHA, true)
-	if err7 != nil {
-		log.Println("api/github ERROR getting repo contents in getGithubRepoCommitTree:", err7)
-		return nil, err7
-	}
-
-	return tree, nil
-}
 
 func GetGithubConnectionLogError(user *db.User) *db.GithubConnection {
 	githubConnection := db.GithubConnection{}

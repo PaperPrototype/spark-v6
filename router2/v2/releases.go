@@ -259,8 +259,8 @@ func getGithubReleaseAssetsTreeJSON(c *gin.Context) {
 
 	entrees := []github.TreeEntry{}
 	for _, entree := range tree.Entries {
-		if strings.Contains(*entree.Path, ".jpg") || strings.Contains(*entree.Path, ".png") ||
-			strings.Contains(*entree.Path, ".jpeg") || strings.Contains(*entree.Path, ".gif") {
+		if (strings.Contains(*entree.Path, ".jpg") || strings.Contains(*entree.Path, ".png") ||
+			strings.Contains(*entree.Path, ".jpeg") || strings.Contains(*entree.Path, ".gif")) && strings.Contains(strings.ToLower(*entree.Path), "assets") {
 			entrees = append(entrees, entree)
 		}
 	}
