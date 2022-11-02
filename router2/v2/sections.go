@@ -5,6 +5,7 @@ import (
 	"log"
 	"main/auth2"
 	"main/db"
+	"main/githubapi"
 	"main/markdown"
 	"net/http"
 	"strconv"
@@ -26,17 +27,48 @@ func postSectionGithubFORM(c *gin.Context) {
 
 	sectionIDNum, _ := strconv.ParseUint(sectionID, 10, 64)
 
-	githubSection := db.GithubSection{
-		SectionID: sectionIDNum,
-		Path:      path,
-	}
-	err := db.CreateOrUpdateGithubSection(sectionID, &githubSection)
+	section, err := db.GetSection(sectionID)
 	if err != nil {
-		log.Println("v2/section.go ERROR creating or updating section in postSectionGithubFORM:", err)
+		log.Println("v2/section.go ERROR getting section in postSectionGithubFORM:", err)
 		c.JSON(http.StatusBadRequest, payload{
-			Error: "Error creating or updating github section.",
+			Error: "Error getting section.",
 		})
 		return
+	}
+
+	// get markdown so we can cache it
+	author := auth2.GetLoggedInUserLogError(c)
+	release, _ := db.GetAnyRelease(section.ReleaseID)
+	markdown, _ := githubapi.GetGithubMarkdown(author, release, path)
+
+	// if no github section
+	if section.ID != section.GithubSection.SectionID {
+		// create github section
+
+		githubSection := db.GithubSection{
+			SectionID:     sectionIDNum,
+			Path:          path,
+			MarkdownCache: markdown,
+		}
+		err := db.CreateGithubSection(sectionID, &githubSection)
+		if err != nil {
+			log.Println("v2/section.go ERROR creating github section in postSectionGithubFORM:", err)
+			c.JSON(http.StatusBadRequest, payload{
+				Error: "Error creating github section.",
+			})
+			return
+		}
+	} else {
+		// update github section
+
+		err := db.UpdateGithubSection(sectionID, path, markdown)
+		if err != nil {
+			log.Println("v2/section.go ERROR updating github section in postSectionGithubFORM:", err)
+			c.JSON(http.StatusBadRequest, payload{
+				Error: "Error updating github section.",
+			})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, payload{})
@@ -194,7 +226,7 @@ func getSectionMarkdownHTML(c *gin.Context) {
 				tmpMarkdown = section.GithubSection.MarkdownCache
 			} else {
 				// cache the markdown from this section if not cached already
-				tmpMarkdown, Error = getGithubMarkdown(author, release, section)
+				tmpMarkdown, Error = githubapi.GetGithubMarkdown(author, release, section.GithubSection.Path)
 				db.UpdateGithubSectionMarkdownCache(section.ID, tmpMarkdown)
 			}
 

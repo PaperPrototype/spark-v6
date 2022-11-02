@@ -4,6 +4,7 @@ import (
 	"log"
 	"main/auth2"
 	"main/db"
+	"main/markdown"
 	"main/msg"
 	"net/http"
 	"strings"
@@ -88,12 +89,18 @@ func getCourse(c *gin.Context) {
 		}
 	}
 
+	markdownHTML := ""
+	if section.GithubSection.MarkdownCache != "" {
+		buffer, _ := markdown.Convert([]byte(section.GithubSection.MarkdownCache))
+		markdownHTML = buffer.String()
+	}
+
 	c.HTML(
 		http.StatusOK,
 		"course_.html",
 		gin.H{
 			"Owned":        owned,
-			"MarkdownHTML": section.GithubSection.MarkdownCache,
+			"MarkdownHTML": markdownHTML,
 			"Section":      section,
 			"User":         auth2.GetLoggedInUserLogError(c),
 			"LoggedIn":     auth2.IsLoggedInValid(c),

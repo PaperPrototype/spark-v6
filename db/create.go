@@ -70,12 +70,21 @@ func CreateOrUpdateGithubSection(sectionID string, githubSection *GithubSection)
 
 	var err1 error = nil
 	if count > 0 {
+		// update
 		err1 = GormDB.Model(&GithubSection{}).Where("section_id = ?", sectionID).Update("path", githubSection.Path).Error
+
 	} else {
+		// create
+
 		err1 = GormDB.Create(githubSection).Error // create new record
+
 	}
 
 	return err1
+}
+
+func CreateGithubSection(sectionID string, githubSection *GithubSection) error {
+	return GormDB.Create(githubSection).Error // create new record
 }
 
 func CreateOrUpdateGithubRelease(releaseID string, githubRelease *GithubRelease) error {

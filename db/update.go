@@ -27,3 +27,7 @@ func UpdateGithubRelease(releaseID uint64, branch string, repoID int64, repoName
 func UpdateGithubSectionMarkdownCache(sectionID uint64, markdownCache string) error {
 	return GormDB.Model(&GithubSection{}).Where("section_id = ?", sectionID).Update("markdown_cache", markdownCache).Error
 }
+
+func UpdateGithubSection(sectionID string, path string, markdownCache string) error {
+	return GormDB.Model(&GithubSection{}).Where("section_id = ?", sectionID).Update("path", path).Update("markdown_cache", markdownCache).Error
+}
