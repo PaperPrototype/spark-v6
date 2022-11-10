@@ -88,22 +88,19 @@ func CreateGithubSection(sectionID string, githubSection *GithubSection) error {
 }
 
 func CreateOrUpdateGithubRelease(releaseID string, githubRelease *GithubRelease) error {
+	tmpGithubRelease := GithubRelease{}
+	err := GormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).First(&tmpGithubRelease).Error
 
-	var count int64 = 0
-	err := GormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).Count(&count).Error
-
-	if err != nil {
-		return err
-	}
-
-	var err1 error = nil
-	if count > 0 {
-		err1 = GormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).Update("repo_id", githubRelease.RepoID).Update("repo_name", githubRelease.RepoName).Update("branch", githubRelease.Branch).Update("sha", githubRelease.SHA).Error
+	var err2 error = nil
+	if err == nil {
+		// no error, we found it!
+		err2 = GormDB.Model(&GithubRelease{}).Where("release_id = ?", releaseID).Update("repo_id", githubRelease.RepoID).Update("repo_name", githubRelease.RepoName).Update("branch", githubRelease.Branch).Update("sha", githubRelease.SHA).Update("patch", tmpGithubRelease.Patch+1).Error
 	} else {
-		err1 = GormDB.Create(githubRelease).Error // create new record
+		// no record found in database
+		err2 = GormDB.Create(githubRelease).Error // create new record
 	}
 
-	return err1
+	return err2
 }
 
 func CreateGithubRelease(githubRelease *GithubRelease) error {

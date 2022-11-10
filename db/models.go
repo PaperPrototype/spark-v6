@@ -268,6 +268,7 @@ type GithubRelease struct {
 	RepoName  string `gorm:"default:woops;"`
 	Branch    string `gorm:"default:main; not null"`
 	SHA       string // TODO use for tracking the SHA of the current git commit
+	Patch     uint32 // number of times we updated the github repo details (used to check if section markdown cache is invalid and needs updated)
 	UpdatedAt time.Time
 }
 
@@ -291,9 +292,10 @@ type Section struct {
 }
 
 type GithubSection struct {
-	SectionID     uint64 `gorm:"unique"`
-	Path          string // sha for specific course section
-	MarkdownCache string // cache
+	SectionID             uint64 `gorm:"unique"`
+	Path                  string // sha for specific course section
+	MarkdownCache         string // cache
+	MarkdownCachePatchNum uint32 // what patch number was on the release when we cached
 }
 
 type Content struct {
