@@ -231,7 +231,6 @@ func getSectionMarkdownHTML(c *gin.Context) {
 					// ALREADY CACHED!
 					tmpMarkdown = section.GithubSection.MarkdownCache
 				}
-
 			} else {
 				// cache the markdown from this section if not cached already
 				tmpMarkdown, Error = githubapi.GetGithubMarkdown(author, release, section.GithubSection.Path)

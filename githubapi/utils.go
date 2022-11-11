@@ -113,14 +113,14 @@ func GetGithubMarkdown(author *db.User, release *db.Release, path string) (HTML 
 	})
 	if err7 != nil {
 		log.Println("api/github ERROR getting repo contents in getGithubRepoCommitContent:", err7)
-		return "", "Internal Server Error"
+		return "", "Error getting markdown at path. Did you rename a file or folder in the github repository?"
 	}
 
 	// decode content
 	content, err8 := contentEncoded.GetContent()
 	if err8 != nil {
 		log.Println("api/github ERROR decoding", *contentEncoded.Encoding, "content in getGithubRepoCommitContent:", err8)
-		return "", "Internal Server Error"
+		return "", "Internal Server Error Decoding Contents"
 	}
 
 	return string(content), ""

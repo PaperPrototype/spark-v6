@@ -112,7 +112,7 @@ Now you know what needs done. Go do it! Ask for help, and get your hands dirty. 
 
 less critical MVP features
 - Course progress system. When you finish a section its marked as complete
-- Ranking system. Courses with more pre-requisites get a higher "level" (think "levels" like in a video game). This will could bring out the competitive nature of some pestudents, and make a system for evaluating how deep a students knowledge has gone. Basically the higher level course a student takes the higher their rank gets.
+- When there is more than 1 release, the course page breaks/stops working
 
 Make sure to read the [QUESTIONS.md](/QUESTIONS.md) file in the repo as it outlines questions that we should have answers for!
 
