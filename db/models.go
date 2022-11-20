@@ -180,7 +180,7 @@ type CouponClaim struct {
 
 type User struct {
 	ID       uint64 `gorm:"primaryKey"`
-	Username string `gorm:"unique"` // unique identifer used in the url
+	Username string `gorm:"unique"` // unique for each user (identifer used in the url of courses as well)
 	Name     string // real name
 	Hash     string // password hash
 	Email    string `gorm:"unique"`
