@@ -10,8 +10,8 @@ type payload struct {
 }
 
 func AddRoutes(group *gin.RouterGroup) {
-	group.POST("/course/:courseID", postCourseFORM)
-	group.GET("/course/:courseID/releases", getCourseReleasesJSON)
+	group.POST("/course/:courseID", postCourseFORM)                                        // update course info
+	group.GET("/course/:courseID/releases", getCourseReleasesJSON)                         // get releases JSON
 	group.POST("/course/:courseID/releases", mustBeAuthorCourseID, postCourseReleasesFORM) // create a new release
 
 	group.GET("/releases/:releaseID", getReleaseJSON)                          // get release

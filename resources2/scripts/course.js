@@ -6,6 +6,25 @@ function course_openMenu() {
     Alpine.store('course').menuOpen = true;
 }
 
+function course_viewHome() {
+    // which html view to show
+    Alpine.store("course").view = "home";
+
+    // which menu item to highlight
+    Alpine.store("course").active = "home";
+
+    // change top bar display name to course title
+    Alpine.store("course").displayName = Alpine.store("course").title;
+
+    let username = Alpine.store("course").username;
+    let courseName = Alpine.store("course").name;
+
+    history.replaceState({
+        id: username+'/'+courseName,
+        source: 'web'
+    }, Alpine.store("course").title, '/'+username+'/'+courseName);
+}
+
 function course_viewSection(id) {
     Alpine.store("course").view = "section";
     Alpine.store("course").active = "section"+id;
@@ -78,14 +97,21 @@ function course_isThereAPreviousSection(sectionID) {
     return false;
 }
 
+function course_startCourse() {
+    let payload = Alpine.store("course").sections;
+    if (payload.length > 0) {
+        // load first section
+        course_loadSection(payload[0].ID, payload[0].Name);
+        course_viewSection(payload[0].ID);
+    }
+}
+
 function course_loadSection(sectionID, sectionName) {
     Alpine.store("course").loadingSection = true;
     
     let releaseID = Alpine.store("course").releaseID;
     Alpine.store("course").sectionID = sectionID;
-    Alpine.store("course").sectionName = sectionName;
-
-    course_viewSection(sectionID);
+    Alpine.store("course").displayName = sectionName;
 
     // is there a next section?
     if (course_isThereANextSection(sectionID)) {
@@ -164,11 +190,13 @@ function course_loadSections() {
 
         console.log("/v2/releases/:releaseID/sections");
         console.log(json);
+
         Alpine.store("course").sections = json.Payload;
 
         // if sectionID is set
         if (Alpine.store("course").sectionID !== 0) {
-            course_loadSection(Alpine.store("course").sectionID, Alpine.store("course").sectionName);
+            course_loadSection(Alpine.store("course").sectionID, Alpine.store("course").displayName);
+            course_viewSection(Alpine.store("course").sectionID);
         } else if (json.Payload.length > 0) {
             // else load first section
             course_loadSection(json.Payload[0].ID, json.Payload[0].Name);

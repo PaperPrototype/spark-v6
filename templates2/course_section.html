@@ -1,7 +1,7 @@
-<div x-data x-show="$store.course.view === 'section'" style="overflow-y: scroll; max-width:100vw; min-height:100vh; overflow-x:hidden; background-color:var(--thm-bg);">
+<div x-data x-show="$store.course.view === 'section'" style="overflow-y: scroll; max-width:100vw; min-height:100vh; overflow-x:hidden; background-color:var(--thm-bg); padding-bottom:2rem;">
     <div class="align-center-horizontal" style="width:800px; max-width:100vw;">
-        <div x-html="$store.course.sectionHTML" markdown2 id="course_markdown" style="margin-bottom:15vh; padding-top:3rem;">
-            {{ .MarkdownHTML }}
+        <div x-html="$store.course.sectionHTML" markdown2 id="course_markdown" style="padding-top:2rem; padding-bottom:2rem;">
+            {{ .SectionMarkdownHTML }}
         </div>
 
         <style>
@@ -39,7 +39,7 @@
             <div style="height:3rem; width:3rem; margin-left:auto; margin-right:auto;" :class="$store.course.loadingSection ? 'next-prev-loader' : '' "></div>
         </div>
 
-        <div style="display:flex; flex-direction:row; width:100%; margin-bottom:5rem; padding-left:2rem; padding-right:2rem;">
+        <div style="display:flex; flex-direction:row; width:100%; padding-left:2rem; padding-right:2rem;">
             <div x-show="$store.course.previous" @click="course_loadPreviousSection()" class="next-prev" style="margin-right:auto;">
                 previous
             </div>
@@ -49,25 +49,4 @@
         </div>
     </div>
 
-    <div style="height:30; background-color:black; padding:1rem;">
-        <a href="/" style="text-decoration:none;">
-            <div style="display:flex; padding:1rem; width:fit-content;">
-                <img src="/resources2/images/sparker_code_transp_large.png" style="height:1.8rem;"> 
-                <div style="display:inline-block; padding-left:1rem; margin-top:0rem; font-size:1.5rem; font-weight:500;">
-                    Sparker
-                </div>
-            </div>
-        </a>
-        <div style="padding:1rem; max-width:800px;">It's not just courses, it's a learning experience. 
-            We want to solve online learnings biggest problems, with ridiculously simple solutions.
-        </div>
-        <div style="padding:1rem; display:flex; flex-direction:row; font-size: 1.8rem;">
-            <a href="https://discord.gg/QhqTE4t2tR">
-                <i class="fa-brands fa-discord"></i>
-            </a>
-            <a href="https://www.youtube.com/channel/UCbpsB-qXDo3T36_wsrzaPDQ">
-                <i style="padding-left:1rem;" class="fa-brands fa-youtube"></i>
-            </a>
-        </div>
-    </div>
 </div>

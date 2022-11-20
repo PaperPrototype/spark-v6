@@ -166,11 +166,11 @@ type Coupon struct {
 			- GetStripeData
 	*/
 
-	ClaimedCoupons []ClaimedCoupon
+	CouponClaims []CouponClaim
 }
 
 // coupon claims
-type ClaimedCoupon struct {
+type CouponClaim struct {
 	ID        uint64
 	CouponID  uint64
 	UserID    uint64
@@ -233,7 +233,9 @@ type Course struct {
 	Name     string `gorm:"not null"` // the courses unique url name (eg. spark.com/username/minecraftcourse)
 	Subtitle string
 	Public   bool   `gorm:"default:f"`
-	Level    uint32 `gorm:"default:0"`
+	Markdown string // course landing page markdown
+
+	Level uint32 `gorm:"default:0"`
 
 	UserID uint64 `gorm:"not null"`
 

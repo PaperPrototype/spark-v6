@@ -1,0 +1,11 @@
+<div x-data x-show="$store.course.view === 'home'" style="overflow-y: scroll; max-width:100vw; min-height:100vh; overflow-x:hidden; background-color:var(--thm-bg); padding-bottom:2rem;">
+    <div class="align-center-horizontal" style="width:800px; max-width:100vw;">
+        <div markdown2 style="padding-top:2rem; padding-bottom:2rem;">
+            {{ .CourseMarkdownHTML }}
+        </div>
+
+        <div @click="course_startCourse()" style="font-weight:600; background-color:var(--thm-hl); width:100%; text-align:center; padding:0.5rem; margin-top:2rem; --utls-hover:var(--thm-hl-a); cursor:default;" class="utls-bd utls-hover">
+            VIEW COURSE <i class="fa-solid fa-right-long"></i>
+        </div>
+    </div>
+</div>

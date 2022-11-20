@@ -15,11 +15,19 @@
             courseID: {{ .Course.ID }}, 
             releaseID: {{ .Course.Release.ID }},
             sectionID: {{ .Section.ID }},
-            sectionName: {{ .Section.Name }},
+            displayName: {{ .Course.Title }},
             releases: [],
             menuOpen: true,
-            view: "section", // channel view, section view (posts?)
-            active: "", // active menu item
+
+            // if section ID was provided
+            {{ if eq .Section.ID 0 }}
+            view: "home", // "home" view, "channel" view, "section" view (posts?)
+            active: "home", // active menu item
+            {{ else }} 
+            view: "section", // "home" view, "channel" view, "section" view (posts?)
+            active: "section{{ .Section.ID }}", // active menu item
+            {{ end }}
+
             sections: [],
             sectionHTML: "",
 
@@ -41,7 +49,7 @@
 <link href="/resources2/css/course.css" rel="stylesheet">
 <link href="/resources2/css/markdown2.css" rel="stylesheet">
 
-<!-- top nav bar -->
+<!-- top menu -->
 <div 
 x-data
 :class="$store.course.menuOpen ? '' : '' "
@@ -53,8 +61,8 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
         </i>
 
         <div style="font-weight:500; font-size:16px; padding-top:0.5rem; display:flex">
-            <div x-show="$store.course.sectionName !== ''" style="display:flex; flex-direction:row; margin-left:0.5rem; margin-right:2rem;">
-                <span x-text="$store.course.sectionName" style="margin-left:0.5rem;" class="thm-c-less">{{ .Section.Name }}</span>
+            <div x-show="$store.course.displayName !== ''" style="display:flex; flex-direction:row; margin-left:0.5rem; margin-right:2rem;">
+                <span x-text="$store.course.displayName" style="margin-left:0.5rem;" class="thm-c-less">{{ .Section.Name }}</span>
             </div>
         </div>
 
@@ -73,7 +81,7 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
     <div style="width:100%; height:100vh; display:flex; flex-direction: column; padding:0.5rem; overflow-y:scroll; background-color: var(--thm-bg); box-shadow:0 0 1rem black;"
     @click.outside="course_closeMenu()">
     
-        <!-- top bar -->
+        <!-- top -->
         <div style="display:flex; margin-bottom:0.5rem; cursor:default;">
             <a href="/" style="padding:0.5rem; text-decoration:none;" class="course-menu-item utls-bd">
                 <i class="fa-solid fa-angle-left" style="padding-right:0.5rem;"></i>
@@ -81,18 +89,23 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
             </a>
         </div>
 
-        {{ if eq .User.ID .Course.User.ID }}
-            <div @click="settings_open()" class="utls-bd course-menu-item" style="padding-left:0.6rem; padding-right:0.6rem;">
-                <i class="fa-solid fa-gear"></i>
-            </div>
-        {{ end }}
-    
         <!-- for course author only -->
-        {{ if eq $.User.ID $.Course.User.ID }}
+        {{ if eq .User.ID .Course.User.ID }}
+            <!-- settings -->
+            <div @click="settings_open()" class="utls-bd course-menu-item" style="padding-left:0.6rem; padding-right:0.6rem;">
+                <i class="fa-solid fa-gear"></i> Settings
+            </div>
+
+            <!-- new release -->
             <div @click="settings_releasesNewCreate()" style="display:flex; flex-direction:row; border:0.1rem solid var(--thm-over-hover); padding:0.5rem; --utls-hover:black;" class="utls-bd utls-hover">
                 New Release
             </div>
         {{ end }}
+
+        <!-- home -->
+        <div @click="course_viewHome()" style="background-color:var(--thm-hl); display:flex; flex-direction:row; padding:0.5rem; --utls-hover:black;" class="utls-bd utls-hover">
+            <i class="fa-solid fa-house" style="padding-right:0.5rem;"></i> Home <div style="background-color:rgb(255, 52, 52); border-radius: 0.2rem; padding-left:0.25rem; padding-right:0.25rem; margin-left:auto;">new</div>
+        </div>
     
         <!-- releases -->
         <div>
@@ -143,7 +156,7 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
                                 </div>
                             </template>
                         </div>
-                            
+
                         <!-- resources -->
                         <div>
                             <div class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
@@ -178,6 +191,8 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
 <!-- views -->
 {{ template "course_section.html" . }}
 
+{{ template "course_home.html" . }}
+
 <!-- settings pages
     only show if the user is the author -->
 {{ if eq .User.ID .Course.User.ID }}
@@ -193,5 +208,27 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
 
     <!-- TODO channel settings -->
 {{ end }}
+
+<div style="height:30; background-color:black; padding:1rem;">
+    <a href="/" style="text-decoration:none;">
+        <div style="display:flex; padding:1rem; width:fit-content;">
+            <img src="/resources2/images/sparker_code_transp_large.png" style="height:1.8rem;"> 
+            <div style="display:inline-block; padding-left:1rem; margin-top:0rem; font-size:1.5rem; font-weight:500;">
+                Sparker
+            </div>
+        </div>
+    </a>
+    <div style="padding:1rem; max-width:800px;">It's not just courses, it's a learning experience. 
+        We want to solve online learnings biggest problems, with ridiculously simple solutions.
+    </div>
+    <div style="padding:1rem; display:flex; flex-direction:row; font-size: 1.8rem;">
+        <a href="https://discord.gg/QhqTE4t2tR">
+            <i class="fa-brands fa-discord"></i>
+        </a>
+        <a href="https://www.youtube.com/channel/UCbpsB-qXDo3T36_wsrzaPDQ">
+            <i style="padding-left:1rem;" class="fa-brands fa-youtube"></i>
+        </a>
+    </div>
+</div>
 
 {{ template "_footer.html" . }}

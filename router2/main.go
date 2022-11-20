@@ -1,6 +1,7 @@
 package router2
 
 import (
+	"html/template"
 	"log"
 	"main/auth2"
 	"main/db"
@@ -80,33 +81,46 @@ func getCourse(c *gin.Context) {
 
 	metaDescription := strings.Trim(course.Subtitle, " ")
 
-	section := db.Section{}
+	section := &db.Section{}
 	if sectionIDParam != "" {
-		section, err2 := db.GetSection(sectionIDParam)
+		var err2 error
+		section, err2 = db.GetSection(sectionIDParam)
 		if err2 == nil && section.Description != "" {
 			metaDescription = "In this Section - " + strings.Trim(section.Description, " ")
 			metaTitle += " - " + section.Name
 		}
+
+		if err == nil {
+			log.Println("!!! GOT SECTION !!!")
+		}
+
+		if err != nil {
+			log.Println("router2/main.go ERROR getting section:", err2)
+		}
 	}
 
-	markdownHTML := ""
+	sectionMarkdownHTML := ""
 	if section.GithubSection.MarkdownCache != "" {
 		buffer, _ := markdown.Convert([]byte(section.GithubSection.MarkdownCache))
-		markdownHTML = buffer.String()
+		sectionMarkdownHTML = buffer.String()
 	}
+
+	buffer, _ := markdown.Convert([]byte(course.Markdown))
+	courseMarkdownHTML := buffer.String()
 
 	c.HTML(
 		http.StatusOK,
 		"course_.html",
 		gin.H{
-			"Owned":        owned,
-			"MarkdownHTML": markdownHTML,
-			"Section":      section,
-			"User":         auth2.GetLoggedInUserLogError(c),
-			"LoggedIn":     auth2.IsLoggedInValid(c),
-			"Messages":     msg.GetMessages(c),
-			"Releases":     releases,
-			"Course":       course,
+			"Owned":               owned,
+			"CourseMarkdownHTML":  template.HTML(courseMarkdownHTML),
+			"SectionMarkdownHTML": template.HTML(sectionMarkdownHTML),
+			"Section":             section,
+			"User":                auth2.GetLoggedInUserLogError(c),
+			"LoggedIn":            auth2.IsLoggedInValid(c),
+			"Messages":            msg.GetMessages(c),
+			"Releases":            releases,
+			"Course":              course,
 			"Meta": meta{
 				Title:    metaTitle,
 				Desc:     metaDescription,

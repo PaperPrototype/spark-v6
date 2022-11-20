@@ -210,7 +210,7 @@ func getSectionMarkdownHTML(c *gin.Context) {
 
 	// if author
 	if user.ID == course.UserID {
-		html = `<p style="text-align:center;">Open course settings to connect to a github release.</p>`
+		html = `<p style="text-align:center;">Open release settings to connect to a github release.</p>`
 	}
 
 	// for github based courses

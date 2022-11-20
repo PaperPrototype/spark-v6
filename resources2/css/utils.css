@@ -37,7 +37,7 @@
 
 .utls-tip .utls-tiptext-bot-left {
     /* position to the left bottom */
-    top: 150%;
+    top: 110%;
     right: 50%;
 }
 
@@ -52,5 +52,5 @@
 }
 
 .utls-hover:hover {
-    background-color: var(--utls-hover);
+    background-color: var(--utls-hover) !important;
 }
