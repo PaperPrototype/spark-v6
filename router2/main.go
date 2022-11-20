@@ -60,7 +60,7 @@ func getCourse(c *gin.Context) {
 		return
 	}
 
-	// if authro then they can view private releases
+	// if author then they can view private releases
 	releases := []db.Release{}
 	if auth2.GetLoggedInUserLogError(c).ID == course.UserID {
 		releases, _ = db.GetAnyReleases(course.ID)
