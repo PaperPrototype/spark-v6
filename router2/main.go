@@ -89,14 +89,6 @@ func getCourse(c *gin.Context) {
 			metaDescription = "In this Section - " + strings.Trim(section.Description, " ")
 			metaTitle += " - " + section.Name
 		}
-
-		if err == nil {
-			log.Println("!!! GOT SECTION !!!")
-		}
-
-		if err != nil {
-			log.Println("router2/main.go ERROR getting section:", err2)
-		}
 	}
 
 	sectionMarkdownHTML := ""
