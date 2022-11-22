@@ -12,29 +12,29 @@
 </script>
 
 <!-- top nav bar -->
-<div style="height:3.2rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:2; background-color:black; backdrop-filter: blur(10px);">
-    <img class="align-center-horizontal" style="height:3.2rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
+<div style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:2; background-color:black; backdrop-filter: blur(10px);">
+    <img class="align-center-horizontal" style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
 
-    <div x-data @click="onboard_open()" style="position:fixed; top:0; right:0; height:2rem; width:100%; text-align: end;">
+    <div x-data @click="onboard_open()" style="position:fixed; top:0; right:0; height:2.5rem; width:100%; text-align: end;">
         {{ if .LoggedIn }}
             <div class="utls-tip">
                 <a href="/new" style="text-decoration:none; font-weight:600;">
-                    <i style="padding:0.5rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-plus"></i>
+                    <i style="padding:0.7rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-plus"></i>
                 </a>
                 <span class="utls-tiptext utls-tiptext-bot-left">new course</span>
             </div>
             <div class="utls-tip">
                 <a href="/logout" style="text-decoration:none; font-weight:600;">
-                    <i style="padding:0.5rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-right-from-bracket"></i>
+                    <i style="padding:0.7rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-right-from-bracket"></i>
                 </a>
                 <span class="utls-tiptext utls-tiptext-bot-left">logout</span>
             </div>
         {{ else }}
-            <div @click="onboard_open()" style="padding:0.5rem; font-weight: 500; padding-right:1rem;">
-                <button class="utls-bd thm-bg-hl" style="padding:0.45rem; font-weight: 500; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
+            <div @click="onboard_open()" style="padding:0.4rem; font-weight: 500; padding-right:1rem;">
+                <button class="utls-bd thm-bg-hl" style="padding:0.25rem; font-weight: 500; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
                     signup
                 </button>
-                <span style="padding:0.45rem;">login</span>
+                <span style="padding:0.25rem;">login</span>
             </div>
         {{ end }}
     </div>
