@@ -49,6 +49,18 @@ func postSignup(c *gin.Context) {
 	name := c.PostForm("name")
 	redirectURL := c.PostForm("redirectURL")
 
+	if email == "" {
+		msg.SendMessage(c, "Error. Blank email not allowed.")
+		c.Redirect(http.StatusFound, redirectURL)
+		return
+	}
+
+	if pass == "" || confirm == "" {
+		msg.SendMessage(c, "Error. Blank password not allowed.")
+		c.Redirect(http.StatusFound, redirectURL)
+		return
+	}
+
 	emailAvailable, err5 := db.EmailAvailable(email)
 	if err5 != nil {
 		log.Println("routes/post ERROR checking if email is available:", err5)
@@ -83,7 +95,6 @@ func postSignup(c *gin.Context) {
 		Hash:     hash,
 		Email:    email,
 	}
-
 	err3 := db.CreateUser(&user)
 	if err3 != nil {
 		log.Println("ERROR creating user routes/signup:", err3)
@@ -101,7 +112,16 @@ func postSignup(c *gin.Context) {
 
 	auth2.Login(c, sessionToken)
 
-	msg.SendMessage(c, "Signed up and logged in!")
+	msg.SendMessage(c, "Sign up successful. Check your email to verify your account. Make sure to check your spam folder.")
+
+	err6 := mailer.SendVerification(user.ID)
+	if err6 != nil {
+		log.Println("router2/auth.go ERROR sending email verifcation in postSignup:", err6)
+		msg.SendMessage(c, "Account creating successful. Error sending email verification.")
+		c.Redirect(http.StatusFound, redirectURL)
+		return
+	}
+
 	c.Redirect(http.StatusFound, redirectURL)
 }
 

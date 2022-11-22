@@ -5,6 +5,7 @@ import (
 	"main/auth2"
 	"main/db"
 	"main/helpers"
+	"main/mailer"
 	"main/msg"
 	"net/http"
 
@@ -105,30 +106,39 @@ func postSettingsEditEmail(c *gin.Context) {
 		msg.SendMessage(c, "Email is the same. Nothing to update.")
 		c.Redirect(http.StatusFound, "/settings")
 		return
-	} else {
-		if !db.EmailAvailableIgnoreError(email) {
-			msg.SendMessage(c, "That email is taken.")
-			c.Redirect(http.StatusFound, "/settings")
-			return
-		}
-
-		err2 := user.SetVerified(false)
-		if err2 != nil {
-			log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err2)
-			msg.SendMessage(c, "Error updating user's email.")
-			c.Redirect(http.StatusFound, "/settings")
-			return
-		}
-
-		err1 := db.UpdateUser(user.ID, user.Username, user.Name, user.Bio, email)
-		if err1 != nil {
-			log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err1)
-			msg.SendMessage(c, "Error updating user's email.")
-			c.Redirect(http.StatusFound, "/settings")
-			return
-		}
 	}
 
-	msg.SendMessage(c, "Successfully updated email.")
+	if !db.EmailAvailableIgnoreError(email) {
+		msg.SendMessage(c, "That email is taken.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
+	err3 := mailer.SendVerification(user.ID)
+	if err3 != nil {
+		log.Println("routes/settings ERROR sending email verification in postSettingsEditUser:", err3)
+		msg.SendMessage(c, "Error updating user's email.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
+	err2 := user.SetVerified(false)
+	if err2 != nil {
+		log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err2)
+		msg.SendMessage(c, "Error updating user's email.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
+	err1 := db.UpdateUser(user.ID, user.Username, user.Name, user.Bio, email)
+	if err1 != nil {
+		log.Println("routes/settings ERROR updating user in postSettingsEditUser:", err1)
+		msg.SendMessage(c, "Error updating user's email.")
+		c.Redirect(http.StatusFound, "/settings")
+		return
+	}
+
+	msg.SendMessage(c, "Successfully updated email. Check your email to re-verify your account. Make sure to check your spam folder.")
+
 	c.Redirect(http.StatusFound, "/settings")
 }
