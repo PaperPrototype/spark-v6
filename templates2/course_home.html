@@ -1,26 +1,38 @@
-<div x-data x-show="$store.course.view === 'home'" style="overflow-y: scroll; max-width:100vw; min-height:100vh; overflow-x:hidden; background-color:var(--thm-bg); padding-bottom:2rem;">
-    <div class="align-center-horizontal" style="width:800px; max-width:100vw;">
-        <div>
+<div x-data x-show="$store.course.view === 'home'" style="overflow-y: scroll; max-width:100vw; min-height:100vh; overflow-x:hidden; padding-bottom:2rem;">
+
+    <!-- fancy top image and title -->
+    <div style="height:40rem; max-width:100%; background: linear-gradient(var(--thm-bg), rgba(0,0,0,0));">
+
+        <div class="align-center-horizontal" style="width:800px; max-width:100vw; padding-top:2rem;">
+            <h1>{{ .Course.Title }}</h1>
+            <div style="height:30rem; max-width:100%; background-image:url('{{ .Course.Release.ImageURL }}'); background-position:center; background-size:cover;">
+            </div>
             <!-- TODO fancy faded image and course title / purchase info / user progress -->
-        </div>
 
-        <div markdown2 style="padding-top:2rem; padding-bottom:2rem;">
-            {{ .CourseMarkdownHTML }}
-
-            <!-- no markdown for course landing page -->
-            {{ if eq .CourseMarkdownHTML "" }}
-                {{ if eq .Course.User.ID .User.ID }}
-                    <p>No landing page markdown! Open <span x-data @click="settings_open()" style="text-decoration:underline; cursor:pointer;">course settings</span> and provide a landing page funnel for your course!</p>
-                {{ end }}
-            {{ end }}
-        </div>
-
-        <div>
-            <!-- TODO prerequisite courses -->
-        </div>
-
-        <div @click="course_startCourse()" style="font-weight:600; background-color:var(--thm-hl); width:100%; text-align:center; padding:0.5rem; margin-top:2rem; --utls-hover:var(--thm-hl-a); cursor:pointer;" class="utls-bd utls-hover">
-            START COURSE <i class="fa-solid fa-right-long"></i>
         </div>
     </div>
+
+    <div style="background-color:var(--thm-bg); padding-bottom:2rem;">
+        <div class="align-center-horizontal" style="width:800px; max-width:100vw;">
+            <div markdown2 style="padding-top:2rem; padding-bottom:2rem;">
+                {{ .CourseMarkdownHTML }}
+    
+                <!-- no markdown for course landing page -->
+                {{ if eq .CourseMarkdownHTML "" }}
+                    {{ if eq .Course.User.ID .User.ID }}
+                        <p>No landing page markdown! Open <span x-data @click="settings_open()" style="text-decoration:underline; cursor:pointer;">course settings</span> and provide a landing page funnel for your course!</p>
+                    {{ end }}
+                {{ end }}
+            </div>
+    
+            <div>
+                <!-- TODO prerequisite courses -->
+            </div>
+    
+            <div @click="course_startCourse()" style="font-weight:600; background-color:var(--thm-hl); width:100%; text-align:center; padding:0.5rem; margin-top:2rem; --utls-hover:var(--thm-hl-a); cursor:pointer;" class="utls-bd utls-hover">
+                START COURSE <i class="fa-solid fa-right-long"></i>
+            </div>
+        </div>
+    </div>
+    
 </div>

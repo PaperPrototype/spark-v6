@@ -14,7 +14,7 @@ function course_viewHome() {
     Alpine.store("course").active = "home";
 
     // change top bar display name to course title
-    Alpine.store("course").displayName = Alpine.store("course").title;
+    Alpine.store("course").displayName = "Home";
 
     let username = Alpine.store("course").username;
     let courseName = Alpine.store("course").name;
@@ -29,6 +29,8 @@ function course_viewSection(id) {
     Alpine.store("course").view = "section";
     Alpine.store("course").active = "section"+id;
     Alpine.store("course").sectionID = id;
+    
+    Alpine.store("course").displayName = sectionName;
 
     let username = Alpine.store("course").username;
     let courseName = Alpine.store("course").name;
@@ -111,7 +113,6 @@ function course_loadSection(sectionID, sectionName) {
     
     let releaseID = Alpine.store("course").releaseID;
     Alpine.store("course").sectionID = sectionID;
-    Alpine.store("course").displayName = sectionName;
 
     // is there a next section?
     if (course_isThereANextSection(sectionID)) {

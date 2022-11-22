@@ -15,7 +15,7 @@
             courseID: {{ .Course.ID }}, 
             releaseID: {{ .Course.Release.ID }},
             sectionID: {{ .Section.ID }},
-            displayName: {{ .Course.Title }},
+            displayName: "",
             releases: [],
             menuOpen: true,
 
@@ -62,7 +62,7 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
 
         <div style="font-weight:500; font-size:16px; padding-top:0.5rem; display:flex">
             <div x-show="$store.course.displayName !== ''" style="display:flex; flex-direction:row; margin-left:0.5rem; margin-right:2rem;">
-                <span x-text="$store.course.displayName" style="margin-left:0.5rem;" class="thm-c-less">{{ .Section.Name }}</span>
+                <span x-text="$store.course.displayName" style="margin-left:0.5rem;" class="thm-c-less"></span>
             </div>
         </div>
 
