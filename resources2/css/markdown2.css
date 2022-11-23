@@ -18,6 +18,20 @@
 	width: 100%;
 }
 
+
+[markdown2] > ol > li {
+    margin-left:1rem;
+    margin-right:1rem;
+	width: calc(100% - 1rem);
+}
+
+[markdown2] > ul > li {
+    margin-left:1rem;
+    margin-right:1rem;
+	width: calc(100% - 1rem);
+}
+
+
 [markdown2] > blockquote {
     border-left: 0.25rem solid var(--thm-hl);
     margin-left:2rem;

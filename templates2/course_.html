@@ -138,7 +138,7 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
                                 SECTIONS
                             </div>
                             <template x-for="section in $store.course.sections" :key="section.ID">
-                                <div @click="course_viewSection(section.ID); course_loadSection(section.ID, section.Name);" style="display:flex; flex-direction:row;" class="utls-bd utls-tip">
+                                <div @click="course_viewSection(section.ID, section.Name); course_loadSection(section.ID, section.Name);" style="display:flex; flex-direction:row;" class="utls-bd utls-tip">
                                     <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd" :class="$store.course.active === 'section' + section.ID ? 'course-menu-item-selected' : 'course-menu-item' ">
                                         <div x-text="section.Name"></div>
                                         {{ if .Owned }}

@@ -25,11 +25,11 @@ function course_viewHome() {
     }, Alpine.store("course").title, '/'+username+'/'+courseName);
 }
 
-function course_viewSection(id) {
+function course_viewSection(id, sectionName) {
     Alpine.store("course").view = "section";
     Alpine.store("course").active = "section"+id;
     Alpine.store("course").sectionID = id;
-    
+
     Alpine.store("course").displayName = sectionName;
 
     let username = Alpine.store("course").username;
@@ -103,12 +103,12 @@ function course_startCourse() {
     let payload = Alpine.store("course").sections;
     if (payload.length > 0) {
         // load first section
-        course_loadSection(payload[0].ID, payload[0].Name);
-        course_viewSection(payload[0].ID);
+        course_loadSection(payload[0].ID);
+        course_viewSection(payload[0].ID, payload[0].Name);
     }
 }
 
-function course_loadSection(sectionID, sectionName) {
+function course_loadSection(sectionID) {
     Alpine.store("course").loadingSection = true;
     
     let releaseID = Alpine.store("course").releaseID;
@@ -196,8 +196,8 @@ function course_loadSections() {
 
         // if sectionID is set
         if (Alpine.store("course").sectionID !== 0) {
-            course_loadSection(Alpine.store("course").sectionID, Alpine.store("course").displayName);
-            course_viewSection(Alpine.store("course").sectionID);
+            course_loadSection(Alpine.store("course").sectionID);
+            course_viewSection(Alpine.store("course").sectionID, Alpine.store("course").displayName);
         } else if (json.Payload.length > 0) {
             // else load first section
             course_loadSection(json.Payload[0].ID, json.Payload[0].Name);
