@@ -7,12 +7,6 @@ import (
 
 func migrate() {
 	// updates to database for v7
-	// TODO drop Versions table
-	GormDB.Migrator().DropTable(&Version{})
-	GormDB.Migrator().DropTable(&GithubVersion{})
-	GormDB.Migrator().DropColumn(&Release{}, "versions")
-	GormDB.Migrator().DropColumn(&Course{}, "version")
-	GormDB.Migrator().DropColumn(&Course{}, "versions")
 
 	GormDB.AutoMigrate(
 		// auth

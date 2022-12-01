@@ -69,6 +69,30 @@ func getBuyRelease(c *gin.Context) {
 		return
 	}
 
+	if !author.Verified {
+		msg.SendMessage(c, "An error has occured! The author of this course cannot accept payments at this time. We apologize. We are gifting you the course for free :)")
+
+		mailer.SendStripePaymentProblemEmail(author.ID, "It appears someone tried to purchase a course from you, but you have not verified your email! We gifted the course for free since you could not accept the payment.")
+
+		ownership := db.Ownership{
+			Desc:      payments.DescStripeConnectionNotSetup,
+			UserID:    user.ID,
+			CourseID:  release.CourseID,
+			ReleaseID: release.ID,
+			Completed: false,
+		}
+		err5 := db.CreateOwnership(&ownership)
+		if err5 != nil {
+			msg.SendMessage(c, "Failed to create course ownership! That is not supposed to happen! Contact us and send a screenshot of this message!")
+			c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
+			return
+		}
+
+		msg.SendMessage(c, "An error occured on our end. We are gifting you the course for free! Our apologies!")
+		c.Redirect(http.StatusFound, "/"+username+"/"+courseName)
+		return
+	}
+
 	if !author.HasStripeConnection() {
 		msg.SendMessage(c, "An error has occured! The author of this course cannot accept payments at this time. We apologize. We are gifting you the course for free :)")
 
@@ -153,9 +177,9 @@ func getBuyRelease(c *gin.Context) {
 		mailer.SendStripePaymentProblemEmail(author.ID, "Your stripe info needs updated. We had to gift one of your courses for free since your stripe account could not accept payments at this time.")
 	}
 
-	// release.Price * PercentageShare
+	// release.Price * (PercentageShare + StripePercentageShare) + StripeFee
 	// uint16        * float32
-	var sparkersCut int64 = int64(math.Round(float64(float32(release.Price) * payments.PercentageShare)))
+	var sparkersCut int64 = int64(math.Floor(float64(float32(release.Price)*(payments.PercentageShare+payments.StripePercentageShare)))) + payments.StripeFee
 
 	params := &stripe.CheckoutSessionParams{
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -165,15 +189,15 @@ func getBuyRelease(c *gin.Context) {
 					Currency:   stripe.String(string(stripe.CurrencyUSD)),
 					UnitAmount: stripe.Int64(int64(release.Price)),
 					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
-						Name:        stripe.String(course.Title + " v" + fmt.Sprint(release.Num)),
-						Description: stripe.String(course.Subtitle),
+						Name:        stripe.String(course.Title + " Edition" + fmt.Sprint(release.Num)),
+						Description: stripe.String("Course from Sparker"),
 					},
 				},
 			},
 		},
 		PaymentIntentData: &stripe.CheckoutSessionPaymentIntentDataParams{
 			ApplicationFeeAmount: stripe.Int64(sparkersCut),
-			Description:          stripe.String("Buying " + course.Title + " v" + fmt.Sprint(release.Num)),
+			Description:          stripe.String("Buying " + course.Title + " Edition" + fmt.Sprint(release.Num)),
 			TransferData: &stripe.CheckoutSessionPaymentIntentDataTransferDataParams{
 				Destination: stripe.String(stripeConnection.StripeAccountID),
 			},
