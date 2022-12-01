@@ -11,6 +11,7 @@ import (
 	"main/payments"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -181,6 +182,14 @@ func getBuyRelease(c *gin.Context) {
 	// uint16        * float32
 	var sparkersCut int64 = int64(math.Floor(float64(float32(release.Price)*(payments.PercentageShare+payments.StripePercentageShare)))) + payments.StripeFee
 
+	// stripe requires a description for successful payments
+	paymentDescription := course.Subtitle
+	// if subtitle is empty
+	if strings.Trim(course.Subtitle, " ") == "" {
+		// provide default description
+		paymentDescription = "Course from Sparker"
+	}
+
 	params := &stripe.CheckoutSessionParams{
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
@@ -190,7 +199,7 @@ func getBuyRelease(c *gin.Context) {
 					UnitAmount: stripe.Int64(int64(release.Price)),
 					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
 						Name:        stripe.String(course.Title + " Edition" + fmt.Sprint(release.Num)),
-						Description: stripe.String("Course from Sparker"),
+						Description: stripe.String(paymentDescription),
 					},
 				},
 			},
