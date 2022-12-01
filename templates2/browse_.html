@@ -21,13 +21,13 @@
                 <a href="/new" style="text-decoration:none; font-weight:600;">
                     <i style="padding:0.7rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-plus"></i>
                 </a>
-                <span class="utls-tiptext utls-tiptext-bot-left">new course</span>
+                <span style="--utls-tip-bg:var(--thm-hl);" class="utls-tiptext utls-tiptext-bot-left">new course</span>
             </div>
             <div class="utls-tip">
                 <a href="/logout" style="text-decoration:none; font-weight:600;">
                     <i style="padding:0.7rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-right-from-bracket"></i>
                 </a>
-                <span class="utls-tiptext utls-tiptext-bot-left">logout</span>
+                <span style="--utls-tip-bg:var(--thm-hl);" class="utls-tiptext utls-tiptext-bot-left">logout</span>
             </div>
         {{ else }}
             <div @click="onboard_open()" style="padding:0.4rem; font-weight: 500; padding-right:1rem;">
@@ -49,7 +49,7 @@
                 <h2 style="font-size:2.5rem;">Welcome, {{ .User.Name }}!</h2>
                 <p>@{{ .User.Username }}</p>
 
-                <a href="/settings" style="padding:0.5rem; text-decoration:none; display:flex; flex-direction:row; width:fit-content; background-color: rgb(255, 255, 255); color:black;" class="align-center-horizontal utls-shadow utls-bd">
+                <a href="/settings" style="padding:0.5rem; text-decoration:none; display:flex; flex-direction:row; width:fit-content; background-color: rgb(255, 255, 255); color:black; --utls-shadow:var(--thm-bg);" class="align-center-horizontal utls-shadow utls-bd">
                     <div style="color:black">settings</div> <i style="font-size:1.25rem; padding-left:0.5rem; color:black;" class="fa-solid fa-gear"></i>
                 </a>
             {{ else }}

@@ -17,6 +17,9 @@
             sectionID: {{ .Section.ID }},
             displayName: "",
             releases: [],
+            release: {
+                Num: {{ .Course.Release.Num }},
+            },
             menuOpen: true,
 
             // if section ID was provided
@@ -82,102 +85,121 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
     @click.outside="course_closeMenu()">
     
         <!-- top -->
-        <div style="display:flex; margin-bottom:0.5rem; cursor:default;">
-            <a href="/" style="padding:0.5rem; text-decoration:none;" class="course-menu-item utls-bd">
-                <i class="fa-solid fa-angle-left" style="padding-right:0.5rem;"></i>
-                {{ .Course.Title }}
+        <div style="display:flex; flex-direction:row; margin-bottom:0.5rem;">
+            <a href="/" style="color:var(--thm-text-less); padding:0.5rem; text-decoration:none; cursor:default; --utls-hover:var(--thm-over-hover);" class="utls-hover utls-bd">
+                <i class="fa-solid fa-angle-left" style="padding-right:0.25rem; color:var(--thm-text-less)"></i>
+                browse
             </a>
-        </div>
 
-        <!-- for course author only -->
-        {{ if eq .User.ID .Course.User.ID }}
-            <!-- settings -->
-            <div @click="settings_open()" class="utls-bd course-menu-item" style="padding-left:0.6rem; padding-right:0.6rem;">
-                <i class="fa-solid fa-gear"></i> Settings
-            </div>
+            <div x-data="{ open: false }" @click="open = true" style="margin-left:auto; padding:0.5rem; text-decoration:none; cursor:default; --utls-hover:var(--thm-over-hover);" class="utls-hover utls-bd utls-tip">
 
-            <!-- new release -->
-            <div @click="settings_releasesNewCreate()" style="display:flex; flex-direction:row; border:0.1rem solid var(--thm-over-hover); padding:0.5rem; --utls-hover:black;" class="utls-bd utls-hover">
-                New Release
-            </div>
-        {{ end }}
+                <div>
+                    <span x-show="$store.course.releases.length != 0" style="font-weight:500; color:var(--thm-text-less);" x-text="'Edition ' + $store.course.release.Num"></span> 
+                    <i class="fa-solid fa-angle-down" style="color:var(--thm-text-less); padding-left:0.25rem; padding-right:0.25rem;"></i>    
+                </div>
 
-        <!-- home -->
-        <div @click="course_viewHome()" style="background-color:var(--thm-hl); display:flex; flex-direction:row; padding:0.5rem; --utls-hover:black;" class="utls-bd utls-hover">
-            <i class="fa-solid fa-house" style="padding-right:0.5rem;"></i> Home <div style="background-color:rgb(255, 52, 52); border-radius: 0.2rem; padding-left:0.25rem; padding-right:0.25rem; margin-left:auto;">new</div>
-        </div>
-    
-        <!-- releases -->
-        <div>
-            <template x-for="release in $store.course.releases">
-                <div style="padding:0.5rem; background-color:black; margin-top:1rem;" class="utls-bd">
-                    <div style="display:flex; flex-direction:row;">
-                        <div @click="course_loadSections(release.ID)" class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
-                            RELEASE V<span class="thm-c-less" x-text="release.Num"></span>
+                <!-- menu dropdown -->
+                <div @click.outside="open = false" x-show="open == true" class="utls-tiptext utls-tiptext-align-right utls-shadow" style="--utls-shadow:var(--thm-bg); --utls-tip-bg:var(--thm-over-hover);">
+                    
+                    <!-- for course author only -->
+                    {{ if eq .User.ID .Course.User.ID }}
+                        <!-- settings -->
+                        <div @click="settings_open()" class="utls-bd" style="padding:0.5rem; background-color:var(--thm-hl);">
+                            <i class="fa-solid fa-gear"></i> Settings
                         </div>
-    
-                        <!-- for course author only -->
-                        {{ if eq $.User.ID $.Course.User.ID }}
-                            <!-- create new section -->
-                            <div @click="settings_sectionsNewOpen()" class="course-menu-hover utls-bd" style="margin-left:auto; font-weight:500; font-size:0.8rem; margin-right:0.5rem;">
-                                <i class="fa-solid fa-plus thm-c-less" style="padding:0.5rem;"></i>
+
+                        <div @click="settings_releasesNewCreate()" class="utls-bd" style="margin-top:0.5rem; margin-bottom:0.5rem; padding:0.5rem; background-color:var(--thm-hl);">
+                            New Release
+                        </div>
+
+                        <div class="utls-bd" style="margin-bottom:0.5rem; margin-left:0.1rem; margin-right:0.1rem; height:0.15rem; background-color:var(--thm-over-selected);">
+                        </div>
+                    {{ end }}
+
+                    <!-- editions -->
+                    <template x-for="release in $store.course.releases">
+                        <div style="display:flex; flex-direction:row;">
+                            <div @click="course_loadReleaseSections(release.ID); course_loadReleaseResources(release.ID);" 
+                            :class="$store.course.releaseID == release.ID ? 'utls-selected' : '' " class="utls-bd utls-hover" 
+                            style="width:100%; margin-bottom:0.5rem; padding:0.5rem; --utls-hover:var(--thm-over-selected);" 
+                            x-text="'Edition ' + release.Num">
                             </div>
-            
-                            <!-- release settings -->
-                            <div @click="settings_releasesLoad(release.ID)" class="course-menu-hover utls-bd" style="margin-right:0.55rem;">
-                                <i class="fa-solid fa-gear thm-c-less" style="padding:0.45rem;"></i>
-                            </div>
-                        {{ end }}
+
+                            <!-- for course author only -->
+                            {{ if eq .User.ID .Course.User.ID }}
+                                <i @click="settings_releasesLoad(release.ID);" style="padding:0.5rem; --utls-hover:var(--thm-over-selected); margin-bottom:0.5rem; margin-left:0.5rem;" class="utls-hover fa-solid fa-gear utls-bd"></i>
+                            {{ end }}
+                        </div>
+                    </template>
+
+                    <div style="color:rgb(125, 125, 125); font-size:16px;" x-show="$store.course.releases.length == 0">
+                        this course has no editions
                     </div>
-                    <div x-show="$store.course.releaseID === release.ID">
-                        
-                        <!-- sections -->
-                        <div>
-                            <div class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
-                                <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; margin-top:0.5rem;"></i>
-                                SECTIONS
-                            </div>
-                            <template x-for="section in $store.course.sections" :key="section.ID">
-                                <div @click="course_viewSection(section.ID, section.Name); course_loadSection(section.ID, section.Name);" style="display:flex; flex-direction:row;" class="utls-bd utls-tip">
-                                    <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd" :class="$store.course.active === 'section' + section.ID ? 'course-menu-item-selected' : 'course-menu-item' ">
-                                        <div x-text="section.Name"></div>
-                                        {{ if .Owned }}
-                                        <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock-open' " class="fa-solid"></i>
-                                        {{ else }}
-                                        <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock' " class="fa-solid"></i>
-                                        {{ end }}
-                                    </div>
-    
-                                    <!-- if they are the author then they can access settings -->
-                                    {{ if eq $.User.ID $.Course.User.ID }}
-                                        <i style="margin-left:auto; padding:0.5rem;" class="fa-solid fa-gear course-menu-item utls-bd" @click="settings_sectionsOpen(); settings_sectionsLoad(section.ID);"></i>
-                                    {{ end }}
-                                    <span x-show="section.Description !== '' " class="utls-tiptext utls-tiptext-bot-left utls-shadow" x-text="section.Description"></span>
-                                </div>
-                            </template>
-                        </div>
 
-                        <!-- resources -->
-                        <div>
-                            <div class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
-                                <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; margin-top:0.5rem;"></i>
-                                RESOURCES
-                            </div>
-                            <div>
-                                <template x-for="resource in $store.course.resources">
-                                    <a download x-bind:href="'/v2/releases/' + release.ID + '/resources/' + resource.path" style="display:flex; flex-direction:row; padding:0.5rem; margin-left:0.5rem; margin-right:0.5rem;" class="utls-bd utls-tip">
-                                        <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd">
-                                            <div x-text="resource.path"></div>
-                                        </div>
-                                    </a>
-                                </template>
-                            </div>
-                        </div>
+                    <div style="color:rgb(125, 125, 125); font-size:16px;" x-show="$store.course.releases.length == 1">
+                        only 1 edition
                     </div>
                 </div>
-            </template>
+            </div>
         </div>
-    
+
+        <div style="margin:0.5rem; margin-bottom:1.5rem; font-size:1.5rem; font-weight:600;">{{ .Course.Title }}</div>
+
+        <!-- home -->
+        <div :class="$store.course.active === 'home' ? 'course-menu-item-selected' : 'course-menu-item' " 
+        @click="course_viewHome()" 
+        style="display:flex; flex-direction:row; padding:0.5rem;" 
+        class="utls-bd">
+            <i class="fa-solid fa-house" style="padding-right:0.5rem;"></i> Home
+        </div>
+
+        <!-- sections -->
+        <div class="thm-c-less" style="font-weight:500; font-size:0.8rem; display:flex; flex-direction:row; padding-right:0.5rem;">
+            <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; padding-top:0.5rem;"></i>
+            <div style="padding:0.25rem; padding-top:0.5rem;" class="thm-c-less">
+                SECTIONS
+            </div>
+
+            <!-- for course author only -->
+            {{ if eq .User.ID .Course.User.ID }}
+                <i @click="settings_sectionsNewOpen()" style="margin-left:auto; padding:0.5rem; --utls-hover:var(--thm-over-hover);" class="thm-c-less fa-solid fa-plus utls-hover utls-bd"></i>
+            {{ end }}
+        </div>
+        <template x-for="section in $store.course.sections" :key="section.ID">
+            <div @click="course_viewSection(section.ID, section.Name); course_loadSection(section.ID, section.Name);" style="display:flex; flex-direction:row;" class="utls-bd utls-tip">
+                <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd" :class="$store.course.active === 'section' + section.ID ? 'course-menu-item-selected' : 'course-menu-item' ">
+                    <div x-text="section.Name"></div>
+                    {{ if .Owned }}
+                    <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock-open' " class="fa-solid"></i>
+                    {{ else }}
+                    <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock' " class="fa-solid"></i>
+                    {{ end }}
+                </div>
+
+                <!-- if they are the author then they can access settings -->
+                {{ if eq $.User.ID $.Course.User.ID }}
+                    <i style="margin-left:auto; padding:0.5rem;" class="fa-solid fa-gear course-menu-item utls-bd" @click="settings_sectionsOpen(); settings_sectionsLoad(section.ID);"></i>
+                {{ end }}
+                <span x-show="section.Description !== '' " class="utls-tiptext utls-tiptext-bot-left utls-shadow" style="--utls-shadow:var(--thm-bg); --utls-tip-bg:var(--thm-hl);" x-text="section.Description"></span>
+            </div>
+        </template>
+
+        <!-- resources -->
+        <div>
+            <div class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
+                <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; margin-top:0.5rem;"></i>
+                RESOURCES
+            </div>
+            <div>
+                <template x-for="resource in $store.course.resources">
+                    <a download x-bind:href="'/v2/releases/' + $store.course.releaseID + '/resources/' + resource.path" style="display:flex; flex-direction:row; padding:0.5rem; margin-left:0.5rem; margin-right:0.5rem;" class="utls-bd utls-tip">
+                        <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd">
+                            <div x-text="resource.path"></div>
+                        </div>
+                    </a>
+                </template>
+            </div>
+        </div>
     
         <div style="margin-top:2rem;">
             <a href="https://discord.gg/QhqTE4t2tR" target="_blank" style="text-decoration:none;" class="utls-bd" :class="$store.course.active === 'channel' ? 'course-menu-item-selected' : 'course-menu-item' ">

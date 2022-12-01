@@ -178,32 +178,6 @@ function course_fixGithubImageLnks(markdownHTML, releaseID) {
     return markdownHTMLElem.innerHTML;
 }
 
-function course_loadSections() {
-    // clear existing sections
-    sessionStorage.clear();
-
-    let releaseID = Alpine.store("course").releaseID;
-
-    fetch2("/v2/releases/"+releaseID+"/sections", "GET", function(json) {
-        if (json.Error !== "") {
-            return;
-        }
-
-        console.log("/v2/releases/:releaseID/sections");
-        console.log(json);
-
-        Alpine.store("course").sections = json.Payload;
-
-        // if sectionID is set
-        if (Alpine.store("course").sectionID !== 0) {
-            course_loadSection(Alpine.store("course").sectionID);
-            course_viewSection(Alpine.store("course").sectionID, Alpine.store("course").displayName);
-        } else if (json.Payload.length > 0) {
-            // else load first section
-            course_loadSection(json.Payload[0].ID, json.Payload[0].Name);
-        }
-    });
-}
 
 function course_viewChannel() {
     Alpine.store("course").view = "channel";
@@ -224,8 +198,8 @@ function course_loadReleases() {
         Alpine.store("course").releases = json.Payload;
 
         // reload the sections
-        course_loadSections();
-        course_loadResources();
+        course_loadReleaseSections(Alpine.store('course').releaseID);
+        course_loadReleaseResources(Alpine.store('course').releaseID);
     });
 }
 
@@ -246,15 +220,64 @@ function course_getSelectedRelease() {
     return null;
 }
 
-function course_loadResources() {
-    let releaseID = Alpine.store("course").releaseID;
+function course_loadReleaseSections(releaseID) {
+    // clear existing sections
+    sessionStorage.clear();
 
-    fetch2("/v2/releases/"+releaseID+"/github/resources", "GET", function(json) {
+    Alpine.store("course").releaseID = releaseID;
+    let releases = Alpine.store("course").releases;
+
+    for (let i = 0; i < releases.length; i++) {
+        if (releases[i].ID === releaseID) {
+            // set release info to current release
+            Alpine.store('course').release = releases[i];
+        }
+    }
+
+    fetch2("/v2/releases/"+releaseID+"/sections", "GET", function(json) {
         if (json.Error !== "") {
             return;
         }
 
-        console.log("/v2/releases/:releaseID/github/resources");
+        console.log("/v2/releases/:releaseID/sections");
+        console.log(json);
+
+        Alpine.store("course").sections = json.Payload;
+
+        // if sectionID is set
+        if (Alpine.store("course").sectionID !== 0) {
+            course_loadSection(Alpine.store("course").sectionID);
+            course_viewSection(Alpine.store("course").sectionID, Alpine.store("course").displayName);
+        } else if (json.Payload.length > 0) {
+            // else load first section
+            course_loadSection(json.Payload[0].ID);
+            course_viewSection(json.Payload[0].ID, json.Payload[0].Name);
+        }
+
+        if (json.Payload.length == 0) {
+            course_viewHome();
+        }
+    });
+}
+
+function course_loadReleaseResources(releaseID) {
+    Alpine.store("course").releaseID = releaseID;
+    let releases = Alpine.store("course").releases;
+
+    for (let i = 0; i < releases.length; i++) {
+        if (releases[i].ID === releaseID) {
+            // set release info to current release
+            Alpine.store('course').release = releases[i];
+        }
+    }
+
+    fetch2("/v2/releases/"+releaseID+"/resources", "GET", function(json) {
+        if (json.Error !== "") {
+            Alpine.store("course").resources = [];
+            return;
+        }
+
+        console.log("/v2/releases/:releaseID/resources");
 
         for (let i = 0; i < json.Payload.length; i++) {
             json.Payload[i].path = json.Payload[i].path.slice(10, json.Payload[i].path.length);

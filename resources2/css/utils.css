@@ -21,7 +21,7 @@
     width: max-content;
     max-width:10rem;
     padding:0.5rem;
-    background-color: var(--thm-hl);
+    background-color: var(--utls-tip-bg);
     color: white;
     text-align: center;
     border-radius: 6px;
@@ -41,6 +41,12 @@
     right: 50%;
 }
 
+.utls-tip .utls-tiptext-align-right {
+    /* position to the left bottom */
+    top: 100%;
+    right: 0%;
+}
+
 .utls-tip .utls-tiptext-bot-right {
     /* position to the bottom */
     top: 100%;
@@ -48,9 +54,13 @@
 }
 
 .utls-shadow {
-    box-shadow: 0 0 1rem var(--thm-bg);
+    box-shadow: 0 0 1rem var(--utls-shadow);
 }
 
 .utls-hover:hover {
+    background-color: var(--utls-hover) !important;
+}
+
+.utls-selected {
     background-color: var(--utls-hover) !important;
 }

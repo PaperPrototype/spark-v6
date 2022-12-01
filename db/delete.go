@@ -63,11 +63,6 @@ func DeleteRelease(releaseID string) error {
 		return err
 	}
 
-	err1 := DeleteReleaseVersions(releaseID)
-	if err1 != nil {
-		return err1
-	}
-
 	return nil
 }
 

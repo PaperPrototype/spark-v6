@@ -23,7 +23,7 @@ func AddRoutes(group *gin.RouterGroup) {
 	group.GET("/releases/:releaseID/sections", getReleaseSectionsJSON)                        // get sections of a release
 	group.POST("/releases/:releaseID/section", mustBeAuthorReleaseID, postReleaseSectionFORM) // create a new section
 	group.GET("/releases/:releaseID/assets/:name", getReleaseGithubAsset)
-	group.GET("/releases/:releaseID/github/resources", getReleaseResourcesJSON)   // get release github resources
+	group.GET("/releases/:releaseID/resources", getReleaseResourcesJSON)          // get release resources
 	group.GET("/releases/:releaseID/resources/:name", getReleaseResourceDOWNLOAD) // get release github resource
 	group.DELETE("/releases/:releaseID", mustBeAuthorReleaseID, deleteRelease)
 

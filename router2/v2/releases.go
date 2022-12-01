@@ -604,9 +604,33 @@ func deleteRelease(c *gin.Context) {
 func getReleaseResourcesJSON(c *gin.Context) {
 	releaseID := c.Params.ByName("releaseID")
 
+	release, err5 := db.GetAnyRelease(releaseID)
+	if err5 != nil {
+		log.Println("v2/github.go ERROR getting release in getReleaseResourcesJSON:", err5)
+		c.JSON(
+			http.StatusInternalServerError,
+			payload{
+				Error: "Error getting release",
+			},
+		)
+		return
+	}
+
+	// return an empty array since github is not enabled
+	if !release.GithubEnabled {
+		entrees := []github.TreeEntry{}
+		c.JSON(
+			http.StatusOK,
+			payload{
+				Payload: entrees,
+			},
+		)
+		return
+	}
+
 	githubRelease, err := db.GetGithubReleaseWithIDStr(releaseID)
 	if err != nil {
-		log.Println("v2/github.go ERROR getting github release in getGithubReleaseTreeJSON:", err)
+		log.Println("v2/github.go ERROR getting github release in getReleaseResourcesJSON:", err)
 		c.JSON(
 			http.StatusInternalServerError,
 			payload{
@@ -616,13 +640,11 @@ func getReleaseResourcesJSON(c *gin.Context) {
 		return
 	}
 
-	release, _ := db.GetAnyRelease(releaseID)
-
 	course, _ := db.GetCourseWithIDPreloadUser(release.CourseID)
 
 	connection, err1 := githubapi.GetGithubConnection(course.UserID)
 	if err1 != nil {
-		log.Println("v2/github.go ERROR getting github connection in getGithubReleaseTreeJSON:", err1)
+		log.Println("v2/github.go ERROR getting github connection in getReleaseResourcesJSON:", err1)
 		c.JSON(
 			http.StatusInternalServerError,
 			payload{
@@ -639,7 +661,7 @@ func getReleaseResourcesJSON(c *gin.Context) {
 
 	githubUser, _, err2 := client.Users.Get(ctx, "")
 	if err2 != nil {
-		log.Println("api/github ERROR getting github user in getGithubReleaseTreeJSON:", err2)
+		log.Println("api/github ERROR getting github user in getReleaseResourcesJSON:", err2)
 		c.JSON(
 			http.StatusInternalServerError,
 			payload{
@@ -651,7 +673,7 @@ func getReleaseResourcesJSON(c *gin.Context) {
 
 	repo, _, err3 := client.Repositories.GetByID(ctx, int64(githubRelease.RepoID))
 	if err3 != nil {
-		log.Println("api/github ERROR getting repo by ID in getGithubReleaseTreeJSON:", err3)
+		log.Println("api/github ERROR getting repo by ID in getReleaseResourcesJSON:", err3)
 		c.JSON(
 			http.StatusInternalServerError,
 			payload{
@@ -665,7 +687,7 @@ func getReleaseResourcesJSON(c *gin.Context) {
 	// use sha to get specific commit
 	tree, _, err4 := client.Git.GetTree(ctx, *githubUser.Login, *repo.Name, githubRelease.SHA, true)
 	if err4 != nil {
-		log.Println("api/github ERROR getting repo contents in getGithubReleaseTreeJSON:", err4)
+		log.Println("api/github ERROR getting repo contents in getReleaseResourcesJSON:", err4)
 		c.JSON(
 			http.StatusInternalServerError,
 			payload{

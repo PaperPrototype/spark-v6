@@ -53,7 +53,7 @@
             console.log(json);
 
             let releaseID = Alpine.store("course").releaseID;
-            course_loadSections(releaseID);
+            course_loadReleaseSections(releaseID);
             Alpine.store("settings_sections").newSectionPopupOpen = false;
             Alpine.store("settings_sections").newSectionName = "";
         })
@@ -78,7 +78,7 @@
             Alpine.store("settings_sections").startPath = Alpine.store("settings_sections").path;
 
             // reload the sections after applying a change
-            course_loadSections(Alpine.store("course").releaseID);
+            course_loadReleaseSections(Alpine.store("course").releaseID);
         });
     }
 
@@ -102,7 +102,7 @@
             Alpine.store("settings_sections").startIsFree = Alpine.store("settings_sections").isFree;
 
             // reload the sections after applying a change
-            course_loadSections(Alpine.store("course").releaseID);
+            course_loadReleaseSections(Alpine.store("course").releaseID);
         });
     }
 
@@ -181,12 +181,20 @@
     function settings_sectionsDelete() {
         let id = Alpine.store("settings_sections").id;
 
+        if (Alpine.store("course").sectionID == id) {
+            // we are deleting the section we are viewing
+            
+            // reset sectionID to zero so that we don't try to 
+            // view the section we deleted
+            Alpine.store("course").sectionID = 0;
+        }
+
         fetch2("/v2/sections/"+id, "DELETE", function(json) {
             if (json.Error !== "") {
                 return;
             }
 
-            course_loadSections(Alpine.store("course").releaseID);
+            course_loadReleaseSections(Alpine.store("course").releaseID);
             settings_sectionsClose();
         });
     }
