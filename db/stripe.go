@@ -78,6 +78,7 @@ func (user *User) OwnsRelease(releaseID uint64) bool {
 
 	// if err then not valid
 	if err != nil {
+		log.Println("")
 		return false
 	}
 

@@ -9,7 +9,6 @@ import (
 	"main/mailer"
 	"main/msg"
 	"main/payments"
-	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -178,9 +177,8 @@ func getBuyRelease(c *gin.Context) {
 		mailer.SendStripePaymentProblemEmail(author.ID, "Your stripe info needs updated. We had to gift one of your courses for free since your stripe account could not accept payments at this time.")
 	}
 
-	// release.Price * (PercentageShare + StripePercentageShare) + StripeFee
 	// uint16        * float32
-	var sparkersCut int64 = int64(math.Floor(float64(float32(release.Price)*(payments.PercentageShare+payments.StripePercentageShare)))) + payments.StripeFee
+	var sparkersCut int64 = payments.CalculateCut(release.Price)
 
 	// stripe requires a description for successful payments
 	paymentDescription := course.Subtitle
@@ -198,7 +196,7 @@ func getBuyRelease(c *gin.Context) {
 					Currency:   stripe.String(string(stripe.CurrencyUSD)),
 					UnitAmount: stripe.Int64(int64(release.Price)),
 					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
-						Name:        stripe.String(course.Title + " Edition" + fmt.Sprint(release.Num)),
+						Name:        stripe.String(course.Title + " Edition " + fmt.Sprint(release.Num)),
 						Description: stripe.String(paymentDescription),
 					},
 				},
@@ -206,7 +204,7 @@ func getBuyRelease(c *gin.Context) {
 		},
 		PaymentIntentData: &stripe.CheckoutSessionPaymentIntentDataParams{
 			ApplicationFeeAmount: stripe.Int64(sparkersCut),
-			Description:          stripe.String("Buying " + course.Title + " Edition" + fmt.Sprint(release.Num)),
+			Description:          stripe.String("Buying " + course.Title + " Edition " + fmt.Sprint(release.Num)),
 			TransferData: &stripe.CheckoutSessionPaymentIntentDataTransferDataParams{
 				Destination: stripe.String(stripeConnection.StripeAccountID),
 			},

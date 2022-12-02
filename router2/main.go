@@ -39,7 +39,7 @@ func getBrowse(c *gin.Context) {
 			"Courses":         courses,
 			"Meta": meta{
 				Title:    "Sparker - Browse",
-				Desc:     "learn coding to build ideas",
+				Desc:     "Learn coding to build ideas",
 				ImageURL: "/resources2/images/sparker_code_hl_banner.png",
 			},
 		},
@@ -52,8 +52,7 @@ func getCourse(c *gin.Context) {
 	sectionIDParam := c.Params.ByName("sectionID")
 	_ = c.Params.ByName("releaseID")
 
-	course, err := db.GetUserCoursePreload(usernameParam, strings.ToLower(courseParam))
-
+	course, err := db.GetUserCoursePreload(usernameParam, courseParam)
 	if err != nil {
 		log.Println("router/get.go ERROR getting course:", err)
 		c.Redirect(http.StatusFound, "/")

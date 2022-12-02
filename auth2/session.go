@@ -19,7 +19,7 @@ func IsLoggedInValid(c *gin.Context) bool {
 	// delete expired sessions
 	err := db.DeleteExpiredSessions()
 	if err != nil {
-		log.Println("session ERROR deleting old session? (possilbe there is no sessions):", err)
+		log.Println("session ERROR deleting old session? (possibly there is no sessions):", err)
 	}
 
 	// get cookie session

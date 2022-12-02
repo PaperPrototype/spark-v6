@@ -8,7 +8,6 @@ import (
 	"main/db"
 	"main/helpers"
 	"main/payments"
-	"math"
 	"net/http"
 	"os"
 	"time"
@@ -73,8 +72,8 @@ func postStripeWebhook(c *gin.Context) {
 
 		// AmountPayed * PercentageShare
 		// we took PercentageShare percent
-		ourCut := uint64(math.Round(float64(float32(buyRelease.AmountPaying) * payments.PercentageShare)))
-		authorsCut := buyRelease.AmountPaying - ourCut
+		ourCut := payments.CalculateCut(release.Price)
+		authorsCut := buyRelease.AmountPaying - uint64(ourCut)
 
 		purchase := db.Purchase{
 			UserID:          buyRelease.UserID,

@@ -12,7 +12,7 @@ func getBuySuccess(c *gin.Context) {
 	username := c.Params.ByName("username")
 	course := c.Params.ByName("course")
 
-	log.Println("successfully purchased course")
+	log.Println("successfully purchased course (Your purchase may take a few minutes to complete).")
 	msg.SendMessage(c, "Successfully purchased course")
 	c.Redirect(http.StatusFound, "/"+username+"/"+course)
 }

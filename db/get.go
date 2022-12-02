@@ -270,7 +270,7 @@ func GetAllPublicCoursesPreload() ([]Course, error) {
 func GetOwnershipsPreloadCourses(userID uint64) ([]Ownership, error) {
 	ownerships := []Ownership{}
 
-	err := GormDB.Model(&Ownership{}).Where("user_id = ?", userID).Preload("Course").Preload("Release").Preload("User").Find(&ownerships).Error
+	err := GormDB.Model(&Ownership{}).Where("user_id = ?", userID).Preload("Course").Preload("Release").Preload("User").Preload("Course.User").Find(&ownerships).Error
 
 	return ownerships, err
 }

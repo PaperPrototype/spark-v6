@@ -2,6 +2,7 @@ package payments
 
 import (
 	"main/helpers"
+	"math"
 
 	"github.com/stripe/stripe-go/v73"
 )
@@ -26,6 +27,11 @@ const (
 	DescStripeChargesNotEnabled       string = "Charges are not enabled for this stripe account. Could not accept payment. Gifting course for free."
 	DescStripeChargesNotEnabledError  string = "An error occured. Are charges enabled for this stripe account? Gifting course for free."
 )
+
+// release.Price * (PercentageShare + StripePercentageShare) + StripeFee
+func CalculateCut(price uint64) int64 {
+	return int64(math.Ceil(float64(float32(price)*(PercentageShare+StripePercentageShare)))) + StripeFee
+}
 
 func Setup() {
 	// set global stripe API key
