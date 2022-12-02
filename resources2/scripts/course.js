@@ -251,7 +251,6 @@ function course_loadReleaseSections(releaseID) {
         } else if (json.Payload.length > 0) {
             // else load first section
             course_loadSection(json.Payload[0].ID);
-            course_viewSection(json.Payload[0].ID, json.Payload[0].Name);
         }
 
         if (json.Payload.length == 0) {
