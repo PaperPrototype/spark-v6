@@ -68,6 +68,10 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
                 <span x-text="$store.course.displayName" style="margin-left:0.5rem;" class="thm-c-less"></span>
             </div>
         </div>
+
+        <a x-show="$store.course.displayName === ''" href="/">
+            <img class="align-center-horizontal" style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
+        </a>
         
         {{ if .LoggedIn }}
             <div class="thm-bg-hl utls-tip" style="margin-left:auto; padding:0.6rem; height:2.5rem; padding-left:1rem; padding-right:0.7rem;">
