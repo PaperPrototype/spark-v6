@@ -51,7 +51,8 @@ func Run() {
 
 	router.LoadHTMLGlob("./templates2/*")
 	router.Static("/resources2", "./resources2")
-	router.StaticFile("favicon.ico", "./resources2/images/favicon.ico")
+	router.StaticFile("/favicon.ico", "./resources2/images/favicon.ico")
+	router.StaticFile("/ads.txt", "./ads.txt")
 
 	// setup all the routes
 	SetupRoutes()
