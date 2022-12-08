@@ -197,9 +197,14 @@ function course_loadReleases() {
 
         Alpine.store("course").releases = json.Payload;
 
-        // reload the sections
-        course_loadReleaseSections(Alpine.store('course').releaseID);
-        course_loadReleaseResources(Alpine.store('course').releaseID);
+        if (json.Payload.length !== 0) {
+            // (re)load the sections
+            course_loadReleaseSections(Alpine.store('course').releaseID);
+            course_loadReleaseResources(Alpine.store('course').releaseID);
+        } else {
+            // don't leave menu hanging open
+            Alpine.store("course").menuOpen = false;
+        }
     });
 }
 

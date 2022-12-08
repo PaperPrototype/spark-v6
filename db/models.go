@@ -233,6 +233,8 @@ type Course struct {
 
 	UserID uint64 `gorm:"not null"`
 
+	ImageURL string // youtube video or image url
+
 	// ORM preloadable property
 	User    User
 	Release Release // can be preloaded with the newest release

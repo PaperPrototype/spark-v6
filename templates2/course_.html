@@ -68,10 +68,49 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
                 <span x-text="$store.course.displayName" style="margin-left:0.5rem;" class="thm-c-less"></span>
             </div>
         </div>
-
-        <a href="/" style="margin-left:auto; margin-right:0.5rem;">
-            <img style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
-        </a>
+        
+        {{ if .LoggedIn }}
+            <div class="thm-bg-hl utls-tip" style="margin-left:auto; padding:0.6rem; height:2.5rem; padding-left:1rem; padding-right:0.7rem;">
+                <i class="fa-solid fa-user-check"></i>
+                <div 
+                class="utls-tiptext utls-tiptext-align-right"
+                style="background-color:var(--thm-hl); height:12rem; max-width:15rem; width:15rem; border-radius: 0; text-align:left;
+                border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem;">
+                    <div style="border-radius:0.25rem; padding:0.5rem; display:flex;">
+                        <span style="font-weight:500;">{{ .User.Name }}</span>
+                        <span style="margin-left:auto;">@{{ .User.Username }}</span>
+                    </div>
+                    <div style="margin-bottom:0.5rem;">
+                        <a href="/settings" style="text-decoration:none;">
+                            <div style="padding:0.5rem; background-color:black; border-radius:0.25rem;">
+                                Settings
+                            </div>
+                        </a>
+                    </div>
+                    <div style="margin-bottom:0.5rem;">
+                        <a href="/new" style="text-decoration:none;">
+                            <div style="padding:0.5rem; background-color:black; border-radius:0.25rem;">
+                                New Course
+                            </div>
+                        </a>
+                    </div>
+                    <div style="margin-bottom:0.5rem;">
+                        <a href="/logout" style="text-decoration:none;">
+                            <div style="padding:0.5rem; background-color:black; border-radius:0.25rem;">
+                                Logout
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {{ else }}
+            <div @click="onboard_open()" style="padding:0.4rem; font-weight: 500; padding-right:1rem;">
+                <button class="utls-bd thm-bg-hl" style="padding:0.25rem; font-weight: 500; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
+                    signup
+                </button>
+                <span style="padding:0.25rem;">login</span>
+            </div>
+        {{ end }}
     </div>
 </div>
 
@@ -153,8 +192,11 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
             <i class="fa-solid fa-house" style="padding-right:0.5rem;"></i> Home
         </div>
 
-        <!-- sections -->
+        <!-- SECTIONS -->
+        <!-- only apply this setting if not author -->
+        {{ if ne .User.ID .Course.User.ID }}
         <div x-show="$store.course.sections.length !== 0">
+        {{ end }}
             <div class="thm-c-less" style="font-weight:500; font-size:0.8rem; display:flex; flex-direction:row; padding-right:0.5rem;">
                 <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; padding-top:0.5rem;"></i>
                 <div style="padding:0.25rem; padding-top:0.5rem;" class="thm-c-less">
@@ -184,9 +226,12 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
                     <span x-show="section.Description !== '' " class="utls-tiptext utls-tiptext-bot-left utls-shadow" style="--utls-shadow:var(--thm-bg); --utls-tip-bg:var(--thm-hl);" x-text="section.Description"></span>
                 </div>
             </template>
+        <!-- only apply this setting if not author -->
+        {{ if ne .User.ID .Course.User.ID }}
         </div>
+        {{ end }}
 
-        <!-- resources -->
+        <!-- RESOURCES -->
         <div x-show="$store.course.resources.length !== 0">
             <div class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
                 <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; margin-top:0.5rem;"></i>

@@ -35,16 +35,6 @@ func postCourseFORM(c *gin.Context) {
 		return
 	}
 
-	releasesCount := db.CountPublicCourseReleasesLogError(courseID)
-
-	// if public and no releases!
-	if public && releasesCount == 0 {
-		c.JSON(http.StatusOK, payload{
-			Error: "You must have at least 1 public release before you can make a course public",
-		})
-		return
-	}
-
 	err2 := db.UpdateCourse(courseID, title, name, subtitle, public, markdown)
 	if err2 != nil {
 		log.Println("v2/course.go ERROR updating course in postCourseFORM:", err2)

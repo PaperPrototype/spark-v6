@@ -17,17 +17,38 @@
 
     <div x-data @click="onboard_open()" style="position:fixed; top:0; right:0; height:2.5rem; width:100%; text-align: end;">
         {{ if .LoggedIn }}
-            <div class="utls-tip">
-                <a href="/new" style="text-decoration:none; font-weight:600;">
-                    <i style="padding:0.7rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-plus"></i>
-                </a>
-                <span style="--utls-tip-bg:var(--thm-hl);" class="utls-tiptext utls-tiptext-bot-left">new course</span>
-            </div>
-            <div class="utls-tip">
-                <a href="/logout" style="text-decoration:none; font-weight:600;">
-                    <i style="padding:0.7rem; font-size:1.25rem; padding-right:1rem;" class="fa-solid fa-right-from-bracket"></i>
-                </a>
-                <span style="--utls-tip-bg:var(--thm-hl);" class="utls-tiptext utls-tiptext-bot-left">logout</span>
+            <div class="thm-bg-hl utls-tip" style="margin-left:auto; padding:0.6rem; height:2.5rem; padding-left:1rem; padding-right:0.7rem;">
+                <i class="fa-solid fa-user-check"></i>
+                <div 
+                class="utls-tiptext utls-tiptext-align-right"
+                style="background-color:var(--thm-hl); height:12rem; max-width:15rem; width:15rem; border-radius: 0; text-align:left;
+                border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem;">
+                    <div style="border-radius:0.25rem; padding:0.5rem; display:flex;">
+                        <span style="font-weight:500;">{{ .User.Name }}</span>
+                        <span style="margin-left:auto;">@{{ .User.Username }}</span>
+                    </div>
+                    <div style="margin-bottom:0.5rem;">
+                        <a href="/settings" style="text-decoration:none;">
+                            <div style="padding:0.5rem; background-color:black; border-radius:0.25rem;">
+                                Settings
+                            </div>
+                        </a>
+                    </div>
+                    <div style="margin-bottom:0.5rem;">
+                        <a href="/new" style="text-decoration:none;">
+                            <div style="padding:0.5rem; background-color:black; border-radius:0.25rem;">
+                                New Course
+                            </div>
+                        </a>
+                    </div>
+                    <div style="margin-bottom:0.5rem;">
+                        <a href="/logout" style="text-decoration:none;">
+                            <div style="padding:0.5rem; background-color:black; border-radius:0.25rem;">
+                                Logout
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
         {{ else }}
             <div @click="onboard_open()" style="padding:0.4rem; font-weight: 500; padding-right:1rem;">
@@ -46,12 +67,8 @@
         <div style="text-align:center; max-width:100%; padding-top:1rem;">
             {{ if .LoggedIn }}
                 <!-- title -->
-                <h2 style="font-size:2.5rem;">Welcome, {{ .User.Name }}!</h2>
-                <p>@{{ .User.Username }}</p>
+                <h2 style="font-size:2.5rem;">Welcome {{ .User.Name }}!</h2>
 
-                <a href="/settings" style="padding:0.5rem; text-decoration:none; display:flex; flex-direction:row; width:fit-content; background-color: rgb(255, 255, 255); color:black; --utls-shadow:var(--thm-bg);" class="align-center-horizontal utls-shadow utls-bd">
-                    <div style="color:black">settings</div> <i style="font-size:1.25rem; padding-left:0.5rem; color:black;" class="fa-solid fa-gear"></i>
-                </a>
             {{ else }}
                 <!-- title -->
                 <h2 style="font-size:3rem;">Sparker</h2>
