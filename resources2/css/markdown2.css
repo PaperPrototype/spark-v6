@@ -48,8 +48,8 @@
 }
 
 [markdown2] > p > img {
-	width: calc(100% + 6rem);
-    transform: translate(-3rem);
+	width: calc(100% + 4rem);
+    transform: translate(-2rem);
 	display: table;
 }
 
@@ -61,8 +61,8 @@
 
 [markdown2] > p > iframe {
 	display: table;
-	width: calc(100% + 6rem);
-    transform: translate(-3rem);
+	width: calc(100% + 4rem);
+    transform: translate(-2rem);
 	height: auto;
 	aspect-ratio: 16 / 9;
 }

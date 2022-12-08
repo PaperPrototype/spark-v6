@@ -109,7 +109,7 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
                         </div>
 
                         <div @click="settings_releasesNewCreate()" class="utls-bd" style="margin-top:0.5rem; margin-bottom:0.5rem; padding:0.5rem; background-color:var(--thm-hl);">
-                            New Release
+                            New Edition
                         </div>
 
                         <div class="utls-bd" style="margin-bottom:0.5rem; margin-left:0.1rem; margin-right:0.1rem; height:0.15rem; background-color:var(--thm-over-selected);">
@@ -154,38 +154,40 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
         </div>
 
         <!-- sections -->
-        <div class="thm-c-less" style="font-weight:500; font-size:0.8rem; display:flex; flex-direction:row; padding-right:0.5rem;">
-            <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; padding-top:0.5rem;"></i>
-            <div style="padding:0.25rem; padding-top:0.5rem;" class="thm-c-less">
-                SECTIONS
-            </div>
-
-            <!-- for course author only -->
-            {{ if eq .User.ID .Course.User.ID }}
-                <i @click="settings_sectionsNewOpen()" style="margin-left:auto; padding:0.5rem; --utls-hover:var(--thm-over-hover);" class="thm-c-less fa-solid fa-plus utls-hover utls-bd"></i>
-            {{ end }}
-        </div>
-        <template x-for="section in $store.course.sections" :key="section.ID">
-            <div @click="course_viewSection(section.ID, section.Name); course_loadSection(section.ID, section.Name);" style="display:flex; flex-direction:row;" class="utls-bd utls-tip">
-                <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd" :class="$store.course.active === 'section' + section.ID ? 'course-menu-item-selected' : 'course-menu-item' ">
-                    <div x-text="section.Name"></div>
-                    {{ if .Owned }}
-                    <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock-open' " class="fa-solid"></i>
-                    {{ else }}
-                    <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock' " class="fa-solid"></i>
-                    {{ end }}
+        <div x-show="$store.course.sections.length !== 0">
+            <div class="thm-c-less" style="font-weight:500; font-size:0.8rem; display:flex; flex-direction:row; padding-right:0.5rem;">
+                <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; padding-top:0.5rem;"></i>
+                <div style="padding:0.25rem; padding-top:0.5rem;" class="thm-c-less">
+                    SECTIONS
                 </div>
 
-                <!-- if they are the author then they can access settings -->
-                {{ if eq $.User.ID $.Course.User.ID }}
-                    <i style="margin-left:auto; padding:0.5rem;" class="fa-solid fa-gear course-menu-item utls-bd" @click="settings_sectionsOpen(); settings_sectionsLoad(section.ID);"></i>
+                <!-- for course author only -->
+                {{ if eq .User.ID .Course.User.ID }}
+                    <i @click="settings_sectionsNewOpen()" style="margin-left:auto; padding:0.5rem; --utls-hover:var(--thm-over-hover);" class="thm-c-less fa-solid fa-plus utls-hover utls-bd"></i>
                 {{ end }}
-                <span x-show="section.Description !== '' " class="utls-tiptext utls-tiptext-bot-left utls-shadow" style="--utls-shadow:var(--thm-bg); --utls-tip-bg:var(--thm-hl);" x-text="section.Description"></span>
             </div>
-        </template>
+            <template x-for="section in $store.course.sections" :key="section.ID">
+                <div @click="course_viewSection(section.ID, section.Name); course_loadSection(section.ID, section.Name);" style="display:flex; flex-direction:row;" class="utls-bd utls-tip">
+                    <div style="width:100%; display:flex; flex-direction:row;" class="utls-bd" :class="$store.course.active === 'section' + section.ID ? 'course-menu-item-selected' : 'course-menu-item' ">
+                        <div x-text="section.Name"></div>
+                        {{ if .Owned }}
+                        <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock-open' " class="fa-solid"></i>
+                        {{ else }}
+                        <i style="margin-left:auto;" :class="section.Free ? '' : 'fa-lock' " class="fa-solid"></i>
+                        {{ end }}
+                    </div>
+
+                    <!-- if they are the author then they can access settings -->
+                    {{ if eq $.User.ID $.Course.User.ID }}
+                        <i style="margin-left:auto; padding:0.5rem;" class="fa-solid fa-gear course-menu-item utls-bd" @click="settings_sectionsOpen(); settings_sectionsLoad(section.ID);"></i>
+                    {{ end }}
+                    <span x-show="section.Description !== '' " class="utls-tiptext utls-tiptext-bot-left utls-shadow" style="--utls-shadow:var(--thm-bg); --utls-tip-bg:var(--thm-hl);" x-text="section.Description"></span>
+                </div>
+            </template>
+        </div>
 
         <!-- resources -->
-        <div>
+        <div x-show="$store.course.resources.length !== 0">
             <div class="thm-c-less" style="font-weight:500; font-size:0.8rem;">
                 <i class="fa-solid fa-sort-down thm-c-less" style="padding:0.25rem; margin-top:0.5rem;"></i>
                 RESOURCES
@@ -201,9 +203,9 @@ style="position:fixed; top:0; left:0; bottom:0; z-index:3;">
             </div>
         </div>
     
-        <div style="margin-top:2rem;">
+        <div style="margin-top:2rem;margin-bottom:2rem;">
             <a href="https://discord.gg/QhqTE4t2tR" target="_blank" style="text-decoration:none;" class="utls-bd" :class="$store.course.active === 'channel' ? 'course-menu-item-selected' : 'course-menu-item' ">
-                <i class="fa-brands fa-discord"></i> Join Sparker's discord server! <i class="fa-solid fa-up-right-from-square"></i>
+                <i class="fa-brands fa-discord"></i> Sparkers Official Discord <i class="fa-solid fa-up-right-from-square"></i>
             </a>
         </div>
         <div style="margin-bottom:auto;"></div>
