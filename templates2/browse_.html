@@ -71,29 +71,32 @@
                 {{ end }}
             </div>
 
-            <h1> All Courses </h1>
-            <!-- courses -->
-            <div class="cards">
-                {{ range .Courses }}
-                    {{ if eq .ImageURL "" }}
-                    <div class="card" style="background-image:url('{{ .Release.ImageURL }}');">
-                    {{ else }}
-                    <div class="card" style="background-image:url('{{ .ImageURL }}');">
-                    {{ end }}
-                        <div class="card-content">
-                            <div style="margin-top:auto; font-size:2rem; font-weight:600;">{{ .Title }}</div>
-                            <div style="display:flex; flex-direction:row;">
-                                <div style="font-weight:500; padding-top:0.5rem;">by {{ .User.Username }}</div>
-                                <a 
-                                style="margin-left:auto; padding:0.5rem; color:var(--thm-hl); font-weight:500;"
-                                href="/{{ .User.Username }}/{{ .Name }}">
-                                    learn more
-                                    <i style="color:var(--thm-hl);" class="fa-solid fa-angle-right"></i>
-                                </a>
+            <div style="text-align:left;">
+                <h1 style="padding:1.5rem;"> All Courses </h1>
+                <!-- courses -->
+                <div class="cards">
+                    {{ range .Courses }}
+                        {{ if eq .ImageURL "" }}
+                        <div class="card" style="background-image:url('{{ .Release.ImageURL }}');">
+                        {{ else }}
+                        <div class="card" style="background-image:url('{{ .ImageURL }}');">
+                        {{ end }}
+                            <div class="card-content">
+                                <div style="margin-top:auto; font-size:2rem; font-weight:600;">{{ .Title }}</div>
+                                <div style="display:flex; flex-direction:row;">
+                                    <div style="font-weight:500; padding-top:0.5rem;">by {{ .User.Username }}</div>
+                                    <a 
+                                    style="margin-left:auto; padding:0.5rem; color:var(--thm-hl); font-weight:500;"
+                                    href="/{{ .User.Username }}/{{ .Name }}">
+                                        learn more
+                                        <i style="color:var(--thm-hl);" class="fa-solid fa-angle-right"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {{ end }}
+                    {{ end }}
+                </div>
+                
             </div>
             
         </div>
