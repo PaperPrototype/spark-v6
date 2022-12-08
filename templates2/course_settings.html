@@ -6,12 +6,14 @@
             open: false,
             title: "{{ .Course.Title }}",
             name: "{{ .Course.Name }}",
+            imageURL: "{{ .Course.ImageURL }}",
             subtitle: "{{ .Course.Subtitle }}",
             public: {{ .Course.Public }},
             markdown: "{{ .Course.Markdown }}",
 
             startTitle: "{{ .Course.Title }}",
             startName: "{{ .Course.Name }}",
+            startImageURL: "{{ .Course.ImageURL }}",
             startSubtitle: "{{ .Course.Subtitle }}",
             startPublic: {{ .Course.Public }},
             startMarkdown: "{{ .Course.Markdown }}",
@@ -24,6 +26,7 @@
         let formData = new FormData();
         formData.append("title", Alpine.store("settings").title);
         formData.append("name", Alpine.store("settings").name);
+        formData.append("imageURL", Alpine.store("settings").imageURL);
         formData.append("subtitle", Alpine.store("settings").subtitle);
         formData.append("public", Alpine.store("settings").public);
         formData.append("markdown", Alpine.store("settings").markdown);
@@ -63,6 +66,11 @@
                 <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding:0.1rem;">COURSE URL NAME</div>
                 <input x-model="$store.settings.name" placeholder="Name" class="thm-bg utls-bd utls-bd-none">
             </div>
+
+            <div style="margin-top:2rem;">
+                <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding:0.1rem;">COURSE IMAGE URL</div>
+                <input x-model="$store.settings.imageURL" placeholder="Image URL" class="thm-bg utls-bd utls-bd-none">
+            </div>
             
             <div style="margin-top:2rem;">
                 <div class="thm-c-less" style="font-weight:600; font-size:0.8rem; padding:0.2rem;">COURSE DESCRIPTION</div>
@@ -99,6 +107,7 @@
             $store.settings.public !== $store.settings.startPublic || 
             $store.settings.title !== $store.settings.startTitle || 
             $store.settings.name !== $store.settings.startName || 
+            $store.settings.imageURL !== $store.settings.startImageURL || 
             $store.settings.subtitle !== $store.settings.startSubtitle || 
             $store.settings.markdown !== $store.settings.startMarkdown"
             class="utls-bd thm-bg-hl utls-shadow"

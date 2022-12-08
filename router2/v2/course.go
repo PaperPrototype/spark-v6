@@ -15,6 +15,7 @@ func postCourseFORM(c *gin.Context) {
 	user := auth2.GetLoggedInUserLogError(c)
 	title := c.PostForm("title")
 	name := c.PostForm("name")
+	imageURL := c.PostForm("imageURL")
 	public := c.PostForm("public") == "true"
 	subtitle := c.PostForm("subtitle")
 	markdown := c.PostForm("markdown")
@@ -35,7 +36,7 @@ func postCourseFORM(c *gin.Context) {
 		return
 	}
 
-	err2 := db.UpdateCourse(courseID, title, name, subtitle, public, markdown)
+	err2 := db.UpdateCourse(courseID, title, name, subtitle, public, markdown, imageURL)
 	if err2 != nil {
 		log.Println("v2/course.go ERROR updating course in postCourseFORM:", err2)
 		c.JSON(http.StatusOK, payload{

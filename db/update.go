@@ -4,8 +4,8 @@ func UpdateUser(userID uint64, username, name, bio, email string) error {
 	return GormDB.Model(&User{}).Where("id = ?", userID).Update("bio", bio).Update("name", name).Update("username", username).Update("email", email).Error
 }
 
-func UpdateCourse(courseID, title, name, subtitle string, public bool, markdown string) error {
-	return GormDB.Model(&Course{}).Where("id = ?", courseID).Update("name", name).Update("title", title).Update("subtitle", subtitle).Update("public", public).Update("markdown", markdown).Error
+func UpdateCourse(courseID, title, name, subtitle string, public bool, markdown string, imageURL string) error {
+	return GormDB.Model(&Course{}).Where("id = ?", courseID).Update("name", name).Update("title", title).Update("subtitle", subtitle).Update("public", public).Update("markdown", markdown).Update("image_url", imageURL).Error
 }
 
 func UpdateRelease(releaseID string, price uint64, public bool, postsNeededNum uint16, imageURL string, githubEnabled bool) error {
