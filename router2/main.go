@@ -38,8 +38,8 @@ func getBrowse(c *gin.Context) {
 			"Messages":        msg.GetMessages(c),
 			"Courses":         courses,
 			"Meta": meta{
-				Title:    "Sparker - Browse",
-				Desc:     "Learn coding to build ideas",
+				Title:    "Sparker",
+				Desc:     "Purpose? To enable anyone to become a software engineer, and get a job",
 				ImageURL: "/resources2/images/sparker_code_hl_banner.png",
 			},
 		},
