@@ -58,28 +58,45 @@
     <!-- title and gradient -->
     <div style="margin-top:3.2rem; padding-left:1rem; padding-right:1rem; min-height:840px; padding-top:2rem; background:linear-gradient(black, var(--thm-hl));">
         <div style="text-align:center; max-width:100%; padding-top:1rem;">
-            <div style="padding-bottom:2rem;">
+            <div style="padding-bottom:5rem;">
 
                 {{ if .LoggedIn }}
                     <!-- title -->
-                    <h2 style="font-size:2.5rem;">Welcome to Sparker {{ .User.Name }}!</h2>
+                    <div style="text-align: center;">
+                        <div style="margin-top:5rem; font-size:3rem; font-weight: 600;">
+                            Welcome {{ .User.Name }}!
+                        </div>
+                        <a href="/paper/minecraft-unity" style="text-decoration:none;">
+                            <div style="display:flex; flex-direction:row;">
+                                <div style="margin-left:auto; margin-right:auto; margin-top:3rem; 
+                                padding:1rem; background-color:var(--thm-hl); font-size:1rem; font-weight: 500;
+                                padding-left:2rem; padding-right:2rem; border-radius: 0.25rem;;">
+                                    Discover Coding a Minecraft Terrain System
+                                </div>
+                            </div>
+                        </a>
+                    </div>
 
                 {{ else }}
                     <!-- title -->
-                    <div style="display:flex; flex-direction: row;">
-                        <div style="margin-left:auto; padding-top:0.25rem; padding-right:1rem;">
-                            <img style="height:3rem;" src="/resources2/images/sparker_code_transp_large.png"> 
+                    <div style="text-align: center;">
+                        <div style="margin-top:5rem; font-size:3rem; font-weight: 600;">
+                            Learn Coding to Build Ideas
                         </div>
-                        <div style="font-size:3rem; margin-right:auto; font-weight: 600;">
-                            Sparker
-                        </div>
+                        <a href="/paper/minecraft-unity" style="text-decoration:none;">
+                            <div style="display:flex; flex-direction:row;">
+                                <div style="margin-left:auto; margin-right:auto; margin-top:3rem; 
+                                padding:1rem; background-color:var(--thm-hl); font-size:1rem; font-weight: 500;
+                                padding-left:2rem; padding-right:2rem; border-radius: 0.25rem;;">
+                                    Discover Coding a Minecraft Terrain System
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                    <h3>Learn coding to build ideas</h3>
                 {{ end }}
             </div>
 
             <div style="text-align:left;">
-                <h1 style="padding:1.5rem;"> All Courses </h1>
                 <!-- courses -->
                 <div class="cards">
                     {{ range .Courses }}
