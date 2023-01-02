@@ -80,9 +80,9 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
                 class="utls-tiptext utls-tiptext-align-right"
                 style="background-color:var(--thm-hl); height:12rem; max-width:15rem; width:15rem; border-radius: 0; text-align:left;
                 border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem;">
-                    <div style="border-radius:0.25rem; padding:0.5rem; display:flex;">
-                        <span style="font-weight:500;">{{ .User.Name }}</span>
-                        <span style="margin-left:auto;">@{{ .User.Username }}</span>
+                    <div style="border-radius:0.25rem; padding:0.5rem; display:flex; flex-direction:row; flex-wrap: wrap;">
+                        <span style="font-weight:500; white-space:nowrap;">{{ .User.Name }}</span>
+                        <span style="margin-left:auto; white-space:nowrap;">@{{ .User.Username }}</span>
                     </div>
                     <div style="margin-bottom:0.5rem;">
                         <a href="/settings" style="text-decoration:none;">

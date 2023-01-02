@@ -6,7 +6,12 @@
 
 <!-- top nav bar -->
 <div style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:2; background-color:black; backdrop-filter: blur(10px);">
-    <img class="align-center-horizontal" style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
+    <div style="display:flex; flex-direction:row; padding-left:1rem;">
+        <img style="height:2.5rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
+        <div style="font-weight:500; padding-top:0.4rem; font-size:1.25rem;">
+            Sparker
+        </div>
+    </div>
 
     <div x-data @click="onboard_open()" style="position:fixed; top:0; right:0; height:2.5rem; width:100%; text-align: end;">
         {{ if .LoggedIn }}
@@ -16,9 +21,9 @@
                 class="utls-tiptext utls-tiptext-align-right"
                 style="background-color:var(--thm-hl); height:12rem; max-width:15rem; width:15rem; border-radius: 0; text-align:left;
                 border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem;">
-                    <div style="border-radius:0.25rem; padding:0.5rem; display:flex;">
-                        <span style="font-weight:500;">{{ .User.Name }}</span>
-                        <span style="margin-left:auto;">@{{ .User.Username }}</span>
+                    <div style="border-radius:0.25rem; padding:0.5rem; display:flex; flex-direction:row; flex-wrap: wrap;">
+                        <span style="font-weight:500; white-space:nowrap;">{{ .User.Name }}</span>
+                        <span style="margin-left:auto; white-space:nowrap;">@{{ .User.Username }}</span>
                     </div>
                     <div style="margin-bottom:0.5rem;">
                         <a href="/settings" style="text-decoration:none;">
@@ -71,7 +76,7 @@
                                 <div style="margin-left:auto; margin-right:auto; margin-top:3rem; 
                                 padding:1rem; background-color:var(--thm-hl); font-size:1rem; font-weight: 500;
                                 padding-left:2rem; padding-right:2rem; border-radius: 0.25rem;;">
-                                    Discover Coding a Minecraft Terrain System
+                                    Discover coding a Minecraft Terrain System
                                 </div>
                             </div>
                         </a>
@@ -88,7 +93,7 @@
                                 <div style="margin-left:auto; margin-right:auto; margin-top:3rem; 
                                 padding:1rem; background-color:var(--thm-hl); font-size:1rem; font-weight: 500;
                                 padding-left:2rem; padding-right:2rem; border-radius: 0.25rem;;">
-                                    Discover Coding a Minecraft Terrain System
+                                    Discover coding a Minecraft Terrain System
                                 </div>
                             </div>
                         </a>
