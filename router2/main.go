@@ -39,7 +39,7 @@ func getBrowse(c *gin.Context) {
 			"Courses":         courses,
 			"Meta": meta{
 				Title:    "Sparker",
-				Desc:     "Purpose? To enable anyone to become a software engineer, and get a job",
+				Desc:     "Purpose? Voxel terrain courses.",
 				ImageURL: "/resources2/images/sparker_code_hl_banner.png",
 			},
 		},
