@@ -4,23 +4,34 @@
 
 <link href="/resources2/css/cards.css" rel="stylesheet">
 
+<style>
+    .user-menu-bd {
+        border-radius: 0.25rem;
+    }
+
+    .user-menu-bd:hover {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+</style>
+
 <!-- top nav bar -->
-<div style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:2; background-color:black; backdrop-filter: blur(10px);">
-    <div style="display:flex; flex-direction:row; padding-left:0.5rem;">
-        <img style="height:2.5rem; padding:0.25rem;" src="/resources2/images/sparker_code_transp_large.png">
-        <div style="font-weight:500; padding-top:0.4rem; padding-left:0.5rem; font-size:1.25rem;">
-            Sparker
+<div style="height:3rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:2; background-color:black; backdrop-filter: blur(10px);">
+    <div style="display:flex; flex-direction:row; padding-left:0.75rem;">
+        <img style="height:3rem; padding:0.5rem;" src="/resources2/images/sparker_code_transp_large.png">
+        <div style="font-weight:500; padding-top:0.75rem; padding-left:0.25rem; font-size:1.25rem;">
+            sparker
         </div>
     </div>
 
     <div x-data @click="onboard_open()" style="position:fixed; top:0; right:0; height:2.5rem; width:100%; text-align: end;">
         {{ if .LoggedIn }}
-            <div class="thm-bg-hl utls-tip" style="margin-left:auto; padding:0.6rem; height:2.5rem; padding-left:1rem; padding-right:0.7rem;">
+            <div class="thm-bg-hl utls-tip user-menu-bd" style="margin-left:auto; margin:0.4rem; padding:0.5rem; height:2.25rem; padding-left:1rem; padding-right:0.7rem;">
                 <i class="fa-solid fa-user-check"></i>
                 <div 
                 class="utls-tiptext utls-tiptext-align-right"
                 style="background-color:var(--thm-hl); height:12rem; max-width:15rem; width:15rem; border-radius: 0; text-align:left;
-                border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem;">
+                border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem; border-bottom-right-radius:0.25rem;">
                     <div style="border-radius:0.25rem; padding:0.5rem; display:flex; flex-direction:row; flex-wrap: wrap;">
                         <span style="font-weight:500; white-space:nowrap;">{{ .User.Name }}</span>
                         <span style="margin-left:auto; white-space:nowrap;">@{{ .User.Username }}</span>
@@ -49,8 +60,8 @@
                 </div>
             </div>
         {{ else }}
-            <div @click="onboard_open()" style="padding:0.4rem; font-weight: 500; padding-right:1rem;">
-                <button class="utls-bd thm-bg-hl" style="padding:0.25rem; font-weight: 500; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
+            <div @click="onboard_open()" style="padding:0.65rem; font-weight: 400; padding-right:1rem;">
+                <button class="utls-bd thm-bg-hl" style="padding:0.25rem; padding-left:0.5rem; padding-right:0.5rem; margin-right:0.5rem; box-shadow: 0 0 0.5rem var(--thm-hl-a);">
                     signup
                 </button>
                 <span style="padding:0.25rem;">login</span>

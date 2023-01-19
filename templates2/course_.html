@@ -52,14 +52,25 @@
 <link href="/resources2/css/course.css" rel="stylesheet">
 <link href="/resources2/css/markdown2.css" rel="stylesheet">
 
+<style>
+    .user-menu-bd {
+        border-radius: 0.25rem;
+    }
+
+    .user-menu-bd:hover {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+</style>
+
 <!-- top menu -->
-<div 
+<div
 x-data
 :class="$store.course.menuOpen ? '' : '' "
-style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:3; background-color:var(--thm-bg); backdrop-filter: blur(10px);">
-    <div x-data style="position:fixed; top:0; right:0; height:2.5rem; width:100%; display:flex;">
-        <i style="margin-right:auto; padding:0.6rem; padding-left:1rem; padding-right:1rem; font-size:1.25rem; color:var(--thm-text-less);"
-        class="thm-bg-hl fa-solid fa-equals"
+style="height:3rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:3; background:linear-gradient(var(--thm-bg), rgba(0, 0, 0, 0));">
+    <div x-data style="position:fixed; top:0; right:0; height:3rem; width:100%; display:flex;">
+        <i style="margin:0.4rem; margin-right:auto; padding:0.5rem; padding-left:0.75rem; padding-right:0.75rem; font-size:1.25rem; color:var(--thm-text-less);"
+        class="thm-bg-hl fa-solid fa-equals utls-bd"
         @click="course_openMenu()">
         </i>
 
@@ -74,12 +85,12 @@ style="height:2.5rem; position:fixed; top:0; bottom:0; left:0; right:0; z-index:
         </a>
         
         {{ if .LoggedIn }}
-            <div class="thm-bg-hl utls-tip" style="margin-left:auto; padding:0.6rem; height:2.5rem; padding-left:1rem; padding-right:0.7rem;">
+            <div class="thm-bg-hl utls-tip user-menu-bd" style="margin:0.4rem; margin-left:auto; padding:0.5rem; height:2.25rem; padding-left:1rem; padding-right:0.7rem;">
                 <i class="fa-solid fa-user-check"></i>
                 <div 
                 class="utls-tiptext utls-tiptext-align-right"
-                style="background-color:var(--thm-hl); height:12rem; max-width:15rem; width:15rem; border-radius: 0; text-align:left;
-                border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem;">
+                style="background-color:var(--thm-hl); border-radius:0; height:12rem; max-width:15rem; width:15rem; text-align:left;
+                border-bottom-left-radius:0.25rem; border-top-left-radius:0.25rem; border-bottom-right-radius:0.25rem;">
                     <div style="border-radius:0.25rem; padding:0.5rem; display:flex; flex-direction:row; flex-wrap: wrap;">
                         <span style="font-weight:500; white-space:nowrap;">{{ .User.Name }}</span>
                         <span style="margin-left:auto; white-space:nowrap;">@{{ .User.Username }}</span>

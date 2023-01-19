@@ -13,8 +13,8 @@ function course_viewHome() {
     // which menu item to highlight
     Alpine.store("course").active = "home";
 
-    // change top bar display name to course title
-    Alpine.store("course").displayName = "Home";
+    // change top bar display name to show sparker logo
+    Alpine.store("course").displayName = "";
 
     let username = Alpine.store("course").username;
     let courseName = Alpine.store("course").name;
@@ -51,6 +51,7 @@ function course_loadPreviousSection() {
         if (sections[i].ID === sectionID) {
             if (i <= sections.length) {
                 course_loadSection(sections[i-1].ID, sections[i-1].Name);
+                course_viewSection(sections[i+1].ID, sections[i+1].Name);
             }
         }
     }
@@ -66,6 +67,7 @@ function course_loadNextSection() {
         if (sections[i].ID === sectionID) {
             if (i <= sections.length) {
                 course_loadSection(sections[i+1].ID, sections[i+1].Name);
+                course_viewSection(sections[i+1].ID, sections[i+1].Name);
             }
         }
     }
