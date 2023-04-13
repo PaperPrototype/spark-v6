@@ -131,9 +131,9 @@
     }
 
     [markdown2] > p > iframe {
-        display: table;
-        width: 100vw;
-        transform: translate(calc(-2rem - ((100vw - 800px) / 2)));
+        width: 100%;
+        transform: translate(0);
+        max-width: 800px;
     }
 
     [markdown2] h1, [markdown2] h2, [markdown2] h3, [markdown2] h4, [markdown2] h5, [markdown2] h6 {
