@@ -1,22 +1,21 @@
 ### The most important things you'll hear me say are here
-This document is very important. Please to not edit it without talking to one of the founders (Abdiel, or David).
 
+Check the RELEASE_TODO.md for critical features that need to be added.
 Do not edit QUESTIONS.md (unless you are adding a question)
 Feel free to edit RELEASE_TODO.md
 
 > Scroll to the bottom for setup instructions to run the app locally.
-> Check the RELEASE_TODO.md for critical features that need to be added.
 
 # Lets get started
-If you are part of the team it's gonna help to know what exactly what it is we are building so lets get started. 
+What exactly are we building:
 
 The only things working are:
 - courses hosted through github
-    - We have 2 courses that are active, and 1 of them is paid.
+    - We have 3 courses that are active ~~and 1 of them is paid.~~
 - payments for course releases
-    - each course can have multiple releases (like editions of a book). Each release is pruchased separately.
+    - each course can have multiple releases (like editions of a book). Each release is purchased separately.
 - payment errors cause an email to be sent to the author, and gift the course for free to the customer
-    - customer satifaction because something went wrong, we take the hit and make sure to satisfy the customer
+    - if something went wrong (an error curred), we take the hit and make sure to satisfy the customer (give the course for free)
         - someone should look at that code and find ways to ensure those errors never can happen
 - onboarding, login / signup
 
@@ -31,9 +30,9 @@ Make sure to read the [QUESTIONS.md](/QUESTIONS.md) file in the repo as it outli
 There is also a list of the most important questions that I have **not** figured out:
 
 1. 
-    Who is gonna make the course other than me? Should we hire teachers? I personally like making courses, but this is not going to work long term.
+    Who is gonna make the course's other than me? Should we hire teachers? I personally like making courses, but this is not going to work long term.
 2. 
-    How are we going to break even while we continue to develop the site. How can we increase our runway as much as possible!
+    How are we going to break even (profit) while we continue to develop the site. How can we increase our runway as much as possible!
     - google ads
         - this needs to be done as soon as possible.
     - a few high demand niche courses
