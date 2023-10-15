@@ -1,3 +1,5 @@
+For stripe payment routes see `stripe_webhooks` `stripe_buy` `stripe_connect` `stripe_checkout` in the `router2` folder.
+
 # Developer info
 `router` and `templates` and `resources` were the old site. I've kept them for legacy purposes since I use them for example code of things I've done before. `templates2` and `router2` and `resources2` are the replacements.
 
